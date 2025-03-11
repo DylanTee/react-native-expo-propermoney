@@ -1,6 +1,6 @@
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { ColorValue, StyleProp, TextStyle, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, TextStyle } from "react-native";
 interface ExpoVectorIconProps {
   name:
     | "left"
@@ -26,7 +26,8 @@ interface ExpoVectorIconProps {
     | "copy1"
     | "logout"
     | "warning"
-    | "scan1";
+    | "scan1"
+    | "edit"
   size: number;
   color: ColorValue;
   style?: StyleProp<TextStyle>;

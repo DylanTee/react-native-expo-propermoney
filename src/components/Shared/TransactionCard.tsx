@@ -1,15 +1,11 @@
 import { sh, sw } from "@libs/responsive.lib";
-import { Colors } from "@styles/Colors";
 import React from "react";
 import { Image, View, ViewStyle } from "react-native";
 import { TouchableOpacity } from "react-native";
 import SizedBox from "./SizedBox";
 import { TTransaction } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import { Global } from "@styles/Global";
 import CustomText from "./CustomText";
 import { displayCurrency, getAmountTextColor } from "@libs/utils";
-import dayjs from "dayjs";
-import ModalZoomableImage from "./CustomModal/ModalZoomableImage";
 import { useAuthStore } from "@libs/zustand/authStore";
 import Avatar from "./Avatar";
 
@@ -27,7 +23,6 @@ const TransactionCard = ({
   const authStore = useAuthStore();
   return (
     <TouchableOpacity
-      disabled={data.userId != authStore.user?._id}
       style={containerStyle}
       onPress={onPress}
     >
@@ -45,7 +40,7 @@ const TransactionCard = ({
           }
         />
         <SizedBox width={sw(10)} />
-        <View style={{ flex: 1,justifyContent:'center' }}>
+        <View style={{ flex: 1, justifyContent: "center" }}>
           <View
             style={{ flexDirection: "row", alignItems: "center", gap: sw(5) }}
           >
@@ -53,22 +48,12 @@ const TransactionCard = ({
               style={{
                 width: sw(15),
                 height: sw(15),
-                // borderRadius: sw(25) / 2,
-                // padding: sw(5),
-                // justifyContent: "center",
-                // alignItems: "center",
-                // backgroundColor:
-                //   data.transactionCategory.backgroundColor.trim().length > 0
-                //     ? data.transactionCategory.backgroundColor
-                //     : Colors.gainsboro,
               }}
             >
               <Image
                 style={{
                   width: "100%",
                   height: "100%",
-                  // position: "absolute",
-                  // zIndex: 1,
                 }}
                 source={{ uri: data.transactionCategory.imagePath }}
               />

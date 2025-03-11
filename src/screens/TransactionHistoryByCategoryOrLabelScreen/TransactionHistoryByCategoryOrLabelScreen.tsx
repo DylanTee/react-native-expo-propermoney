@@ -200,28 +200,28 @@ const TransactionHistoryByCategoryOrLabelScreen: AppNavigationScreen<
         renderItem={({ item }: { item: TTransaction }) => (
           <ContainerStack>
             <TransactionCard
-              onPress={() =>
-                navigation.navigate("TransactionsFormScreen", {
-                  isEdit: true,
-                  isUsePhotoAI: false,
-                  form: {
-                    _id: item._id,
-                    transactionCategoryId: item.transactionCategoryId,
-                    transactionLabelIds: item.transactionLabelIds,
-                    currency: item.currency,
-                    amount: item.amount.toString(),
-                    note: item.note ?? "",
-                    imagePath: item.imagePath,
-                    transactedAt: new Date(item.transactedAt),
-                  },
-                  onEdit: () => {
-                    getTransactionGetTransactionsByCategoryIdInfiniteQuery.refetch();
-                  },
-                  onDelete: (_id) => {
-                    getTransactionGetTransactionsByCategoryIdInfiniteQuery.refetch();
-                  },
-                })
-              }
+              onPress={() => {
+                // navigation.navigate("TransactionsFormScreen", {
+                //   isEdit: true,
+                //   isUsePhotoAI: false,
+                //   form: {
+                //     _id: item._id,
+                //     transactionCategoryId: item.transactionCategoryId,
+                //     transactionLabelIds: item.transactionLabelIds,
+                //     currency: item.currency,
+                //     amount: item.amount.toString(),
+                //     note: item.note ?? "",
+                //     imagePath: item.imagePath,
+                //     transactedAt: new Date(item.transactedAt),
+                //   },
+                //   onEdit: () => {
+                //     getTransactionGetTransactionsByCategoryIdInfiniteQuery.refetch();
+                //   },
+                //   onDelete: (_id) => {
+                //     getTransactionGetTransactionsByCategoryIdInfiniteQuery.refetch();
+                //   },
+                // })
+              }}
               data={item}
             />
           </ContainerStack>

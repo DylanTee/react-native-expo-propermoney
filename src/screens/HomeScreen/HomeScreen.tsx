@@ -245,7 +245,11 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
             />
           }
           data={transactions}
-          ItemSeparatorComponent={()=><><SizedBox height={sh(20)}/></>}
+          ItemSeparatorComponent={() => (
+            <>
+              <SizedBox height={sh(20)} />
+            </>
+          )}
           renderItem={({ item, index }) => (
             <>
               {index == 0 ||
@@ -253,36 +257,49 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                 dayjs(transactions[index - 1].transactedAt).format(
                   "YYYY-MM-DD"
                 ) ? (
-                <View style={{borderBottomWidth:1,borderColor:Colors.gainsboro,marginVertical: sw(20),marginHorizontal:sw(15) }}>
+                <View
+                  style={{
+                    borderBottomWidth: 1,
+                    borderColor: Colors.gainsboro,
+                    marginVertical: sw(20),
+                    marginHorizontal: sw(15),
+                  }}
+                >
                   <CustomText
                     size="medium"
-                    label={`${dayjs().format("DD-MM-YYYY") == dayjs(item.transactedAt).format("DD-MM-YYYY")?`Today\n`:``}${dayjs(item.transactedAt).format("DD MMMM YYYY")}`}
-                    textStyle={{ color: "#767676"}}
+                    label={`${
+                      dayjs().format("DD-MM-YYYY") ==
+                      dayjs(item.transactedAt).format("DD-MM-YYYY")
+                        ? `Today\n`
+                        : ``
+                    }${dayjs(item.transactedAt).format("DD MMMM YYYY")}`}
+                    textStyle={{ color: "#767676" }}
                   />
-                  <SizedBox height={sh(5)}/>
+                  <SizedBox height={sh(5)} />
                 </View>
               ) : (
                 <></>
               )}
               <TransactionCard
                 data={item}
-                containerStyle={{marginHorizontal:sw(15)}}
+                containerStyle={{ marginHorizontal: sw(15) }}
                 onPress={() => {
-                  navigation.navigate("TransactionsFormScreen", {
-                    form: {
-                      _id: item._id,
-                      transactionCategoryId: item.transactionCategoryId,
-                      transactionLabelIds: item.transactionLabelIds,
-                      transactedAt: new Date(item.transactedAt),
-                      currency: item.currency,
-                      amount: item.amount.toString(),
-                      imagePath: item.imagePath,
-                      note: item.note ?? "",
-                    },
-                    isEdit: true,
-                    isUsePhotoAI: false,
-                    onEdit: () => {},
-                    onDelete: () => {},
+                  navigation.navigate("TransactionDetailScreen", {
+                    id: item._id,
+                    // form: {
+                    //   _id: item._id,
+                    //   transactionCategoryId: item.transactionCategoryId,
+                    //   transactionLabelIds: item.transactionLabelIds,
+                    //   transactedAt: new Date(item.transactedAt),
+                    //   currency: item.currency,
+                    //   amount: item.amount.toString(),
+                    //   imagePath: item.imagePath,
+                    //   note: item.note ?? "",
+                    // },
+                    // isEdit: true,
+                    // isUsePhotoAI: false,
+                    // onEdit: () => {},
+                    // onDelete: () => {},
                   });
                 }}
               />

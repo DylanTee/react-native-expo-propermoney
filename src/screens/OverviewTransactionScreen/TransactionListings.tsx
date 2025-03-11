@@ -27,24 +27,10 @@ export default function TransactionListings({
   transactions,
   timelineTransactions,
 }: TransactionListingsProps) {
-
   const navigation = useNavigation<AppStackNavigationProp>();
-  const btnEdit = (y: TTransaction) => {
-    navigation.navigate("TransactionsFormScreen", {
-      form: {
-        _id: y._id,
-        transactionCategoryId: y.transactionCategoryId,
-        transactionLabelIds: y.transactionLabelIds,
-        transactedAt: new Date(y.transactedAt),
-        currency: y.currency,
-        amount: y.amount.toString(),
-        imagePath: y.imagePath,
-        note: y.note ?? "",
-      },
-      isEdit: true,
-      isUsePhotoAI: false,
-      onEdit: () => {},
-      onDelete: () => {},
+  const handleCardClick = (y: TTransaction) => {
+    navigation.navigate("TransactionDetailScreen", {
+      id: y._id,
     });
   };
   const list = useMemo(() => {
@@ -102,7 +88,7 @@ export default function TransactionListings({
                     </View>
                     <View style={{}}>
                       {x.totalCurrenciesIncomeAndExpenses.map((data) => (
-                        <View style={{flexDirection:"row"}}>
+                        <View style={{ flexDirection: "row" }}>
                           <CustomText
                             size={"medium"}
                             label={displayCurrency({
@@ -136,7 +122,7 @@ export default function TransactionListings({
                     <TransactionCard
                       key={y._id}
                       data={y}
-                      onPress={() => btnEdit(y)}
+                      onPress={() => handleCardClick(y)}
                     />
                   ))}
                   <SizedBox height={sh(20)} />

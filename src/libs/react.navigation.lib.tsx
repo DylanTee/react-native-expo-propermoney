@@ -11,7 +11,6 @@ import {
 import { Colors } from "../styles/Colors";
 import {
   EGetTransactionsByType,
-  ETransactionCategoryType,
   EVerificationOneTimePasswordType,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import MoreScreen from "@screens/MoreScreen/MoreScreen";
@@ -30,11 +29,16 @@ import TransactionSettingsScreen from "@screens/TransactionSettingsScreen/Transa
 import TransactionAccountSwitchScreen from "@screens/TransactionAccountSwitchScreen/TransactionAccountSwitchScreen";
 import { TReward } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import TransactionHistoryByCategoryOrLabelScreen from "@screens/TransactionHistoryByCategoryOrLabelScreen/TransactionHistoryByCategoryOrLabelScreen";
+import TransactionDetailScreen from "@screens/TransactionDetailScreen/TransactionDetailScreen";
 
 export type OverviewTransactionScreenParams = {
   selectedUserId: TSelectedUserId;
   startTransactedAt: Date;
 };
+
+export type TransactionDetailScreenParams = {
+  id:string;
+}
 
 export type TSelectedUserId = string | undefined;
 
@@ -68,6 +72,7 @@ export type AppStackParamList = {
     onRefresh(): void;
   };
   ShareUserScreen?: undefined;
+  TransactionDetailScreen:TransactionDetailScreenParams;
   TransactionsFormScreen: {
     form: TTransactionForm;
     isEdit: boolean;
@@ -159,6 +164,11 @@ export default function Router() {
         <AppStack.Screen
           name="ShareUserScreen"
           component={ShareUserScreen}
+          options={options}
+        />
+        <AppStack.Screen
+          name="TransactionDetailScreen"
+          component={TransactionDetailScreen}
           options={options}
         />
         <AppStack.Screen

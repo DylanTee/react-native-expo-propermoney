@@ -7,7 +7,7 @@ import { ExpoUpdatesLibs } from "./expo-updates.libs";
 
 const defaultClient = Axios.create({
   baseURL: ENV.API_URL,
-  timeout: 60000,
+  //timeout: 60000,
 });
 
 defaultClient.interceptors.response.use(

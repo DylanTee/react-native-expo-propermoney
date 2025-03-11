@@ -5,7 +5,7 @@ import { ViewStyle } from "react-native";
 import ModalZoomableImage from "./CustomModal/ModalZoomableImage";
 
 type AvatarProps = {
-  size: "small" | "medium" | "big";
+  size: "small" | "medium" | "big" | "extra-big";
   profileImage: string;
 };
 
@@ -35,6 +35,14 @@ const Avatar = ({ profileImage, size }: AvatarProps) => {
       borderRadius: sw(50) / 2,
     };
   }
+  if (size == "extra-big") {
+    containerStyles = {
+      padding: sw(5),
+      width: sw(80),
+      height: sw(80),
+      borderRadius: sw(10000) / 2,
+    };
+  }
   return (
     <ModalZoomableImage
       buttonStyle={containerStyles}
@@ -44,8 +52,8 @@ const Avatar = ({ profileImage, size }: AvatarProps) => {
             style={{
               width: "100%",
               height: "100%",
-              borderRadius: sw(50) / 2,
               objectFit: "cover",
+              borderRadius: containerStyles.borderRadius,
             }}
             source={{ uri: profileImage }}
           />

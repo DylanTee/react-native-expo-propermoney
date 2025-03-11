@@ -5,7 +5,10 @@ import {
   EMissionType,
   ETransactionCategoryType,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
-import { TMission,TReward } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
+import {
+  TMission,
+  TReward,
+} from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { Alert } from "react-native";
 import { navigationRef } from "./react.navigation.lib";
 import { ReactQueryLibs } from "./react.query.client.lib";
@@ -104,12 +107,10 @@ function displayCurrency({
   amount: number | string;
 }) {
   return typeof amount == "number"
-    ? currency +
-        " " +
-        amount
-          .toFixed(2)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    ? `${amount
+        .toFixed(2)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ${currency}`
     : amount;
 }
 
