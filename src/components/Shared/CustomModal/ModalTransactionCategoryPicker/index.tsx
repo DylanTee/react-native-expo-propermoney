@@ -349,7 +349,7 @@ export default function ModalTransactionCategoryPicker(
                     </View>
                   </View>
                 )}
-                estimatedItemSize={sh(30)}
+                estimatedItemSize={30}
                 ListFooterComponent={
                   <>
                     <LoadingCircle

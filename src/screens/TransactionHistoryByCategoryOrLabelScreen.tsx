@@ -191,11 +191,10 @@ const TransactionHistoryByCategoryOrLabelScreen: AppNavigationScreen<
       <FlashList
         data={transactions}
         keyExtractor={(item, index) => item._id + index}
-        estimatedItemSize={sh(30)}
+        estimatedItemSize={30}
         onEndReached={() => {
           getTransactionGetTransactionsByCategoryIdInfiniteQuery.fetchNextPage();
         }}
-        onEndReachedThreshold={0.5}
         renderItem={({ item }: { item: TTransaction }) => (
           <>
             <TransactionCard

@@ -138,7 +138,7 @@ const MyRewardScreen: AppNavigationScreen<"MyRewardScreen"> = ({
           rewardTab == ERewardTab.valid ? validRewardsList : invalidRewardsList
         }
         keyExtractor={(item, index) => item._id + index}
-        estimatedItemSize={sh(30)}
+        estimatedItemSize={30}
         onEndReached={() => {
           if (rewardTab == ERewardTab.valid) {
             getValidRewardsInfiniteQuery.fetchNextPage();
@@ -158,7 +158,6 @@ const MyRewardScreen: AppNavigationScreen<"MyRewardScreen"> = ({
             onRedeem={() => btnRedeem({ data: item })}
           />
         )}
-        onEndReachedThreshold={0.5}
       />
     </ContainerLayout>
   );
