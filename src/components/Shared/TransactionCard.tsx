@@ -58,7 +58,7 @@ const TransactionCard = ({
                 source={{ uri: data.transactionCategory.imagePath }}
               />
             </View>
-            <CustomText size={"medium"} label={data.transactionCategory.name} />
+            <CustomText containerStyle={{flex:1}} size={"medium"} label={data.transactionCategory.name} />
             <CustomText
               size={"medium"}
               label={displayCurrency({

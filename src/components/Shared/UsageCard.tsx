@@ -7,7 +7,6 @@ import { Colors } from "@styles/Colors";
 import ProgressBar from "./ProgressBar";
 import CustomButton from "./CustomButton";
 import { useTranslation } from "react-i18next";
-import { navigationRef } from "@libs/react.navigation.lib";
 
 interface UsageCardProps {
   title: string;

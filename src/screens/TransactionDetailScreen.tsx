@@ -179,6 +179,22 @@ const TransactionDetailScreen: AppNavigationScreen<
             >
               <CustomText size="big" label="Transaction details" />
               <SizedBox height={sh(10)} />
+              <View style={styles.bodyContainer}>
+                <CustomText
+                  size="medium"
+                  label={`When`}
+                  textStyle={{ color: `#545454` }}
+                />
+                <SizedBox width={sw(10)} />
+                <CustomText
+                  textStyle={{
+                    color: "#5A5A5A",
+                  }}
+                  containerStyle={{ marginLeft: "auto" }}
+                  size="medium"
+                  label={`${dayjs(detail.transactedAt).format("DD MMMM YYYY")}`}
+                />
+              </View>
               {detail.transactionLabelIds.length > 0 && (
                 <View style={styles.bodyContainer}>
                   <CustomText
@@ -199,25 +215,8 @@ const TransactionDetailScreen: AppNavigationScreen<
                   />
                 </View>
               )}
-
-              <View style={styles.bodyContainer}>
-                <CustomText
-                  size="medium"
-                  label={`When`}
-                  textStyle={{ color: `#545454` }}
-                />
-                <SizedBox width={sw(10)} />
-                <CustomText
-                  textStyle={{
-                    color: "#5A5A5A",
-                  }}
-                  containerStyle={{ marginLeft: "auto" }}
-                  size="medium"
-                  label={`${dayjs(detail.transactedAt).format("DD MMMM YYYY")}`}
-                />
-              </View>
               {detail.note && (
-                <View style={styles.bodyContainer}>
+                <View style={[styles.bodyContainer, { width: "100%" }]}>
                   <CustomText
                     size="medium"
                     label={`Note`}
@@ -226,9 +225,10 @@ const TransactionDetailScreen: AppNavigationScreen<
                   <SizedBox width={sw(10)} />
                   <CustomText
                     textStyle={{
+                      marginLeft: "auto",
                       color: "#5A5A5A",
                     }}
-                    containerStyle={{ marginLeft: "auto" }}
+                    containerStyle={{ marginLeft: "auto", flex: 1 }}
                     size="medium"
                     label={`${detail.note}`}
                   />

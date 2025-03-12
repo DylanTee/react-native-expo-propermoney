@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { sw } from "@libs/responsive.lib";
 import Header from "../Header";
-import { EOverviewTransactionsReport } from "@screens/OverviewTransactionScreen/OverviewTransactionScreen";
+import { EOverviewTransactionsReport } from "@screens/OverviewTransactionScreen";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 
 interface ModalOverviewTransctionsReportPickerProps {

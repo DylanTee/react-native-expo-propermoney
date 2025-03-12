@@ -2,7 +2,7 @@ import React from "react";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import Header from "@components/Shared/Header";
 import { useTranslation } from "@libs/i18n/index";
-import Form from "./form";
+import Form from "@components/form-transaction/form";
 import {
   AppNavigationScreen,
   OverviewTransactionScreenParams,
@@ -188,22 +188,18 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
     <>
       <LoadingCircle visible={isPending} />
       <ContainerLayout>
-        <Header
-          onBack={() => navigation.goBack()}
-        />
+        <Header onBack={() => navigation.goBack()} />
         <KeyboardLayout>
-          
-            <Form
-              form={form}
-              isPending={isPending}
-              isEdit={isEdit}
-              isUsePhotoAI={isUsePhotoAI}
-              onSubmit={(form) => {
-                submit(form);
-              }}
-              onDelete={(id) => deleteItem(id)}
-            />
-          
+          <Form
+            form={form}
+            isPending={isPending}
+            isEdit={isEdit}
+            isUsePhotoAI={isUsePhotoAI}
+            onSubmit={(form) => {
+              submit(form as unknown as TTransactionForm);
+            }}
+            onDelete={(id) => deleteItem(id)}
+          />
         </KeyboardLayout>
       </ContainerLayout>
     </>

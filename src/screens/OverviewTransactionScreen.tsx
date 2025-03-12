@@ -5,7 +5,7 @@ import {
   TSelectedUserId,
 } from "@libs/react.navigation.lib";
 import dayjs from "dayjs";
-import DateSwitch from "./DateSwitch";
+import DateSwitch from "@components/overview-transaction/DateSwitch";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
@@ -17,9 +17,9 @@ import {
   TGetTransactionsDashboardQuery,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { Colors } from "@styles/Colors";
-import TransactionListings from "./TransactionListings";
-import TransactionCategories from "./TransactionCategories";
-import TransactionLabels from "./TransactionLabels";
+import TransactionListings from "@components/overview-transaction/TransactionListings";
+import TransactionCategories from "@components/overview-transaction/TransactionCategories";
+import TransactionLabels from "@components/overview-transaction/TransactionLabels";
 import CustomButtonIcon from "@components/Shared/CustomButtonIcon";
 import CustomItemPicker from "@components/Shared/CustomItemPicker";
 import { useQuery } from "@tanstack/react-query";

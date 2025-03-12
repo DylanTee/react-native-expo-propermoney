@@ -2,7 +2,6 @@ import React, { ReactNode } from "react";
 import { StyleSheet, View, TouchableOpacity, ViewStyle } from "react-native";
 import { sw } from "@libs/responsive.lib";
 import { Colors } from "@styles/Colors";
-import SizedBox from "./SizedBox";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 
 interface HeaderProps {

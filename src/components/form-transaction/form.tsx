@@ -155,11 +155,6 @@ export default function Form({
                         });
                         setTransactionForm((prevState) => ({
                           ...prevState,
-                          transactedAt: detectedText?.transactedAt
-                            ? new Date(
-                                detectedText.transactedAt as unknown as Date
-                              )
-                            : form.transactedAt,
                           transactionCategoryId:
                             detectedText?.transactionCategory
                               ? detectedText.transactionCategory._id

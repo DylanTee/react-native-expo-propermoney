@@ -14,7 +14,7 @@ import dayjs from "dayjs";
 import TransactionCard from "@components/Shared/TransactionCard";
 import { displayCurrency } from "@libs/utils";
 import CustomText from "@components/Shared/CustomText";
-import { EOverviewTransactionsReport } from "./OverviewTransactionScreen";
+import { EOverviewTransactionsReport } from "@screens/OverviewTransactionScreen";
 
 interface TransactionListingsProps {
   selectedReport: EOverviewTransactionsReport;

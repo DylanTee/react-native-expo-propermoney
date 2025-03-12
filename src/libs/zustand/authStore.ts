@@ -33,7 +33,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         AxiosLibs.setAccessToken(tokens.accessToken);
         try {
           const { data } = await AxiosLibs.defaultClient.get("/user/detail");
-          let premiumMemberTrialEndAt = null;
+          let premiumMemberTrialEndAt: Date | null = null;
           let topUpMemberEndAt = null;
           let feature: TMemberFeature = memberFeatureFree;
           if (data.premiumMemberTrialEndAt) {

@@ -1,7 +1,5 @@
-import CustomButton from "@components/Shared/CustomButton";
 import CustomText from "@components/Shared/CustomText";
-import SizedBox from "@components/Shared/SizedBox";
-import { sh, sw } from "@libs/responsive.lib";
+import { sw } from "@libs/responsive.lib";
 import { Colors } from "@styles/Colors";
 import React, { ReactNode } from "react";
 import { View, TouchableOpacity } from "react-native";

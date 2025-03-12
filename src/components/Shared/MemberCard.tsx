@@ -1,5 +1,4 @@
 import { sh, sw } from "@libs/responsive.lib";
-import { Colors } from "@styles/Colors";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import dayjs from "dayjs";

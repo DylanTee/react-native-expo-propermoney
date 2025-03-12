@@ -7,7 +7,7 @@ import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper
 import TransactionCategoryCard from "@components/Shared/TransactionCategoryCard";
 import CustomText from "@components/Shared/CustomText";
 import CustomTab from "@components/Shared/CustomTab";
-import { EOverviewTransactionsReport } from "./OverviewTransactionScreen";
+import { EOverviewTransactionsReport } from "@screens/OverviewTransactionScreen";
 
 interface TransactionCategoriesProps {
   selectedReport: EOverviewTransactionsReport;

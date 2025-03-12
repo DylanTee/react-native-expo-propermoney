@@ -13,23 +13,23 @@ import {
   EGetTransactionsByType,
   EVerificationOneTimePasswordType,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
-import MoreScreen from "@screens/MoreScreen/MoreScreen";
-import LoginScreen from "@screens/LoginScreen/LoginScreen";
-import VerifyOneTimePasswordScreen from "@screens/VerifyOneTimePasswordScreen/VerifyOneTimePasswordScreen";
-import HomeScreen from "@screens/HomeScreen/HomeScreen";
-import ContactSupportScreen from "@screens/ContactSupportScreen/ContactSupportScreen";
-import MissionScreen from "@screens/MissionAndReward/MissionScreen/MissionScreen";
-import MyRewardScreen from "@screens/MissionAndReward/MyRewardScreen/MyRewardScreen";
-import MyRewardStoreScreen from "@screens/MissionAndReward/MyRewardStoreScreen/MyRewardStoreScreen";
-import MyRewardFormScreen from "@screens/MissionAndReward/MyRewardFormScreen/MyRewardFormScreen";
-import ShareUserScreen from "@screens/ShareUserScreen/ShareUserScreen";
-import TransactionsFormScreen from "@screens/TransactionsFormScreen/TransactionsFormScreen";
-import OverviewTransactionScreen from "@screens/OverviewTransactionScreen/OverviewTransactionScreen";
-import TransactionSettingsScreen from "@screens/TransactionSettingsScreen/TransactionSettingsScreen";
-import TransactionAccountSwitchScreen from "@screens/TransactionAccountSwitchScreen/TransactionAccountSwitchScreen";
+import MoreScreen from "@screens/MoreScreen";
+import LoginScreen from "@screens/LoginScreen";
+import VerifyOneTimePasswordScreen from "@screens/VerifyOneTimePasswordScreen";
+import HomeScreen from "@screens/HomeScreen";
+import ContactSupportScreen from "@screens/ContactSupportScreen";
+import MissionScreen from "@screens/MissionScreen";
+import MyRewardScreen from "@screens/MyRewardScreen";
+import MyRewardStoreScreen from "@screens/MyRewardStoreScreen";
+import MyRewardFormScreen from "@screens/MyRewardFormScreen";
+import ShareUserScreen from "@screens/ShareUserScreen";
+import TransactionsFormScreen from "@screens/TransactionsFormScreen";
+import OverviewTransactionScreen from "@screens/OverviewTransactionScreen";
+import TransactionSettingsScreen from "@screens/TransactionSettingsScreen";
+import TransactionAccountSwitchScreen from "@screens/TransactionAccountSwitchScreen";
 import { TReward } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import TransactionHistoryByCategoryOrLabelScreen from "@screens/TransactionHistoryByCategoryOrLabelScreen/TransactionHistoryByCategoryOrLabelScreen";
-import TransactionDetailScreen from "@screens/TransactionDetailScreen/TransactionDetailScreen";
+import TransactionHistoryByCategoryOrLabelScreen from "@screens/TransactionHistoryByCategoryOrLabelScreen";
+import TransactionDetailScreen from "@screens/TransactionDetailScreen";
 
 export type OverviewTransactionScreenParams = {
   selectedUserId: TSelectedUserId;

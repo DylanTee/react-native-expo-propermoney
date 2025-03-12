@@ -7,11 +7,11 @@ import { Colors } from "@styles/Colors";
 import { useTranslation } from "@libs/i18n/index";
 import { TReward } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import CustomButton from "@components/Shared/CustomButton";
-import { ERewardTab } from "../MyRewardScreen";
 import { Global } from "@styles/Global";
 import CustomText from "@components/Shared/CustomText";
 import { ERewardType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
+import { ERewardTab } from "@screens/MyRewardScreen";
 
 interface RewardCardProps {
   disabled: boolean;

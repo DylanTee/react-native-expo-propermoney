@@ -13,7 +13,7 @@ import { catchErrorDialog } from "@libs/utils";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
-import RewardCard from "./MyRewardComponents/RewardCard";
+import RewardCard from "@components/Shared/Card/RewardCard";
 import { useTranslation } from "react-i18next";
 import { ERewardType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import CustomTab from "@components/Shared/CustomTab";
