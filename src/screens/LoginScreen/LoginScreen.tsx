@@ -16,7 +16,6 @@ import {
   TPostUserRequestOTPResponse,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
-import ContainerStack from "@components/Shared/ContainerStack";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import CustomTextInput from "@components/Shared/CustomTextInput";
@@ -117,7 +116,7 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
       <LoadingCircle visible={isLoading} />
       <ContainerLayout>
         <KeyboardLayout>
-          <ContainerStack>
+          
             <SizedBox height={sh(40)} />
             <Image
               source={require("@assets/logo.png")}
@@ -199,7 +198,6 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
             />
             <SizedBox height={sh(20)} />
             <VersionText />
-          </ContainerStack>
         </KeyboardLayout>
       </ContainerLayout>
     </>

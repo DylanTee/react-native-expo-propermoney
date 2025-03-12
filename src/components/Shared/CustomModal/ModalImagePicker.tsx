@@ -18,7 +18,6 @@ import {
   ViewStyle,
 } from "react-native";
 import Header from "../Header";
-import ContainerStack from "../ContainerStack";
 import { sw } from "@libs/responsive.lib";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import LoadingCircle from "../LoadingCircle";
@@ -126,25 +125,22 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
             }}
           >
             <Header
-              title={`Method`}
               onBack={() => {
                 setIsVisible(false);
               }}
             />
             <ScrollView>
-              <ContainerStack>
-                {list.map((option) => (
-                  <CustomButtonItemPicker
-                    key={option}
-                    text={option}
-                    isSelect={false}
-                    onPress={() => {
-                      handleOptionsPicked(option);
-                      setIsVisible(false);
-                    }}
-                  />
-                ))}
-              </ContainerStack>
+              {list.map((option) => (
+                <CustomButtonItemPicker
+                  key={option}
+                  text={option}
+                  isSelect={false}
+                  onPress={() => {
+                    handleOptionsPicked(option);
+                    setIsVisible(false);
+                  }}
+                />
+              ))}
             </ScrollView>
           </View>
         </ContainerLayout>

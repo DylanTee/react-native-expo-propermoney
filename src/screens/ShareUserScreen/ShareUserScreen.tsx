@@ -27,7 +27,6 @@ import { catchErrorDialog } from "@libs/utils";
 import { useTranslation } from "@libs/i18n/index";
 import dayjs from "dayjs";
 import CustomText from "@components/Shared/CustomText";
-import ContainerStack from "@components/Shared/ContainerStack";
 import CustomButton from "@components/Shared/CustomButton";
 import { Global } from "@styles/Global";
 import QRCode from "react-native-qrcode-svg";
@@ -262,7 +261,6 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
   return (
     <ContainerLayout>
       <Header
-        title={t("share")}
         onBack={() => {
           navigation.goBack();
         }}
@@ -271,7 +269,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
         visible={shareMutation.isPending || removeMutation.isPending}
       />
       <KeyboardLayout>
-        <ContainerStack>
+        
           {timer && !isShared ? (
             <>
               <CustomText
@@ -524,7 +522,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
               />
             </>
           )}
-        </ContainerStack>
+        
       </KeyboardLayout>
     </ContainerLayout>
   );

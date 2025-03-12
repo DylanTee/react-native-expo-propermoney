@@ -14,7 +14,7 @@ const TransactionSettingsScreen: AppNavigationScreen<
   const { t } = useTranslation();
   return (
     <ContainerLayout>
-      <Header title={t("back")} onBack={() => navigation.goBack()} />
+      <Header onBack={() => navigation.goBack()} />
       <View
         style={{
           padding: sw(10),

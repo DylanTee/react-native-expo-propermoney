@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { sw } from "@libs/responsive.lib";
 import Header from "../Header";
-import ContainerStack from "../ContainerStack";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 
 interface ModalLanguagePickerProps {
@@ -42,25 +41,22 @@ export default function ModalLanguagePicker(props: ModalLanguagePickerProps) {
             }}
           >
             <Header
-              title={`Language`}
               onBack={() => {
                 setIsVisible(false);
               }}
             />
             <ScrollView>
-              <ContainerStack>
-                {languageList.map((option) => (
-                  <CustomButtonItemPicker
-                    key={option.value}
-                    text={`${option.name} (${option.value})`}
-                    isSelect={props.language == option.value}
-                    onPress={() => {
-                      props.onChange(option.value);
-                      setIsVisible(false);
-                    }}
-                  />
-                ))}
-              </ContainerStack>
+              {languageList.map((option) => (
+                <CustomButtonItemPicker
+                  key={option.value}
+                  text={`${option.name} (${option.value})`}
+                  isSelect={props.language == option.value}
+                  onPress={() => {
+                    props.onChange(option.value);
+                    setIsVisible(false);
+                  }}
+                />
+              ))}
             </ScrollView>
           </View>
         </ContainerLayout>

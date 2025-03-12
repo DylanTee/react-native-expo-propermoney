@@ -26,7 +26,7 @@ const TransactionAccountSwitchScreen: AppNavigationScreen<'TransactionAccountSwi
     };
     return (
         <ContainerLayout>
-            <Header title={t('back')} onBack={() => navigation.goBack()} />
+            <Header onBack={() => navigation.goBack()} />
             {authStore.user && (
                 <View style={{flex: 1, padding: sw(10)}}>
                     <TouchableOpacity style={$ButtonContainer} onPress={() => btnSelect(authStore.user?._id)}>

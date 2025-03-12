@@ -121,7 +121,7 @@ const MyRewardStoreScreen: AppNavigationScreen<"MyRewardStoreScreen"> = ({
   };
   return (
     <ContainerLayout>
-      <Header title={t("rewardStore")} onBack={() => navigation.goBack()} />
+      <Header  onBack={() => navigation.goBack()} />
       <LoadingCircle
         visible={
           getTotalPointsQuery.isLoading ||

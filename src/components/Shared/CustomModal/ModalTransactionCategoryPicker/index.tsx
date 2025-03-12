@@ -1,5 +1,4 @@
 import ContainerLayout from "@components/Layout/ContainerLayout";
-import ContainerStack from "@components/Shared/ContainerStack";
 import CustomButton from "@components/Shared/CustomButton";
 import CustomItemPicker from "@components/Shared/CustomItemPicker";
 import CustomTab from "@components/Shared/CustomTab";
@@ -178,7 +177,6 @@ export default function ModalTransactionCategoryPicker(
               }}
             >
               <Header
-                title={`${t("back")}`}
                 onBack={() => setIsVisible(false)}
               />
               <LoadingCircle
@@ -187,7 +185,7 @@ export default function ModalTransactionCategoryPicker(
                   useGetTransactionCategoryInfiniteQuery.isFetching
                 }
               />
-              <ContainerStack>
+              <>
                 <UsageCard
                   title={t("categories")}
                   currentLength={categoriesLength}
@@ -218,7 +216,7 @@ export default function ModalTransactionCategoryPicker(
                   onChangeText={(text) => setSearchText(text)}
                 />
                 <SizedBox height={sh(20)} />
-              </ContainerStack>
+              </>
               {searchText.trim().length > 0 &&
               categories.length == 0 &&
               useGetTransactionCategoryInfiniteQuery.isSuccess ? (

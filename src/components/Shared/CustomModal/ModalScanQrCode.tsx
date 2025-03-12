@@ -3,15 +3,12 @@ import {
   Dimensions,
   Modal,
   Platform,
-  ScrollView,
   TouchableOpacity,
   Vibration,
   View,
   ViewStyle,
 } from "react-native";
 import { sw } from "@libs/responsive.lib";
-import Header from "../Header";
-import ContainerStack from "../ContainerStack";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import { Colors } from "@styles/Colors";
 import CustomText from "../CustomText";

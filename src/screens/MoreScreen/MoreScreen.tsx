@@ -56,7 +56,7 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
     <>
       <LoadingCircle visible={userUpdateMutation.isPending} />
       <ContainerLayout>
-        <Header title="More" onBack={() => navigation.goBack()} />
+        <Header onBack={() => navigation.goBack()} />
         <ScrollView bounces={false}>
           <MemberCard currentRouteName="MoreScreen" />
           <View style={{ padding: sw(15) }}>

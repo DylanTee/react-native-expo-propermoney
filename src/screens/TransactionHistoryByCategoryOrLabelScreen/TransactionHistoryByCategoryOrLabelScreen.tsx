@@ -11,7 +11,6 @@ import {
 import { FlashList } from "@shopify/flash-list";
 import TransactionCard from "@components/Shared/TransactionCard";
 import { sh, sw } from "@libs/responsive.lib";
-import ContainerStack from "@components/Shared/ContainerStack";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import {
   EGetTransactionsBySort,
@@ -130,8 +129,8 @@ const TransactionHistoryByCategoryOrLabelScreen: AppNavigationScreen<
           getTransactionGetTransactionsByCategoryIdInfiniteQuery.isLoading
         }
       />
-      <Header title={getHeaderTitle()} onBack={() => navigation.goBack()} />
-      <ContainerStack>
+      <Header onBack={() => navigation.goBack()} />
+      <>
         {/* <ModalSortPicker
           buttonStyle={{}}
           onChange={(data) => {
@@ -187,7 +186,7 @@ const TransactionHistoryByCategoryOrLabelScreen: AppNavigationScreen<
         ) : (
           []
         )}
-      </ContainerStack>
+      </>
       <SizedBox height={sh(20)} />
       <FlashList
         data={transactions}
@@ -198,7 +197,7 @@ const TransactionHistoryByCategoryOrLabelScreen: AppNavigationScreen<
         }}
         onEndReachedThreshold={0.5}
         renderItem={({ item }: { item: TTransaction }) => (
-          <ContainerStack>
+          <>
             <TransactionCard
               onPress={() => {
                 // navigation.navigate("TransactionsFormScreen", {
@@ -224,7 +223,7 @@ const TransactionHistoryByCategoryOrLabelScreen: AppNavigationScreen<
               }}
               data={item}
             />
-          </ContainerStack>
+          </>
         )}
       />
     </ContainerLayout>

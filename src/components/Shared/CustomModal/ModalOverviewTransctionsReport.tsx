@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { sw } from "@libs/responsive.lib";
 import Header from "../Header";
-import ContainerStack from "../ContainerStack";
 import { EOverviewTransactionsReport } from "@screens/OverviewTransactionScreen/OverviewTransactionScreen";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 
@@ -49,25 +48,22 @@ export default function ModalOverviewTransctionsReportPicker(
             }}
           >
             <Header
-              title={`Report`}
               onBack={() => {
                 setIsVisible(false);
               }}
             />
             <ScrollView>
-              <ContainerStack>
-                {list.map((option) => (
-                  <CustomButtonItemPicker
-                    key={option}
-                    text={option}
-                    isSelect={props.report == option}
-                    onPress={() => {
-                      props.onChange(option);
-                      setIsVisible(false);
-                    }}
-                  />
-                ))}
-              </ContainerStack>
+              {list.map((option) => (
+                <CustomButtonItemPicker
+                  key={option}
+                  text={option}
+                  isSelect={props.report == option}
+                  onPress={() => {
+                    props.onChange(option);
+                    setIsVisible(false);
+                  }}
+                />
+              ))}
             </ScrollView>
           </View>
         </ContainerLayout>

@@ -17,7 +17,6 @@ import React, { useMemo, useState } from "react";
 import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "@libs/i18n/index";
 import CustomButton from "@components/Shared/CustomButton";
-import ContainerStack from "@components/Shared/ContainerStack";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { TTransactionCategoryForm } from ".";
@@ -182,14 +181,12 @@ export default function Form(props: TransactionCategoryFormProps) {
   return (
     <ContainerLayout>
       <Header
-        title={getHeaderTitle()}
         onBack={() => {
           props.onClose();
         }}
       />
       <LoadingCircle visible={isLoading} />
       <KeyboardLayout>
-        <ContainerStack>
           <CustomTextInput
             maxLength={25}
             label={"Category Name"}
@@ -323,7 +320,6 @@ export default function Form(props: TransactionCategoryFormProps) {
               <SizedBox height={sh(40)} />
             </>
           )}
-        </ContainerStack>
       </KeyboardLayout>
     </ContainerLayout>
   );

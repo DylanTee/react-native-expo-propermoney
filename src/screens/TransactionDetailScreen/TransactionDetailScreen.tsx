@@ -18,10 +18,16 @@ import { Colors } from "@styles/Colors";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Image, View, TouchableOpacity, ScrollView } from "react-native";
+import {
+  Image,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
-import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
 import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
+import dayjs from "dayjs";
 
 const TransactionDetailScreen: AppNavigationScreen<
   "TransactionDetailScreen"
@@ -48,7 +54,10 @@ const TransactionDetailScreen: AppNavigationScreen<
   return (
     <ContainerLayout>
       <Header
-        title={t("back")}
+        containerStyle={{
+          paddingHorizontal: sw(15),
+          backgroundColor: "#EDEFEA",
+        }}
         onBack={() => navigation.goBack()}
         itemRight={
           <>
@@ -84,7 +93,6 @@ const TransactionDetailScreen: AppNavigationScreen<
         }
       />
       <ScrollView>
-        <LoadingCircle visible={useGetTransactionDetailQuery.isFetching} />
         {detail && (
           <>
             <View
@@ -94,7 +102,6 @@ const TransactionDetailScreen: AppNavigationScreen<
                 alignItems: "center",
               }}
             >
-              <SizedBox height={sh(20)} />
               <Avatar
                 size="extra-big"
                 profileImage={
@@ -125,7 +132,13 @@ const TransactionDetailScreen: AppNavigationScreen<
                 }
               />
               <SizedBox height={sh(20)} />
-              <View style={{ flexDirection: "row", gap: sw(10) }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: sw(10),
+                  alignItems: "center",
+                }}
+              >
                 <View
                   style={{
                     width: sw(25),
@@ -166,18 +179,75 @@ const TransactionDetailScreen: AppNavigationScreen<
             >
               <CustomText size="big" label="Transaction details" />
               <SizedBox height={sh(10)} />
-              <CustomText
-                size="medium"
-                label={`${detail.note}`}
-                textStyle={{
-                  color: "#5A5A5A",
-                }}
-              />
+              {detail.transactionLabelIds.length > 0 && (
+                <View style={styles.bodyContainer}>
+                  <CustomText
+                    size="medium"
+                    label={`Labels`}
+                    textStyle={{ color: `#545454` }}
+                  />
+                  <SizedBox width={sw(10)} />
+                  <CustomText
+                    textStyle={{
+                      color: "#5A5A5A",
+                    }}
+                    containerStyle={{ marginLeft: "auto" }}
+                    size="medium"
+                    label={`${detail.transactionLabels
+                      ?.map((label) => label.name)
+                      .join(", ")}`}
+                  />
+                </View>
+              )}
+
+              <View style={styles.bodyContainer}>
+                <CustomText
+                  size="medium"
+                  label={`When`}
+                  textStyle={{ color: `#545454` }}
+                />
+                <SizedBox width={sw(10)} />
+                <CustomText
+                  textStyle={{
+                    color: "#5A5A5A",
+                  }}
+                  containerStyle={{ marginLeft: "auto" }}
+                  size="medium"
+                  label={`${dayjs(detail.transactedAt).format("DD MMMM YYYY")}`}
+                />
+              </View>
+              {detail.note && (
+                <View style={styles.bodyContainer}>
+                  <CustomText
+                    size="medium"
+                    label={`Note`}
+                    textStyle={{ color: `#545454` }}
+                  />
+                  <SizedBox width={sw(10)} />
+                  <CustomText
+                    textStyle={{
+                      color: "#5A5A5A",
+                    }}
+                    containerStyle={{ marginLeft: "auto" }}
+                    size="medium"
+                    label={`${detail.note}`}
+                  />
+                </View>
+              )}
               {detail.imagePath && (
-                <>
-                  <SizedBox height={sh(20)} />
+                <View style={styles.bodyContainer}>
+                  <CustomText
+                    size="medium"
+                    label={`Image`}
+                    textStyle={{ color: `#545454` }}
+                  />
                   <ModalZoomableImage
-                    buttonStyle={{}}
+                    buttonStyle={{
+                      borderWidth: 1,
+                      borderColor: `#8B8B8B`,
+                      borderRadius: sw(5),
+                      marginLeft: "auto",
+                    }}
                     listComponents={
                       <>
                         <Image
@@ -185,6 +255,7 @@ const TransactionDetailScreen: AppNavigationScreen<
                             width: sw(100),
                             height: sw(100),
                             objectFit: "cover",
+                            borderRadius: sw(5),
                           }}
                           source={{ uri: detail.imagePath }}
                         />
@@ -192,14 +263,31 @@ const TransactionDetailScreen: AppNavigationScreen<
                     }
                     imagePath={detail.imagePath ?? ``}
                   />
-                  <SizedBox height={sh(10)} />
-                </>
+                </View>
               )}
+              <SizedBox height={sh(20)} />
+              <CustomText
+                size="small"
+                label={`Transaction no. #${detail._id}`}
+                containerStyle={{ alignSelf: "center" }}
+                textStyle={{
+                  color: "#5A5A5A",
+                }}
+              />
+              <SizedBox height={sh(20)} />
             </View>
           </>
         )}
       </ScrollView>
+      <LoadingCircle visible={useGetTransactionDetailQuery.isFetching} />
     </ContainerLayout>
   );
 };
 export default TransactionDetailScreen;
+
+const styles = StyleSheet.create({
+  bodyContainer: {
+    flexDirection: "row",
+    paddingVertical: sh(10),
+  },
+});

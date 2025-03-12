@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { sw } from "@libs/responsive.lib";
 import Header from "../Header";
-import ContainerStack from "../ContainerStack";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 
 interface ModalCurrencyPickerProps {
@@ -42,25 +41,22 @@ export default function ModalCurrencyPicker(props: ModalCurrencyPickerProps) {
             }}
           >
             <Header
-              title={`Currency`}
               onBack={() => {
                 setIsVisible(false);
               }}
             />
             <ScrollView>
-              <ContainerStack>
-                {currencyList.map((option, index) => (
-                  <CustomButtonItemPicker
-                    key={index}
-                    text={`${option.name} (${option.iso})`}
-                    isSelect={props.currency == option.iso}
-                    onPress={() => {
-                      props.onChange(option.iso);
-                      setIsVisible(false);
-                    }}
-                  />
-                ))}
-              </ContainerStack>
+              {currencyList.map((option, index) => (
+                <CustomButtonItemPicker
+                  key={index}
+                  text={`${option.name} (${option.iso})`}
+                  isSelect={props.currency == option.iso}
+                  onPress={() => {
+                    props.onChange(option.iso);
+                    setIsVisible(false);
+                  }}
+                />
+              ))}
             </ScrollView>
           </View>
         </ContainerLayout>

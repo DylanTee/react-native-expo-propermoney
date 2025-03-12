@@ -9,7 +9,6 @@ import { Linking } from "react-native";
 import { useTranslation } from "@libs/i18n/index";
 import CustomText from "@components/Shared/CustomText";
 import CustomButtonIconRight from "@components/Shared/CustomButtonIconRight";
-import ContainerStack from "@components/Shared/ContainerStack";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import { useAuthStore } from "@libs/zustand/authStore";
 
@@ -24,9 +23,9 @@ const ContactSupportScreen: AppNavigationScreen<"ContactSupportScreen"> = ({
   const text = `Hi, i would like to ask some questions regarding the app.\n\n\nID:${authStore.user?._id}\nMEMBER:${authStore.user?.feature.name}`;
   return (
     <ContainerLayout>
-      <Header title={t("contactSupport")} onBack={() => navigation.goBack()} />
+      <Header onBack={() => navigation.goBack()} />
       <SizedBox height={sh(20)} />
-      <ContainerStack>
+
         <CustomText label={t("chooseMethod")} size={"medium"} />
         <SizedBox height={sh(20)} />
         <CustomButtonIconRight
@@ -50,7 +49,6 @@ const ContactSupportScreen: AppNavigationScreen<"ContactSupportScreen"> = ({
         >
           <ExpoVectorIcon name="mail" size={sw(25)} color={Colors.black} />
         </CustomButtonIconRight>
-      </ContainerStack>
     </ContainerLayout>
   );
 };

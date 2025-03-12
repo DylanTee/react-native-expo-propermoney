@@ -1,6 +1,5 @@
 import { TTransactionCategory } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { currencyList } from "@mcdylanproperenterprise/nodejs-proper-money-types/lists/currency";
-import dayjs from "dayjs";
 
 export default function findAmountAndNameOfCategory({
   transactionCategories,
@@ -10,20 +9,17 @@ export default function findAmountAndNameOfCategory({
   message: string;
 }) {
   function extractValues(inputString: string) {
-    const regexDate = /Date:\s*([^\n]*)/;
     const regexCategory = /Category:\s*([^\n]*)/;
     const regexAmount = /Amount:\s*([^\n]*)/;
     const regexContext = /Context:\s*([^\n]*)/;
     const regexCurrency = /Currency:\s*([^\n]*)/;
 
-    const matchDate = regexDate.exec(inputString);
     const matchCategory = regexCategory.exec(inputString);
     const matchAmount = regexAmount.exec(inputString);
     const matchContext = regexContext.exec(inputString);
     const matchCurrency = regexCurrency.exec(inputString);
 
     const values = {
-      Date: matchDate ? matchDate[1].replace("**", "").trim() : null,
       Category: matchCategory
         ? matchCategory[1].replace("**", "").trim()
         : null,
@@ -52,13 +48,6 @@ export default function findAmountAndNameOfCategory({
       return false;
     }
   };
-  const getDateBasedExtractedValues = () => {
-    let transactedAt = null;
-    if (extractedValues.Date) {
-      transactedAt = dayjs(extractedValues.Date);
-    }
-    return transactedAt;
-  };
   const getNoteBasedExtractedValues = () => {
     let note: string | null = null;
     if (extractedValues.Context) {
@@ -86,7 +75,6 @@ export default function findAmountAndNameOfCategory({
     return amount;
   };
   const detectedTextResult = {
-    transactedAt: getDateBasedExtractedValues(),
     transactionCategory:
       transactionCategories.find((x) => x.name == extractedValues.Category) ??
       null,

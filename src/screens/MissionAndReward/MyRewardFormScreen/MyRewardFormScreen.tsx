@@ -21,7 +21,6 @@ import { TPostRewardSubmitBody } from "@mcdylanproperenterprise/nodejs-proper-mo
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import CustomButton from "@components/Shared/CustomButton";
 import CustomText from "@components/Shared/CustomText";
-import ContainerStack from "@components/Shared/ContainerStack";
 import { resetQueries } from "@libs/react.query.client.lib";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
@@ -106,10 +105,9 @@ const MyRewardFormScreen: AppNavigationScreen<"MyRewardFormScreen"> = ({
 
   return (
     <ContainerLayout>
-      <Header title={t("redeem")} onBack={() => navigation.goBack()} />
+      <Header onBack={() => navigation.goBack()} />
       <LoadingCircle visible={isLoading} />
       <KeyboardLayout>
-        <ContainerStack>
           <SizedBox height={sh(20)} />
           <CustomText
             label={t("provideEWalletPhoneNumberAccount")}
@@ -166,7 +164,6 @@ const MyRewardFormScreen: AppNavigationScreen<"MyRewardFormScreen"> = ({
             title={t("submit")}
             onPress={() => btnSubmit()}
           />
-        </ContainerStack>
       </KeyboardLayout>
     </ContainerLayout>
   );

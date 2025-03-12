@@ -17,7 +17,6 @@ import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
 import CustomText from "@components/Shared/CustomText";
-import ContainerStack from "@components/Shared/ContainerStack";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import {
@@ -161,11 +160,10 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
       <ContainerLayout>
         <>
           <Header
-            title={t("verificationCode")}
             onBack={() => navigation.goBack()}
           />
           <KeyboardLayout>
-            <ContainerStack>
+            
               <SizedBox height={sh(20)} />
               <CustomText
                 size={"medium"}
@@ -267,7 +265,7 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
                   onPress={() => handleResendCode()}
                 />
               </View>
-            </ContainerStack>
+            
           </KeyboardLayout>
         </>
       </ContainerLayout>

@@ -17,7 +17,6 @@ import RewardCard from "./MyRewardComponents/RewardCard";
 import { useTranslation } from "react-i18next";
 import { ERewardType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import CustomTab from "@components/Shared/CustomTab";
-import ContainerStack from "@components/Shared/ContainerStack";
 import { resetQueries } from "@libs/react.query.client.lib";
 import { AxiosLibs } from "@libs/axios.lib";
 
@@ -111,7 +110,7 @@ const MyRewardScreen: AppNavigationScreen<"MyRewardScreen"> = ({
 
   return (
     <ContainerLayout>
-      <Header title={t("myReward")} onBack={() => navigation.goBack()} />
+      <Header onBack={() => navigation.goBack()} />
       <LoadingCircle
         visible={
           getInvalidRewardsInfiniteQuery.isLoading ||
@@ -119,7 +118,7 @@ const MyRewardScreen: AppNavigationScreen<"MyRewardScreen"> = ({
           redeemPointMutation.isPending
         }
       />
-      <ContainerStack>
+      
         <CustomTab
           value={rewardTab}
           data={[
@@ -132,7 +131,7 @@ const MyRewardScreen: AppNavigationScreen<"MyRewardScreen"> = ({
             getInvalidRewardsInfiniteQuery.refetch();
           }}
         />
-      </ContainerStack>
+      
       <SizedBox height={sh(10)} />
       <FlashList
         data={

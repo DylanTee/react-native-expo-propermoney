@@ -44,7 +44,6 @@ export default function ModalZoomableImage(props: ModalZoomableImageProps) {
             }}
           >
             <Header
-              title={t("back")}
               onBack={() => {
                 setIsVisible(false);
               }}

@@ -22,7 +22,6 @@ import TransactionCategories from "./TransactionCategories";
 import TransactionLabels from "./TransactionLabels";
 import CustomButtonIcon from "@components/Shared/CustomButtonIcon";
 import CustomItemPicker from "@components/Shared/CustomItemPicker";
-import ContainerStack from "@components/Shared/ContainerStack";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
@@ -190,7 +189,6 @@ const OverviewTransactionScreen: AppNavigationScreen<
     <ContainerLayout>
       <LoadingCircle visible={getTransactionsQuery.isLoading} />
       <Header
-        title={t("overviewSpending")}
         itemRight={
           <>
             <CustomButtonIcon
@@ -252,7 +250,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
           />
         }
       >
-        <ContainerStack>
+        
           <Pressable
             onPress={() => {
               navigation.navigate("TransactionAccountSwitchScreen", {
@@ -348,7 +346,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
           ) : (
             <></>
           )}
-        </ContainerStack>
+        
       </ScrollView>
     </ContainerLayout>
   );

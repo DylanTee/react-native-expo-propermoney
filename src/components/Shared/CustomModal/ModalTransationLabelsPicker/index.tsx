@@ -17,7 +17,6 @@ import { useTranslation } from "@libs/i18n/index";
 import SearchBar from "@components/Shared/SeachBar";
 import CustomText from "@components/Shared/CustomText";
 import CustomButton from "@components/Shared/CustomButton";
-import ContainerStack from "@components/Shared/ContainerStack";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import { Global } from "@styles/Global";
 import NextCreateButton from "@components/Shared/NextCreateButton";
@@ -185,7 +184,6 @@ export default function ModalTransationLabelsPicker(
               }}
             >
               <Header
-                title={t("back")}
                 onBack={() => {
                   setIsVisible(false);
                 }}
@@ -196,7 +194,7 @@ export default function ModalTransationLabelsPicker(
                   useGetTransactionLabelDetailsQuery.isFetching
                 }
               />
-              <ContainerStack>
+              
                 <UsageCard
                   title={t("labels")}
                   currentLength={labels.length}
@@ -228,7 +226,6 @@ export default function ModalTransationLabelsPicker(
                 ) : (
                   <></>
                 )}
-              </ContainerStack>
               <SizedBox height={sh(20)} />
               <FlashList
                 data={listToShow}

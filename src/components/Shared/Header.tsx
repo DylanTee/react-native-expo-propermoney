@@ -1,65 +1,47 @@
 import React, { ReactNode } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity, ViewStyle } from "react-native";
 import { sw } from "@libs/responsive.lib";
 import { Colors } from "@styles/Colors";
 import SizedBox from "./SizedBox";
-import CustomText from "./CustomText";
-import ContainerStack from "./ContainerStack";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
-import { ExpoDeviceLib } from "@libs/expo-devices.lib";
 
 interface HeaderProps {
-  title: string;
+  containerStyle?: ViewStyle;
   itemRight?: ReactNode;
   onBack(): void;
 }
 
 export default function Header({
-  title,
+  containerStyle,
   itemRight = <></>,
   onBack,
 }: HeaderProps) {
-  const getTitle = () => {
-    if (ExpoDeviceLib.isTablet) {
-      if (title.length > 12) {
-        return title.substring(0, 12) + "...";
-      } else {
-        return title;
-      }
-    } else {
-      return title;
-    }
-  };
   return (
-    <ContainerStack>
-      <TouchableOpacity
-        activeOpacity={1}
-        style={styles.container}
-        onPress={() => onBack()}
-      >
-        <View style={styles.backButton}>
-          <ExpoVectorIcon name={"left"} size={sw(20)} color={Colors.black} />
-        </View>
-        <SizedBox width={sw(10)} />
-        <View style={styles.titleContainer}>
-          <CustomText size={"medium"} label={getTitle()} />
-        </View>
+    <View style={containerStyle}>
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.backButton} onPress={() => onBack()}>
+          <ExpoVectorIcon name={"close"} size={sw(20)} color={Colors.black} />
+        </TouchableOpacity>
         <View style={{ flexDirection: "row", marginLeft: "auto" }}>
           {itemRight}
         </View>
-      </TouchableOpacity>
-    </ContainerStack>
+      </View>
+    </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    height: sw(50),
+    height: sw(60),
     alignItems: "center",
   },
   backButton: {
     justifyContent: "center",
-    bottom: sw(-1),
+    alignItems: "center",
+    width: sw(40),
+    height: sw(40),
+    borderRadius: sw(40 / 2),
+    backgroundColor: "#DDE0DA",
   },
   titleContainer: {
     justifyContent: "center",

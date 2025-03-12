@@ -16,7 +16,6 @@ import {
   TPostTransactionUpdateBody,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
-import ContainerStack from "@components/Shared/ContainerStack";
 import { resetQueries } from "@libs/react.query.client.lib";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
@@ -190,11 +189,10 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
       <LoadingCircle visible={isPending} />
       <ContainerLayout>
         <Header
-          title={isEdit ? t("edit") : t("new")}
           onBack={() => navigation.goBack()}
         />
         <KeyboardLayout>
-          <ContainerStack>
+          
             <Form
               form={form}
               isPending={isPending}
@@ -205,7 +203,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
               }}
               onDelete={(id) => deleteItem(id)}
             />
-          </ContainerStack>
+          
         </KeyboardLayout>
       </ContainerLayout>
     </>

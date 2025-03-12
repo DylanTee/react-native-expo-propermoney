@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { sw } from "@libs/responsive.lib";
 import Header from "../Header";
-import ContainerStack from "../ContainerStack";
 import {
   countryList,
   TCountry,
@@ -45,13 +44,12 @@ export default function ModalCountryPicker(props: ModalCountryPickerProps) {
             }}
           >
             <Header
-              title={`Country`}
               onBack={() => {
                 setIsVisible(false);
               }}
             />
             <ScrollView>
-              <ContainerStack>
+              
                 {countryList.map((option, index) => (
                   <CustomButtonItemPicker
                     key={index}
@@ -63,7 +61,7 @@ export default function ModalCountryPicker(props: ModalCountryPickerProps) {
                     }}
                   />
                 ))}
-              </ContainerStack>
+              
             </ScrollView>
           </View>
         </ContainerLayout>

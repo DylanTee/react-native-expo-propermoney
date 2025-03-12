@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { sw } from "@libs/responsive.lib";
 import Header from "../Header";
-import ContainerStack from "../ContainerStack";
 import dayjs from "dayjs";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 
@@ -50,24 +49,22 @@ export default function ModalYearPicker(props: ModalYearPickerProps) {
               }}
             >
               <Header
-                title={`Sort by`}
                 onBack={() => {
                   setIsVisible(false);
                 }}
               />
-              <ContainerStack>
-                {list.map((option) => (
-                  <CustomButtonItemPicker
-                    key={option}
-                    text={`${option}`}
-                    isSelect={props.year == option}
-                    onPress={() => {
-                      props.onChange(option);
-                      setIsVisible(false);
-                    }}
-                  />
-                ))}
-              </ContainerStack>
+
+              {list.map((option) => (
+                <CustomButtonItemPicker
+                  key={option}
+                  text={`${option}`}
+                  isSelect={props.year == option}
+                  onPress={() => {
+                    props.onChange(option);
+                    setIsVisible(false);
+                  }}
+                />
+              ))}
             </View>
           </ScrollView>
         </ContainerLayout>

@@ -14,7 +14,6 @@ import {
 import Header from "../Header";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
-import ContainerStack from "../ContainerStack";
 
 interface ModalTextInputProps {
   buttonStyle: ViewStyle;
@@ -48,12 +47,11 @@ export default function ModalTextInput(props: ModalTextInputProps) {
               }}
             >
               <Header
-                title={props.headerText}
                 onBack={() => {
                   setIsVisible(false);
                 }}
               />
-              <ContainerStack>
+              
                 <CustomTextInput
                   label={props.textInputLabel}
                   onChangeText={(text) => setValue(text)}
@@ -69,7 +67,7 @@ export default function ModalTextInput(props: ModalTextInputProps) {
                     setIsVisible(false);
                   }}
                 />
-              </ContainerStack>
+              
             </View>
           </KeyboardLayout>
         </ContainerLayout>

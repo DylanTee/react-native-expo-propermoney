@@ -15,7 +15,6 @@ import {
   TPostTransactionLabelUpdateBody,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import CustomButton from "@components/Shared/CustomButton";
-import ContainerStack from "@components/Shared/ContainerStack";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { TTransactionLabelForm } from ".";
@@ -127,14 +126,12 @@ export default function Form(props: TransactionLabelFormProps) {
   return (
     <ContainerLayout>
       <Header
-        title={getHeaderTitle()}
         onBack={() => {
           props.onClose();
         }}
       />
       <LoadingCircle visible={isLoading} />
       <KeyboardLayout>
-        <ContainerStack>
           <CustomTextInput
             maxLength={25}
             label={"Label"}
@@ -185,7 +182,6 @@ export default function Form(props: TransactionLabelFormProps) {
               <SizedBox height={sh(40)} />
             </>
           )}
-        </ContainerStack>
       </KeyboardLayout>
     </ContainerLayout>
   );

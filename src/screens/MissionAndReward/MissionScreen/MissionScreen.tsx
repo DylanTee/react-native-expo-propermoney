@@ -14,7 +14,6 @@ import { Alert, Linking, ScrollView, View } from "react-native";
 import CustomButton from "@components/Shared/CustomButton";
 import { Global } from "@styles/Global";
 import CustomText from "@components/Shared/CustomText";
-import ContainerStack from "@components/Shared/ContainerStack";
 import { resetQueries } from "@libs/react.query.client.lib";
 import {
   TMission,
@@ -141,12 +140,11 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
   return (
     <ContainerLayout>
       <Header
-        title={t("missions") + "/" + t("rewards")}
         onBack={() => navigation.goBack()}
       />
       <LoadingCircle visible={isLoading} />
       <ScrollView>
-        <ContainerStack>
+        
           <View style={Global.shadowLine}>
             <CustomText label={t("youHave")} size={"small"} />
             <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
@@ -385,7 +383,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
               ))}
           </View>
           <SizedBox height={sh(20)} />
-        </ContainerStack>
+        
       </ScrollView>
     </ContainerLayout>
   );
