@@ -1,28 +1,20 @@
-import { TTransactionCategory } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { currencyList } from "@mcdylanproperenterprise/nodejs-proper-money-types/lists/currency";
 
 export default function findAmountAndNameOfCategory({
-  transactionCategories,
   message,
 }: {
-  transactionCategories: TTransactionCategory[];
   message: string;
 }) {
   function extractValues(inputString: string) {
-    const regexCategory = /Category:\s*([^\n]*)/;
     const regexAmount = /Amount:\s*([^\n]*)/;
     const regexContext = /Context:\s*([^\n]*)/;
     const regexCurrency = /Currency:\s*([^\n]*)/;
 
-    const matchCategory = regexCategory.exec(inputString);
     const matchAmount = regexAmount.exec(inputString);
     const matchContext = regexContext.exec(inputString);
     const matchCurrency = regexCurrency.exec(inputString);
 
     const values = {
-      Category: matchCategory
-        ? matchCategory[1].replace("**", "").trim()
-        : null,
       Amount: matchAmount ? matchAmount[1].replace("**", "").trim() : null,
       Context: matchContext ? matchContext[1].replace("**", "").trim() : null,
       Currency: matchCurrency
@@ -75,9 +67,6 @@ export default function findAmountAndNameOfCategory({
     return amount;
   };
   const detectedTextResult = {
-    transactionCategory:
-      transactionCategories.find((x) => x.name == extractedValues.Category) ??
-      null,
     currency:
       currencyList.find((x) => x.iso == extractedValues.Currency)?.iso ?? null,
     amount: getAmountBasedExtractedValues(),

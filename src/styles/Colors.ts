@@ -6,4 +6,5 @@ export const Colors = {
     green: '#6BAD10',
     rocketMetalic: '#787A8B',
     gainsboro: '#D6D9E1',
+    suvaGrey: '#8B8B8B'
 };

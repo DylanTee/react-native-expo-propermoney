@@ -244,7 +244,7 @@ const TransactionDetailScreen: AppNavigationScreen<
                   <ModalZoomableImage
                     buttonStyle={{
                       borderWidth: 1,
-                      borderColor: `#8B8B8B`,
+                      borderColor: Colors.suvaGrey,
                       borderRadius: sw(5),
                       marginLeft: "auto",
                     }}

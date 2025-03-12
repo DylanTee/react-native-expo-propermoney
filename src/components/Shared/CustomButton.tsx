@@ -13,6 +13,7 @@ interface ButtonProps {
   icon?: ReactNode;
   disabled?: boolean;
   isTimer?: boolean;
+  buttonStyle?: ViewStyle;
   onPress(): void;
 }
 
@@ -23,35 +24,30 @@ const CustomButton = ({
   icon = undefined,
   disabled = false,
   isTimer = false,
+  buttonStyle,
   onPress,
 }: ButtonProps) => {
   const [seconds, setSeconds] = useState<number | null>(null);
   const isDisabled = disabled || seconds ? true : false;
-  let buttonStyle: ViewStyle = {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: sw(5),
-    opacity: isDisabled ? 0.6 : 1,
-  };
+  let styles = {};
   let textStyle: TextStyle = {
     fontWeight: "bold",
   };
   if (type == "primary") {
-    buttonStyle = {
-      ...buttonStyle,
+    styles = {
       backgroundColor: Colors.primary,
       borderWidth: 2,
       borderColor: Colors.primary,
+      ...buttonStyle,
     };
     textStyle = { ...textStyle, color: Colors.white };
   }
   if (type == "secondary") {
-    buttonStyle = {
-      ...buttonStyle,
+    styles = {
       backgroundColor: Colors.white,
       borderWidth: 2,
       borderColor: Colors.primary,
+      ...buttonStyle,
     };
     textStyle = { ...textStyle, color: Colors.primary };
   }
@@ -62,8 +58,9 @@ const CustomButton = ({
     };
   }
   if (size == "big") {
-    buttonStyle = {
+    styles = {
       padding: sh(10),
+      ...styles,
       ...buttonStyle,
     };
     textStyle = {
@@ -72,8 +69,9 @@ const CustomButton = ({
     };
   }
   if (size == "medium") {
-    buttonStyle = {
+    styles = {
       padding: sh(8),
+      ...styles,
       ...buttonStyle,
     };
     textStyle = {
@@ -82,8 +80,9 @@ const CustomButton = ({
     };
   }
   if (size == "small") {
-    buttonStyle = {
+    styles = {
       ...buttonStyle,
+      ...styles,
       padding: sh(5),
     };
     textStyle = {
@@ -119,10 +118,21 @@ const CustomButton = ({
     return () => clearInterval(interval);
   }, [seconds]);
 
+  console.log(styles);
+
   return (
     <TouchableOpacity
       disabled={isDisabled}
-      style={buttonStyle}
+      style={[
+        {
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: sw(5),
+          opacity: isDisabled ? 0.6 : 1,
+        },
+        styles,
+      ]}
       onPress={() => onPress()}
     >
       {icon && (

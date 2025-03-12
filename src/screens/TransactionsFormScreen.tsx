@@ -37,7 +37,7 @@ import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
 import findAmountAndNameOfCategory from "@libs/findAmountAndNameOfCategory";
 import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
 import { Colors } from "@styles/Colors";
-import { Alert, Image, View } from "react-native";
+import { Alert, Image, StyleSheet, View } from "react-native";
 import CustomTextInput from "@components/Shared/CustomTextInput";
 import ModalCurrencyPicker from "@components/Shared/CustomModal/ModalCurrencyPicker";
 import CustomText from "@components/Shared/CustomText";
@@ -210,14 +210,12 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
       return axios.post(`${ENV.PROPER_API_URL}/ai/imageDetect`, data);
     },
   });
-  const questionOne = `1) Date: (format as YYYY/MM/DD)`;
-  const questionTwo = `2) Category: (pick from )`;
-  const questionThree = `3) Amount:`;
-  const questionFour = `4) Context:`;
-  const questionFive = `5) Currency: (pick from ${currencyList.map(
+  const questionAmount = `1) Amount:`;
+  const questionContext = `2) Context:`;
+  const questionCurrency = `3) Currency: (pick from ${currencyList.map(
     (z) => z.iso
   )})`;
-  const totalQuestionsOnText = `\n\nBased on above example above, construct this format ${questionOne} ${questionTwo} ${questionThree} ${questionFour} ${questionFour} ${questionFive}`;
+  const totalQuestionsOnText = `\n\nBased on above example above, construct this format ${questionAmount} ${questionContext} ${questionCurrency}`;
 
   const getTransactionAtIsTodayOrYesterday = () => {
     if (
@@ -244,23 +242,47 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
   return (
     <>
       <ContainerLayout>
-        <Header onBack={() => navigation.goBack()} />
+        <Header
+          containerStyle={{ paddingHorizontal: sw(15) }}
+          onBack={() => navigation.goBack()}
+        />
         <KeyboardLayout>
           <>
             <SizedBox height={sh(20)} />
-
             {transactionForm && (
-              <>
+              <View style={{ paddingHorizontal: sw(15) }}>
                 <ModalDateTimePicker
                   value={form.transactedAt}
                   buttonStyle={{}}
                   listComponents={
-                    <CustomItemPicker
-                      pickedText={`${dayjs(transactionForm.transactedAt).format(
-                        "DD/MM/YYYY (ddd)"
-                      )} ${getTransactionAtIsTodayOrYesterday()}`}
-                      title={t("date")}
-                    />
+                    <View style={styles.bodyContainer}>
+                      <CustomText
+                        size="medium"
+                        label={`When`}
+                        textStyle={{ color: `#545454` }}
+                      />
+                      <SizedBox width={sw(10)} />
+                      <View
+                        style={{
+                          borderColor: Colors.suvaGrey,
+                          borderWidth: 1,
+                          borderRadius: sw(5),
+                          marginLeft: "auto",
+                          padding: sw(5),
+                        }}
+                      >
+                        <CustomText
+                          textStyle={{
+                            color: "#5A5A5A",
+                          }}
+                          containerStyle={{ marginLeft: "auto" }}
+                          size="medium"
+                          label={`${dayjs(transactionForm.transactedAt).format(
+                            "DD/MM/YYYY (ddd)"
+                          )} ${getTransactionAtIsTodayOrYesterday()}`}
+                        />
+                      </View>
+                    </View>
                   }
                   onChange={(date) => {
                     setTransactionForm((prevState) => ({
@@ -312,15 +334,10 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                               response.data as TAIImageDetectResponse;
                             if (result.messageContent != "") {
                               const detectedText = findAmountAndNameOfCategory({
-                                transactionCategories: [],
                                 message: result.messageContent,
                               });
                               setTransactionForm((prevState) => ({
                                 ...prevState,
-                                transactionCategoryId:
-                                  detectedText?.transactionCategory
-                                    ? detectedText.transactionCategory._id
-                                    : form.transactionCategoryId,
                                 currency: detectedText.currency
                                   ? detectedText.currency
                                   : form.currency,
@@ -470,21 +487,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                   }
                 />
                 <SizedBox height={sh(40)} />
-                <CustomButton
-                  disabled={isLoading}
-                  type={"primary"}
-                  size={"medium"}
-                  title={isEdit ? t("edit") : t("add")}
-                  onPress={() => {
-                    if (!transactionForm.transactionCategoryId) {
-                      Alert.alert(t("missingCategory"));
-                    } else if (transactionForm.amount.trim().length == 0) {
-                      Alert.alert(t("missingAmount"));
-                    } else {
-                      submit(form as unknown as TTransactionForm);
-                    }
-                  }}
-                />
+
                 {isEdit && (
                   <>
                     <SizedBox height={sh(20)} />
@@ -519,13 +522,38 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                   </>
                 )}
                 <SizedBox height={sh(60)} />
-              </>
+              </View>
             )}
             <LoadingCircle visible={isLoading} />
           </>
         </KeyboardLayout>
+        <CustomButton
+          buttonStyle={{ marginHorizontal: sw(15) }}
+          disabled={isLoading}
+          type={"primary"}
+          size={"medium"}
+          title={isEdit ? t("edit") : t("add")}
+          onPress={() => {
+            if (!transactionForm.transactionCategoryId) {
+              Alert.alert(t("missingCategory"));
+            } else if (transactionForm.amount.trim().length == 0) {
+              Alert.alert(t("missingAmount"));
+            } else {
+              submit(form as unknown as TTransactionForm);
+            }
+          }}
+        />
       </ContainerLayout>
     </>
   );
 };
 export default TransactionsFormScreen;
+
+const styles = StyleSheet.create({
+  bodyContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: sh(10),
+  },
+});
