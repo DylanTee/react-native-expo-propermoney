@@ -203,18 +203,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
               onPress={() => {
                 if (authStore.user) {
                   navigation.navigate("TransactionsFormScreen", {
-                    form: {
-                      _id: undefined,
-                      transactedAt: isThisMonth
-                        ? new Date()
-                        : new Date(startTransactedAt),
-                      transactionCategoryId: null,
-                      transactionLabelIds: [],
-                      amount: "",
-                      currency: authStore.user.currency,
-                      imagePath: null,
-                      note: "",
-                    },
+                    id: undefined,
                     isEdit: false,
                     isUsePhotoAI: false,
                     onEdit: () => {},
@@ -250,103 +239,92 @@ const OverviewTransactionScreen: AppNavigationScreen<
           />
         }
       >
-        
-          <Pressable
-            onPress={() => {
-              navigation.navigate("TransactionAccountSwitchScreen", {
-                userId: selectedUserId,
-                onSelect: (userId) => {
-                  setSelectedUserId(userId);
-                },
+        <Pressable
+          onPress={() => {
+            navigation.navigate("TransactionAccountSwitchScreen", {
+              userId: selectedUserId,
+              onSelect: (userId) => {
+                setSelectedUserId(userId);
+              },
+            });
+          }}
+        >
+          <CustomItemPicker
+            title={t("account")}
+            pickedText={getDisplayName() ?? ""}
+          />
+        </Pressable>
+        <SizedBox height={sh(20)} />
+        <DateSwitch
+          startTransactedAt={startTransactedAt}
+          endTransactedAt={endTransactedAt}
+          onDateChange={(start, end) => {
+            if (!getTransactionsQuery.isLoading) {
+              setStartTransactedAt(start);
+              setEndTransactedAt(end);
+            }
+          }}
+        />
+        <SizedBox height={sh(20)} />
+        <ModalOverviewTransctionsReportPicker
+          report={selectedReport}
+          buttonStyle={{}}
+          onChange={(data) => {
+            setSelectedReport(data);
+          }}
+          listComponents={
+            <>
+              <CustomItemPicker pickedText={selectedReport} title={`Report`} />
+            </>
+          }
+        />
+
+        <SizedBox height={sh(10)} />
+        {!getTransactionsQuery.isLoading ? (
+          <TransactionCategories
+            selectedReport={selectedReport}
+            transactions={isListToShowTransactions}
+            transactionCategories={isListToShowTransactionCategories}
+            handlePress={(data) => {
+              navigation.navigate("TransactionHistoryByCategoryOrLabelScreen", {
+                startTransactedAt: startTransactedAt,
+                endTransactedAt: endTransactedAt,
+                _id: data.categoryId,
+                targetUserId: data.targetUserId,
+                type: EGetTransactionsByType.category,
               });
             }}
-          >
-            <CustomItemPicker
-              title={t("account")}
-              pickedText={getDisplayName() ?? ""}
-            />
-          </Pressable>
-          <SizedBox height={sh(20)} />
-          <DateSwitch
-            startTransactedAt={startTransactedAt}
-            endTransactedAt={endTransactedAt}
-            onDateChange={(start, end) => {
-              if (!getTransactionsQuery.isLoading) {
-                setStartTransactedAt(start);
-                setEndTransactedAt(end);
-              }
+          />
+        ) : (
+          <></>
+        )}
+        {!getTransactionsQuery.isLoading ? (
+          <TransactionLabels
+            selectedReport={selectedReport}
+            transactions={isListToShowTransactions}
+            transactionLabels={isListToShowTransactionLabels}
+            handlePress={(data) => {
+              navigation.navigate("TransactionHistoryByCategoryOrLabelScreen", {
+                startTransactedAt: startTransactedAt,
+                endTransactedAt: endTransactedAt,
+                _id: data.labelId,
+                targetUserId: data.targetUserId,
+                type: EGetTransactionsByType.label,
+              });
             }}
           />
-          <SizedBox height={sh(20)} />
-          <ModalOverviewTransctionsReportPicker
-            report={selectedReport}
-            buttonStyle={{}}
-            onChange={(data) => {
-              setSelectedReport(data);
-            }}
-            listComponents={
-              <>
-                <CustomItemPicker
-                  pickedText={selectedReport}
-                  title={`Report`}
-                />
-              </>
-            }
+        ) : (
+          <></>
+        )}
+        {!getTransactionsQuery.isLoading ? (
+          <TransactionListings
+            selectedReport={selectedReport}
+            transactions={isListToShowTransactions}
+            timelineTransactions={isListToShowTimelineTransactions}
           />
-
-          <SizedBox height={sh(10)} />
-          {!getTransactionsQuery.isLoading ? (
-            <TransactionCategories
-              selectedReport={selectedReport}
-              transactions={isListToShowTransactions}
-              transactionCategories={isListToShowTransactionCategories}
-              handlePress={(data) => {
-                navigation.navigate(
-                  "TransactionHistoryByCategoryOrLabelScreen",
-                  {
-                    startTransactedAt: startTransactedAt,
-                    endTransactedAt: endTransactedAt,
-                    _id: data.categoryId,
-                    targetUserId: data.targetUserId,
-                    type: EGetTransactionsByType.category,
-                  }
-                );
-              }}
-            />
-          ) : (
-            <></>
-          )}
-          {!getTransactionsQuery.isLoading ? (
-            <TransactionLabels
-              selectedReport={selectedReport}
-              transactions={isListToShowTransactions}
-              transactionLabels={isListToShowTransactionLabels}
-              handlePress={(data) => {
-                navigation.navigate(
-                  "TransactionHistoryByCategoryOrLabelScreen",
-                  {
-                    startTransactedAt: startTransactedAt,
-                    endTransactedAt: endTransactedAt,
-                    _id: data.labelId,
-                    targetUserId: data.targetUserId,
-                    type: EGetTransactionsByType.label,
-                  }
-                );
-              }}
-            />
-          ) : (
-            <></>
-          )}
-          {!getTransactionsQuery.isLoading ? (
-            <TransactionListings
-              selectedReport={selectedReport}
-              transactions={isListToShowTransactions}
-              timelineTransactions={isListToShowTimelineTransactions}
-            />
-          ) : (
-            <></>
-          )}
-        
+        ) : (
+          <></>
+        )}
       </ScrollView>
     </ContainerLayout>
   );

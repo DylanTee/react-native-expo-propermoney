@@ -21,7 +21,7 @@ import { FlashList } from "@shopify/flash-list";
 import { Colors } from "@styles/Colors";
 import { Global } from "@styles/Global";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import React, {
   Alert,
@@ -31,6 +31,7 @@ import React, {
   Platform,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from "react-native";
 import Form from "./form";
 
@@ -43,6 +44,8 @@ export type TTransactionCategoryForm = {
 };
 
 interface ModalTransactionCategoryPickerProps {
+  listComponents: ReactNode;
+  buttonStyle?: ViewStyle;
   id: string | null;
   onChange(id: string): void;
 }
@@ -63,23 +66,7 @@ export default function ModalTransactionCategoryPicker(
   const [transasctionCategoryId, setTransasctionCategoryId] = useState<
     string | null
   >(props.id);
-  const useGetTransactionCategoryDetailQuery = useQuery({
-    queryKey: ["transaction-category/detail", transasctionCategoryId],
-    queryFn: async () => {
-      const { data } = await AxiosLibs.defaultClient.get(
-        `/transaction-category/detail`,
-        {
-          params: {
-            id: transasctionCategoryId,
-          },
-        }
-      );
-      return data;
-    },
-    enabled: transasctionCategoryId != null,
-  });
-  const detail: TTransactionCategory | undefined =
-    useGetTransactionCategoryDetailQuery.data ?? undefined;
+
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isVisibleForm, setIsVisibleForm] = useState<boolean>(false);
   const [form, setForm] = useState<TTransactionCategoryForm>(initialFormState);
@@ -134,13 +121,9 @@ export default function ModalTransactionCategoryPicker(
           setIsVisible(true);
           setSearchText("");
         }}
+        style={props.buttonStyle}
       >
-        <CustomItemPicker
-          isRequired={transasctionCategoryId == null}
-          title={t("category")}
-          itemLeft={<></>}
-          pickedText={`${detail?.name ?? `Select...`}`}
-        />
+        {props.listComponents}
       </TouchableOpacity>
       <Modal animationType="slide" visible={isVisible}>
         {isVisibleForm ? (
@@ -155,12 +138,10 @@ export default function ModalTransactionCategoryPicker(
               onClose={() => {
                 setIsVisibleForm(false);
                 setIsVisible(false);
-                useGetTransactionCategoryDetailQuery.refetch();
                 useGetTransactionCategoryInfiniteQuery.refetch();
               }}
               onChange={(_id) => {
                 setTransasctionCategoryId(_id);
-                useGetTransactionCategoryDetailQuery.refetch();
                 useGetTransactionCategoryInfiniteQuery.refetch();
                 props.onChange(_id);
                 setIsVisibleForm(false);
@@ -176,14 +157,9 @@ export default function ModalTransactionCategoryPicker(
                 paddingTop: Platform.OS === "android" ? 0 : sw(50),
               }}
             >
-              <Header
-                onBack={() => setIsVisible(false)}
-              />
+              <Header onBack={() => setIsVisible(false)} />
               <LoadingCircle
-                visible={
-                  useGetTransactionCategoryDetailQuery.isFetching ||
-                  useGetTransactionCategoryInfiniteQuery.isFetching
-                }
+                visible={useGetTransactionCategoryInfiniteQuery.isFetching}
               />
               <>
                 <UsageCard

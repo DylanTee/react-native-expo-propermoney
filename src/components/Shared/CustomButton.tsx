@@ -118,8 +118,6 @@ const CustomButton = ({
     return () => clearInterval(interval);
   }, [seconds]);
 
-  console.log(styles);
-
   return (
     <TouchableOpacity
       disabled={isDisabled}

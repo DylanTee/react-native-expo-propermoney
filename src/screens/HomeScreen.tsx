@@ -37,16 +37,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       onPress: () => {
         if (authStore.user) {
           navigation.navigate("TransactionsFormScreen", {
-            form: {
-              _id: undefined,
-              transactionCategoryId: null,
-              transactionLabelIds: [],
-              currency: authStore.user?.currency,
-              amount: "",
-              note: "",
-              imagePath: null,
-              transactedAt: new Date(),
-            },
+            id: undefined,
             isEdit: false,
             isUsePhotoAI: false,
             onEdit: () => {},
@@ -64,16 +55,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       onPress: () => {
         if (authStore.user) {
           navigation.navigate("TransactionsFormScreen", {
-            form: {
-              _id: undefined,
-              transactionCategoryId: null,
-              transactionLabelIds: [],
-              currency: authStore.user?.currency,
-              amount: "",
-              note: "",
-              imagePath: null,
-              transactedAt: new Date(),
-            },
+            id: undefined,
             isEdit: false,
             isUsePhotoAI: true,
             onEdit: () => {},

@@ -17,7 +17,6 @@ import {
 import { Colors } from "@styles/Colors";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import { useTranslation } from "react-i18next";
 import {
   Image,
   View,
@@ -28,12 +27,12 @@ import {
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
 import dayjs from "dayjs";
+import TransactionCategoryContainer from "@components/Shared/TransactionCategoryContainer";
 
 const TransactionDetailScreen: AppNavigationScreen<
   "TransactionDetailScreen"
 > = ({ navigation, route }) => {
   const authStore = useAuthStore();
-  const { t } = useTranslation();
   const useGetTransactionDetailQuery = useQuery({
     queryKey: ["detail", route.params.id],
     queryFn: async () => {
@@ -65,16 +64,7 @@ const TransactionDetailScreen: AppNavigationScreen<
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate("TransactionsFormScreen", {
-                    form: {
-                      _id: detail._id,
-                      transactionCategoryId: detail.transactionCategoryId,
-                      transactionLabelIds: detail.transactionLabelIds,
-                      transactedAt: new Date(detail.transactedAt),
-                      currency: detail.currency,
-                      amount: detail.amount.toString(),
-                      imagePath: detail.imagePath,
-                      note: detail.note ?? "",
-                    },
+                    id: detail._id,
                     isEdit: true,
                     isUsePhotoAI: false,
                     onEdit: () => {},
@@ -132,43 +122,10 @@ const TransactionDetailScreen: AppNavigationScreen<
                 }
               />
               <SizedBox height={sh(20)} />
-              <View
-                style={{
-                  flexDirection: "row",
-                  gap: sw(10),
-                  alignItems: "center",
-                }}
-              >
-                <View
-                  style={{
-                    width: sw(25),
-                    height: sw(25),
-                    borderRadius: sw(25) / 2,
-                    padding: sw(5),
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor:
-                      detail.transactionCategory.backgroundColor.trim().length >
-                      0
-                        ? detail.transactionCategory.backgroundColor
-                        : Colors.gainsboro,
-                  }}
-                >
-                  <Image
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      position: "absolute",
-                      zIndex: 1,
-                    }}
-                    source={{ uri: detail.transactionCategory.imagePath }}
-                  />
-                </View>
-                <CustomText
-                  size={"medium"}
-                  label={detail.transactionCategory.name}
-                />
-              </View>
+              <TransactionCategoryContainer
+                containerStyle={{ flexDirection: "row" }}
+                id={detail.transactionCategory._id}
+              />
               <SizedBox height={sh(20)} />
             </View>
             <SizedBox height={sh(20)} />
@@ -183,12 +140,12 @@ const TransactionDetailScreen: AppNavigationScreen<
                 <CustomText
                   size="medium"
                   label={`When`}
-                  textStyle={{ color: `#545454` }}
+                  textStyle={{ color: Colors.matterhorn }}
                 />
                 <SizedBox width={sw(10)} />
                 <CustomText
                   textStyle={{
-                    color: "#5A5A5A",
+                    color: Colors.matterhorn,
                   }}
                   containerStyle={{ marginLeft: "auto" }}
                   size="medium"
@@ -200,19 +157,9 @@ const TransactionDetailScreen: AppNavigationScreen<
                   <CustomText
                     size="medium"
                     label={`Labels`}
-                    textStyle={{ color: `#545454` }}
+                    textStyle={{ color: Colors.matterhorn }}
                   />
                   <SizedBox width={sw(10)} />
-                  <CustomText
-                    textStyle={{
-                      color: "#5A5A5A",
-                    }}
-                    containerStyle={{ marginLeft: "auto" }}
-                    size="medium"
-                    label={`${detail.transactionLabels
-                      ?.map((label) => label.name)
-                      .join(", ")}`}
-                  />
                 </View>
               )}
               {detail.note && (
@@ -220,13 +167,13 @@ const TransactionDetailScreen: AppNavigationScreen<
                   <CustomText
                     size="medium"
                     label={`Note`}
-                    textStyle={{ color: `#545454` }}
+                    textStyle={{ color: Colors.matterhorn }}
                   />
                   <SizedBox width={sw(10)} />
                   <CustomText
                     textStyle={{
                       marginLeft: "auto",
-                      color: "#5A5A5A",
+                      color: Colors.matterhorn,
                     }}
                     containerStyle={{ marginLeft: "auto", flex: 1 }}
                     size="medium"
@@ -239,7 +186,7 @@ const TransactionDetailScreen: AppNavigationScreen<
                   <CustomText
                     size="medium"
                     label={`Image`}
-                    textStyle={{ color: `#545454` }}
+                    textStyle={{ color: Colors.matterhorn }}
                   />
                   <ModalZoomableImage
                     buttonStyle={{

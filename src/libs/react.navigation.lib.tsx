@@ -37,21 +37,10 @@ export type OverviewTransactionScreenParams = {
 };
 
 export type TransactionDetailScreenParams = {
-  id:string;
-}
+  id: string;
+};
 
 export type TSelectedUserId = string | undefined;
-
-export type TTransactionForm = {
-  _id: string | undefined;
-  transactionCategoryId: string | null;
-  transactionLabelIds: string[];
-  currency: string;
-  amount: string;
-  imagePath: string | null;
-  note: string;
-  transactedAt: Date;
-};
 
 export const navigationRef = createNavigationContainerRef<AppStackParamList>();
 export type AppStackNavigationProp = StackNavigationProp<AppStackParamList>;
@@ -72,9 +61,9 @@ export type AppStackParamList = {
     onRefresh(): void;
   };
   ShareUserScreen?: undefined;
-  TransactionDetailScreen:TransactionDetailScreenParams;
+  TransactionDetailScreen: TransactionDetailScreenParams;
   TransactionsFormScreen: {
-    form: TTransactionForm;
+    id: string | undefined;
     isEdit: boolean;
     isUsePhotoAI: boolean;
     onEdit(_id: string): void;

@@ -24,7 +24,7 @@ import LoadingCircle from "../LoadingCircle";
 
 interface ModalImagePickerProps {
   userId: string;
-  buttonStyle: ViewStyle;
+  buttonStyle?: ViewStyle;
   listComponents: ReactNode;
   type: "profileImage" | "transaction_image";
   onChange(data: string): void;

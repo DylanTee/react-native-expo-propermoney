@@ -10,7 +10,6 @@ import {
   ViewStyle,
   useWindowDimensions,
 } from "react-native";
-import { useTranslation } from "@libs/i18n/index";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import { sw } from "@libs/responsive.lib";
 import ContainerLayout from "@components/Layout/ContainerLayout";
@@ -22,7 +21,6 @@ interface ModalZoomableImageProps {
 }
 
 export default function ModalZoomableImage(props: ModalZoomableImageProps) {
-  const { t } = useTranslation();
   const windowDimensions = useWindowDimensions();
   const [isVisible, setIsVisible] = useState<boolean>(false);
   return (

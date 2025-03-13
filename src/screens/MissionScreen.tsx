@@ -114,16 +114,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
         data.type == EMissionType.weeklyAddIncomeOrExpense
       ) {
         navigation.navigate("TransactionsFormScreen", {
-          form: {
-            _id: undefined,
-            transactionCategoryId: null,
-            transactionLabelIds: [],
-            currency: authStore.user?.currency ?? "MYR",
-            amount: "",
-            imagePath: null,
-            note: "",
-            transactedAt: new Date(),
-          },
+          id: undefined,
           isEdit: false,
           isUsePhotoAI: false,
           onEdit: () => {},
@@ -139,49 +130,149 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
 
   return (
     <ContainerLayout>
-      <Header
-        onBack={() => navigation.goBack()}
-      />
+      <Header onBack={() => navigation.goBack()} />
       <LoadingCircle visible={isLoading} />
       <ScrollView>
-        
-          <View style={Global.shadowLine}>
-            <CustomText label={t("youHave")} size={"small"} />
-            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-              <CustomText label={totalPoints.toString()} size={"big"} />
-              <SizedBox width={sw(5)} />
-              <CustomText label={"Rewards Points (RP)"} size={"small"} />
-            </View>
-            <SizedBox height={sh(10)} />
-            <View style={{ flexDirection: "row" }}>
-              <View>
-                <CustomButton
-                  type={"primary"}
-                  size={"small"}
-                  title={t("myReward")}
-                  onPress={() => navigation.navigate("MyRewardScreen")}
-                />
-              </View>
-              <SizedBox width={sw(20)} />
+        <View style={Global.shadowLine}>
+          <CustomText label={t("youHave")} size={"small"} />
+          <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+            <CustomText label={totalPoints.toString()} size={"big"} />
+            <SizedBox width={sw(5)} />
+            <CustomText label={"Rewards Points (RP)"} size={"small"} />
+          </View>
+          <SizedBox height={sh(10)} />
+          <View style={{ flexDirection: "row" }}>
+            <View>
               <CustomButton
                 type={"primary"}
                 size={"small"}
-                title={t("goToRewardStore")}
-                onPress={() => {
-                  navigation.navigate("MyRewardStoreScreen");
-                }}
+                title={t("myReward")}
+                onPress={() => navigation.navigate("MyRewardScreen")}
               />
             </View>
-          </View>
-          <SizedBox height={sh(20)} />
-          <View>
-            <CustomText label={`${t("daily")} ${t("missions")}`} size={"big"} />
-            <CustomText
-              label={`${t(`timeRemaining`)}: ${dailyMissions?.refreshAt}`}
-              size={"medium"}
+            <SizedBox width={sw(20)} />
+            <CustomButton
+              type={"primary"}
+              size={"small"}
+              title={t("goToRewardStore")}
+              onPress={() => {
+                navigation.navigate("MyRewardStoreScreen");
+              }}
             />
-            <SizedBox height={sh(10)} />
-            {dailyMissions?.missions.map((data) => (
+          </View>
+        </View>
+        <SizedBox height={sh(20)} />
+        <View>
+          <CustomText label={`${t("daily")} ${t("missions")}`} size={"big"} />
+          <CustomText
+            label={`${t(`timeRemaining`)}: ${dailyMissions?.refreshAt}`}
+            size={"medium"}
+          />
+          <SizedBox height={sh(10)} />
+          {dailyMissions?.missions.map((data) => (
+            <View
+              key={data.type}
+              style={[
+                styles.missionContainer,
+                Global.shadowLine,
+                { opacity: data.isClaimed ? 0.4 : 1 },
+              ]}
+            >
+              <CustomText label={data.description} size={"medium"} />
+              <SizedBox height={sw(10)} />
+              <ProgressBar
+                color={Colors.green}
+                width={
+                  data.missionCount.totalCount > 0
+                    ? (data.missionCount.completedCount /
+                        data.missionCount.totalCount) *
+                      100
+                    : 0
+                }
+              />
+              <SizedBox height={sw(10)} />
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <CustomText
+                  label={`${data.point.toString()} RP`}
+                  size={"medium"}
+                />
+                <SizedBox width={sw(5)} />
+                {authStore.user?.topUpMemberRole ==
+                  ESubscriptionEntitlement.starter && (
+                  <CustomButton
+                    type={"secondary"}
+                    size={"small"}
+                    title={"Extra"}
+                    onPress={() => {
+                      Linking.openURL(
+                        `https://pr0per.vercel.app/topup?projectId=propermoney&userId=${authStore.user?._id}`
+                      );
+                    }}
+                  />
+                )}
+                <View
+                  style={{
+                    marginLeft: "auto",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <CustomText
+                    label={data.missionCount.completedCount.toString()}
+                    textStyle={{
+                      color: Colors.primary,
+                    }}
+                    size={"big"}
+                  />
+                  <CustomText
+                    label={`/${data.missionCount.totalCount}`}
+                    size={"medium"}
+                  />
+                </View>
+              </View>
+              <SizedBox height={sw(10)} />
+              {data.isClaimed ? (
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flex: 1,
+                  }}
+                >
+                  <CustomText
+                    label={t("completed")}
+                    size={"small"}
+                    textStyle={{ color: Colors.green }}
+                  />
+                </View>
+              ) : (
+                <View style={{ flexDirection: "row", alignSelf: "flex-end" }}>
+                  <SizedBox width={sh(20)} />
+                  <CustomButton
+                    disabled={isLoading}
+                    type={"primary"}
+                    size={"small"}
+                    title={isAbleClaim(data) ? t("claim") : t("navigate")}
+                    onPress={() => {
+                      btnAction(data);
+                    }}
+                  />
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+        <SizedBox height={sh(20)} />
+        <View>
+          <CustomText size={"big"} label={`${t("weekly")} ${t("missions")}`} />
+          <CustomText
+            size={"medium"}
+            label={`${t(`timeRemaining`)}: ${weeklyMissions?.refreshAt}`}
+          />
+          <SizedBox height={sh(10)} />
+          {weeklyMissions?.missions
+            .filter((x) => x.isActive)
+            .map((data) => (
               <View
                 key={data.type}
                 style={[
@@ -202,6 +293,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
                       : 0
                   }
                 />
+                <SizedBox height={sw(10)} />
                 <SizedBox height={sw(10)} />
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <CustomText
@@ -261,7 +353,6 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
                   <View style={{ flexDirection: "row", alignSelf: "flex-end" }}>
                     <SizedBox width={sh(20)} />
                     <CustomButton
-                      disabled={isLoading}
                       type={"primary"}
                       size={"small"}
                       title={isAbleClaim(data) ? t("claim") : t("navigate")}
@@ -273,117 +364,8 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
                 )}
               </View>
             ))}
-          </View>
-          <SizedBox height={sh(20)} />
-          <View>
-            <CustomText
-              size={"big"}
-              label={`${t("weekly")} ${t("missions")}`}
-            />
-            <CustomText
-              size={"medium"}
-              label={`${t(`timeRemaining`)}: ${weeklyMissions?.refreshAt}`}
-            />
-            <SizedBox height={sh(10)} />
-            {weeklyMissions?.missions
-              .filter((x) => x.isActive)
-              .map((data) => (
-                <View
-                  key={data.type}
-                  style={[
-                    styles.missionContainer,
-                    Global.shadowLine,
-                    { opacity: data.isClaimed ? 0.4 : 1 },
-                  ]}
-                >
-                  <CustomText label={data.description} size={"medium"} />
-                  <SizedBox height={sw(10)} />
-                  <ProgressBar
-                    color={Colors.green}
-                    width={
-                      data.missionCount.totalCount > 0
-                        ? (data.missionCount.completedCount /
-                            data.missionCount.totalCount) *
-                          100
-                        : 0
-                    }
-                  />
-                  <SizedBox height={sw(10)} />
-                  <SizedBox height={sw(10)} />
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <CustomText
-                      label={`${data.point.toString()} RP`}
-                      size={"medium"}
-                    />
-                    <SizedBox width={sw(5)} />
-                    {authStore.user?.topUpMemberRole ==
-                      ESubscriptionEntitlement.starter && (
-                      <CustomButton
-                        type={"secondary"}
-                        size={"small"}
-                        title={"Extra"}
-                        onPress={() => {
-                          Linking.openURL(
-                            `https://pr0per.vercel.app/topup?projectId=propermoney&userId=${authStore.user?._id}`
-                          );
-                        }}
-                      />
-                    )}
-                    <View
-                      style={{
-                        marginLeft: "auto",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <CustomText
-                        label={data.missionCount.completedCount.toString()}
-                        textStyle={{
-                          color: Colors.primary,
-                        }}
-                        size={"big"}
-                      />
-                      <CustomText
-                        label={`/${data.missionCount.totalCount}`}
-                        size={"medium"}
-                      />
-                    </View>
-                  </View>
-                  <SizedBox height={sw(10)} />
-                  {data.isClaimed ? (
-                    <View
-                      style={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                        flex: 1,
-                      }}
-                    >
-                      <CustomText
-                        label={t("completed")}
-                        size={"small"}
-                        textStyle={{ color: Colors.green }}
-                      />
-                    </View>
-                  ) : (
-                    <View
-                      style={{ flexDirection: "row", alignSelf: "flex-end" }}
-                    >
-                      <SizedBox width={sh(20)} />
-                      <CustomButton
-                        type={"primary"}
-                        size={"small"}
-                        title={isAbleClaim(data) ? t("claim") : t("navigate")}
-                        onPress={() => {
-                          btnAction(data);
-                        }}
-                      />
-                    </View>
-                  )}
-                </View>
-              ))}
-          </View>
-          <SizedBox height={sh(20)} />
-        
+        </View>
+        <SizedBox height={sh(20)} />
       </ScrollView>
     </ContainerLayout>
   );

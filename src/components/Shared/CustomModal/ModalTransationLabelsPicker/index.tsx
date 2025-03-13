@@ -4,7 +4,7 @@ import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "@styles/Colors";
-import React, { useMemo, useState } from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 import {
   Alert,
   Linking,
@@ -21,14 +21,13 @@ import LoadingCircle from "@components/Shared/LoadingCircle";
 import { Global } from "@styles/Global";
 import NextCreateButton from "@components/Shared/NextCreateButton";
 import UsageCard from "@components/Shared/UsageCard";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import {
   TGetTransactionLabelQuery,
   TTransactionLabel,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { useAuthStore } from "@libs/zustand/authStore";
-import CustomItemPicker from "@components/Shared/CustomItemPicker";
 import Form from "./form";
 
 export type TTransactionLabelForm = {
@@ -38,6 +37,7 @@ export type TTransactionLabelForm = {
 
 interface ModalTransationLabelsPickerProps {
   ids: string[];
+  listComponent: ReactNode;
   onChange(ids: string[]): void;
 }
 
@@ -55,23 +55,7 @@ export default function ModalTransationLabelsPicker(
     props.ids
   );
   const [searchText, setSearchText] = useState<string>("");
-  const useGetTransactionLabelDetailsQuery = useQuery({
-    queryKey: ["details", transactionLabelIds],
-    queryFn: async () => {
-      const { data } = await AxiosLibs.defaultClient.get(
-        `/transaction-label/details`,
-        {
-          params: {
-            ids: transactionLabelIds,
-          },
-        }
-      );
-      return data;
-    },
-    enabled: transactionLabelIds.length > 0,
-  });
-  const details: TTransactionLabel[] =
-    useGetTransactionLabelDetailsQuery.data ?? [];
+
   const useGetTransactionLabelInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
     queryKey: ["/transaction-label", searchText],
@@ -147,14 +131,7 @@ export default function ModalTransationLabelsPicker(
           setSearchText("");
         }}
       >
-        <CustomItemPicker
-          title={t("labels")}
-          pickedText={
-            details.length > 0
-              ? details.map((label) => label.name).join(",")
-              : "Select..."
-          }
-        />
+        {props.listComponent}
       </TouchableOpacity>
       <Modal animationType="slide" visible={isVisible}>
         {isVisibleForm ? (
@@ -169,8 +146,8 @@ export default function ModalTransationLabelsPicker(
               onClose={() => {
                 setIsVisibleForm(false);
                 setIsVisible(false);
-                useGetTransactionLabelDetailsQuery.refetch()
-                useGetTransactionLabelInfiniteQuery.refetch()
+
+                useGetTransactionLabelInfiniteQuery.refetch();
               }}
               onChange={(_id) => handleIds(_id)}
             />
@@ -189,43 +166,40 @@ export default function ModalTransationLabelsPicker(
                 }}
               />
               <LoadingCircle
-                visible={
-                  useGetTransactionLabelInfiniteQuery.isFetching ||
-                  useGetTransactionLabelDetailsQuery.isFetching
-                }
+                visible={useGetTransactionLabelInfiniteQuery.isFetching}
               />
-              
-                <UsageCard
-                  title={t("labels")}
-                  currentLength={labels.length}
-                  maximumLength={authStore.user?.feature.maximumLabels ?? 0}
-                />
-                <SizedBox height={sh(10)} />
-                <SearchBar
-                  autoFocus={true}
-                  placeholder={t("searchToAdd")}
-                  value={searchText}
-                  onChangeText={(text) => setSearchText(text)}
-                />
-                {searchText.trim().length > 0 ? (
-                  <>
-                    <NextCreateButton
-                      searchText={searchText}
-                      currentLength={labels.length}
-                      maximumLength={authStore.user?.feature.maximumLabels ?? 0}
-                      onNext={() => {
-                        setForm((prevState) => ({
-                          ...prevState,
-                          _id: undefined,
-                          name: searchText,
-                        }));
-                        setIsVisibleForm(true);
-                      }}
-                    />
-                  </>
-                ) : (
-                  <></>
-                )}
+
+              <UsageCard
+                title={t("labels")}
+                currentLength={labels.length}
+                maximumLength={authStore.user?.feature.maximumLabels ?? 0}
+              />
+              <SizedBox height={sh(10)} />
+              <SearchBar
+                autoFocus={true}
+                placeholder={t("searchToAdd")}
+                value={searchText}
+                onChangeText={(text) => setSearchText(text)}
+              />
+              {searchText.trim().length > 0 ? (
+                <>
+                  <NextCreateButton
+                    searchText={searchText}
+                    currentLength={labels.length}
+                    maximumLength={authStore.user?.feature.maximumLabels ?? 0}
+                    onNext={() => {
+                      setForm((prevState) => ({
+                        ...prevState,
+                        _id: undefined,
+                        name: searchText,
+                      }));
+                      setIsVisibleForm(true);
+                    }}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
               <SizedBox height={sh(20)} />
               <FlashList
                 data={listToShow}

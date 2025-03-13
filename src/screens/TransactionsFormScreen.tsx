@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import Header from "@components/Shared/Header";
 import { useTranslation } from "@libs/i18n/index";
 import {
   AppNavigationScreen,
   OverviewTransactionScreenParams,
-  TTransactionForm,
 } from "@libs/react.navigation.lib";
 import { catchErrorDialog, isNumber } from "@libs/utils";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import {
+  TGetTransactionDetailQuery,
   TPostTransactionCreateBody,
   TPostTransactionDeleteBody,
   TPostTransactionUpdateBody,
+  TTransaction,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
 import { resetQueries } from "@libs/react.query.client.lib";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { useAuthStore } from "@libs/zustand/authStore";
 import {
@@ -30,7 +31,6 @@ import dayjs from "dayjs";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
 import ModalDateTimePicker from "@components/Shared/CustomModal/ModalDateTimePicker";
-import CustomItemPicker from "@components/Shared/CustomItemPicker";
 import ModalTransactionCategoryPicker from "@components/Shared/CustomModal/ModalTransactionCategoryPicker";
 import ModalTransationLabelsPicker from "@components/Shared/CustomModal/ModalTransationLabelsPicker";
 import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
@@ -43,6 +43,8 @@ import ModalCurrencyPicker from "@components/Shared/CustomModal/ModalCurrencyPic
 import CustomText from "@components/Shared/CustomText";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import CustomButton from "@components/Shared/CustomButton";
+import TransactionCategoryContainer from "@components/Shared/TransactionCategoryContainer";
+import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
 
 const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
   navigation,
@@ -50,7 +52,42 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
 }) => {
   const { t } = useTranslation();
   const authStore = useAuthStore();
-  const { form, isEdit, isUsePhotoAI } = route.params;
+  const { id, isEdit, isUsePhotoAI } = route.params;
+  const useGetTransactionDetailQuery = useQuery({
+    queryKey: ["detail", id],
+    queryFn: async () => {
+      const query: TGetTransactionDetailQuery = {
+        id: id as string,
+      };
+      const { data } = await AxiosLibs.defaultClient.get(
+        `/transaction/detail`,
+        {
+          params: query,
+        }
+      );
+      return data;
+    },
+    enabled: id != undefined,
+  });
+  const detail: TTransaction | undefined =
+    useGetTransactionDetailQuery.data ?? undefined;
+
+  useEffect(() => {
+    if (detail) {
+      setForm((prevState) => ({
+        ...prevState,
+        _id: detail._id,
+        transactionCategoryId: detail.transactionCategoryId,
+        transactionLabelIds: detail.transactionLabelIds,
+        currency: detail.currency,
+        amount: detail.amount.toString(),
+        imagePath: detail.imagePath,
+        note: detail.note ?? "",
+        transactedAt: detail.transactedAt,
+      }));
+    }
+  }, [detail]);
+
   const createMutation = useMutation({
     mutationFn: (data: TPostTransactionCreateBody) => {
       return AxiosLibs.defaultClient.post("/transaction/create", data);
@@ -68,7 +105,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
     },
   });
 
-  const submit = async (form: TTransactionForm) => {
+  const submit = async () => {
     if (form._id == undefined && form.transactionCategoryId) {
       createItem({
         transactionCategoryId: form.transactionCategoryId,
@@ -202,8 +239,25 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
     });
   };
 
-  const [transactionForm, setTransactionForm] =
-    useState<TTransactionForm>(form);
+  const [form, setForm] = useState<{
+    _id: string | undefined;
+    transactionCategoryId: string | null;
+    transactionLabelIds: string[];
+    currency: string;
+    amount: string;
+    imagePath: string | null;
+    note: string;
+    transactedAt: Date;
+  }>({
+    _id: undefined,
+    transactionCategoryId: null,
+    transactionLabelIds: [],
+    currency: authStore.user?.currency ?? currencyList[0].iso,
+    amount: "",
+    imagePath: null,
+    note: "",
+    transactedAt: new Date(),
+  });
 
   const imageDetectMutation = useMutation({
     mutationFn: async (data: TAIImageDetectBody) => {
@@ -219,12 +273,12 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
 
   const getTransactionAtIsTodayOrYesterday = () => {
     if (
-      dayjs(transactionForm.transactedAt).format("DD/MM/YYYY") ==
+      dayjs(form.transactedAt).format("DD/MM/YYYY") ==
       dayjs().format("DD/MM/YYYY")
     ) {
       return "- Today";
     } else if (
-      dayjs(transactionForm.transactedAt).format("DD/MM/YYYY") ==
+      dayjs(form.transactedAt).format("DD/MM/YYYY") ==
       dayjs().subtract(1, "day").format("DD/MM/YYYY")
     ) {
       return "- Yesterday";
@@ -237,7 +291,8 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
     createMutation.isPending ||
     editMutation.isPending ||
     deleteMutation.isPending ||
-    imageDetectMutation.isPending;
+    imageDetectMutation.isPending ||
+    useGetTransactionDetailQuery.isFetching;
 
   return (
     <>
@@ -248,20 +303,90 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
         />
         <KeyboardLayout>
           <>
-            <SizedBox height={sh(20)} />
-            {transactionForm && (
-              <View style={{ paddingHorizontal: sw(15) }}>
-                <ModalDateTimePicker
-                  value={form.transactedAt}
-                  buttonStyle={{}}
-                  listComponents={
-                    <View style={styles.bodyContainer}>
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <SizedBox height={sh(20)} />
+              <ModalTransactionCategoryPicker
+                listComponents={
+                  <>
+                    <TransactionCategoryContainer
+                      containerStyle={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      id={form.transactionCategoryId ?? undefined}
+                    />
+                  </>
+                }
+                buttonStyle={{
+                  flexDirection: "row",
+                  borderWidth: 1,
+                  borderColor: Colors.suvaGrey,
+                  borderRadius: sw(5),
+                  padding: sw(5),
+                }}
+                id={form.transactionCategoryId}
+                onChange={(id) => {
+                  setForm((prevState) => ({
+                    ...prevState,
+                    transactionCategoryId: id,
+                  }));
+                }}
+              />
+              <SizedBox height={sh(40)} />
+            </View>
+            <View style={{ paddingHorizontal: sw(15) }}>
+              <ModalDateTimePicker
+                value={form.transactedAt}
+                buttonStyle={{}}
+                listComponents={
+                  <View style={styles.bodyContainer}>
+                    <CustomText
+                      size="medium"
+                      label={`When`}
+                      textStyle={{ color: Colors.matterhorn }}
+                    />
+                    <SizedBox width={sw(10)} />
+                    <View
+                      style={{
+                        borderColor: Colors.suvaGrey,
+                        borderWidth: 1,
+                        borderRadius: sw(5),
+                        marginLeft: "auto",
+                        padding: sw(5),
+                      }}
+                    >
                       <CustomText
+                        textStyle={{
+                          color: Colors.matterhorn,
+                        }}
+                        containerStyle={{ marginLeft: "auto" }}
                         size="medium"
-                        label={`When`}
-                        textStyle={{ color: `#545454` }}
+                        label={`${dayjs(form.transactedAt).format(
+                          "DD/MM/YYYY (ddd)"
+                        )} ${getTransactionAtIsTodayOrYesterday()}`}
                       />
-                      <SizedBox width={sw(10)} />
+                    </View>
+                  </View>
+                }
+                onChange={(date) => {
+                  setForm((prevState) => ({
+                    ...prevState,
+                    transactedAt: date,
+                  }));
+                }}
+              />
+              <SizedBox height={sh(20)} />
+              <ModalTransationLabelsPicker
+                listComponent={
+                  <View style={styles.bodyContainer}>
+                    <CustomText
+                      size="medium"
+                      label={`Labels`}
+                      textStyle={{ color: Colors.matterhorn }}
+                    />
+                    <SizedBox width={sw(10)} />
+                    {form.transactionLabelIds.length > 0 ? (
                       <View
                         style={{
                           borderColor: Colors.suvaGrey,
@@ -271,275 +396,284 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                           padding: sw(5),
                         }}
                       >
-                        <CustomText
-                          textStyle={{
-                            color: "#5A5A5A",
-                          }}
-                          containerStyle={{ marginLeft: "auto" }}
-                          size="medium"
-                          label={`${dayjs(transactionForm.transactedAt).format(
-                            "DD/MM/YYYY (ddd)"
-                          )} ${getTransactionAtIsTodayOrYesterday()}`}
+                        <TransactionLabelsContainer
+                          ids={form.transactionLabelIds}
                         />
                       </View>
-                    </View>
-                  }
-                  onChange={(date) => {
-                    setTransactionForm((prevState) => ({
-                      ...prevState,
-                      transactedAt: date,
-                    }));
-                  }}
-                />
-                <SizedBox height={sh(20)} />
-                <ModalTransactionCategoryPicker
-                  id={form.transactionCategoryId}
-                  onChange={(id) => {
-                    setTransactionForm((prevState) => ({
-                      ...prevState,
-                      transactionCategoryId: id,
-                    }));
-                  }}
-                />
-                <SizedBox height={sh(20)} />
-                <ModalTransationLabelsPicker
-                  ids={form.transactionLabelIds}
-                  onChange={(ids) => {
-                    setTransactionForm((prevState) => ({
-                      ...prevState,
-                      transactionLabelIds: ids,
-                    }));
-                  }}
-                />
-                <SizedBox height={sh(20)} />
-                <ModalImagePicker
-                  buttonStyle={{}}
-                  type={"transaction_image"}
-                  userId={authStore.user?._id ?? ""}
-                  onChange={(data) => {
-                    setTransactionForm((prevState) => ({
-                      ...prevState,
-                      imagePath: data,
-                    }));
-
-                    if (isUsePhotoAI) {
-                      imageDetectMutation.mutate(
-                        {
-                          text: totalQuestionsOnText,
-                          imageUrl: data,
+                    ) : (
+                      <CustomText
+                        label="Add"
+                        containerStyle={{ marginLeft: "auto" }}
+                        textStyle={{
+                          color: Colors.primary,
+                          textDecorationLine: "underline",
+                        }}
+                        size="medium"
+                      />
+                    )}
+                  </View>
+                }
+                ids={form.transactionLabelIds}
+                onChange={(ids) => {
+                  setForm((prevState) => ({
+                    ...prevState,
+                    transactionLabelIds: ids,
+                  }));
+                }}
+              />
+              <SizedBox height={sh(20)} />
+              <ModalImagePicker
+                type={"transaction_image"}
+                userId={authStore.user?._id ?? ""}
+                onChange={(data) => {
+                  setForm((prevState) => ({
+                    ...prevState,
+                    imagePath: data,
+                  }));
+                  if (isUsePhotoAI) {
+                    imageDetectMutation.mutate(
+                      {
+                        text: totalQuestionsOnText,
+                        imageUrl: data,
+                      },
+                      {
+                        onSuccess: (response) => {
+                          const result =
+                            response.data as TAIImageDetectResponse;
+                          if (result.messageContent != "") {
+                            const detectedText = findAmountAndNameOfCategory({
+                              message: result.messageContent,
+                            });
+                            setForm((prevState) => ({
+                              ...prevState,
+                              currency: detectedText.currency
+                                ? detectedText.currency
+                                : form.currency,
+                              amount: detectedText.amount
+                                ? isNumber(detectedText.amount)
+                                  ? detectedText.amount
+                                  : form.amount
+                                : form.amount,
+                              note: detectedText.note
+                                ? detectedText.note
+                                : form.note,
+                              imagePath: data,
+                            }));
+                          }
                         },
-                        {
-                          onSuccess: (response) => {
-                            const result =
-                              response.data as TAIImageDetectResponse;
-                            if (result.messageContent != "") {
-                              const detectedText = findAmountAndNameOfCategory({
-                                message: result.messageContent,
-                              });
-                              setTransactionForm((prevState) => ({
-                                ...prevState,
-                                currency: detectedText.currency
-                                  ? detectedText.currency
-                                  : form.currency,
-                                amount: detectedText.amount
-                                  ? isNumber(detectedText.amount)
-                                    ? detectedText.amount
-                                    : form.amount
-                                  : form.amount,
-                                note: detectedText.note
-                                  ? detectedText.note
-                                  : form.note,
-                                imagePath: data,
-                              }));
-                            }
-                          },
-                          onError: (e) => {
-                            catchErrorDialog(e);
-                          },
-                        }
-                      );
-                    }
-                  }}
-                  listComponents={
-                    <>
-                      <CustomItemPicker
-                        title={isUsePhotoAI ? "Photo AI" : "Image"}
-                        pickedText={"Click here"}
-                      />
-                    </>
-                  }
-                />
-
-                {transactionForm.imagePath && (
-                  <ModalZoomableImage
-                    buttonStyle={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderColor: Colors.black,
-                      paddingRight: sw(10),
-                      flexDirection: "row",
-                    }}
-                    imagePath={transactionForm.imagePath}
-                    listComponents={
-                      <Image
-                        style={{
-                          width: "100%",
-                          height: sw(100),
-                          alignSelf: "center",
-                          borderRadius: sw(5),
-                        }}
-                        resizeMode="cover"
-                        source={{ uri: transactionForm.imagePath }}
-                      />
-                    }
-                  />
-                )}
-                <SizedBox height={sh(20)} />
-                <CustomTextInput
-                  contextMenuHidden={true}
-                  itemLeft={
-                    <>
-                      <ModalCurrencyPicker
-                        buttonStyle={{}}
-                        onChange={(data) => {
-                          setTransactionForm((prevState) => ({
-                            ...prevState,
-                            currency: data,
-                          }));
-                        }}
-                        currency={form.currency}
-                        listComponents={
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <CustomText
-                              size={"medium"}
-                              label={transactionForm.currency}
-                            />
-                            <SizedBox width={sw(5)} />
-                            <ExpoVectorIcon
-                              name="down"
-                              size={sw(10)}
-                              color={Colors.black}
-                            />
-                            <SizedBox width={sh(5)} />
-                          </View>
-                        }
-                      />
-                    </>
-                  }
-                  isRequired={transactionForm.amount == ""}
-                  label={t("amount")}
-                  placeholder={"0.00"}
-                  keyboardType={"numeric"}
-                  onChangeText={(text) => {
-                    if (isNumber(text)) {
-                      // Format the value with two decimal places
-                      let formattedText = text.replace(/[^0-9]/g, "");
-                      const length = formattedText.length;
-                      if (parseFloat(formattedText) <= 0) {
-                        formattedText = ``;
-                      } else if (length >= 2) {
-                        formattedText = `${formattedText.substring(
-                          0,
-                          length - 2
-                        )}.${formattedText.substring(length - 2)}`;
-                      } else if (length == 1) {
-                        formattedText = `0.0${formattedText}`;
+                        onError: (e) => {
+                          catchErrorDialog(e);
+                        },
                       }
-                      if (
-                        parseFloat(formattedText) >= 0.99 &&
-                        parseFloat(formattedText) <= 0.1
-                      ) {
-                        formattedText = formattedText.replace(/^0+/, "0");
-                      } else if (parseFloat(formattedText) >= 1) {
-                        formattedText = formattedText.replace(/^0+/, "");
-                      }
-
-                      if (formattedText.substring(0, 2) == "00") {
-                        formattedText = formattedText.replace("00", "0");
-                      } else if (formattedText.substring(0, 1) == ".") {
-                        formattedText = formattedText.replace(".", "0.");
-                      }
-                      setTransactionForm((prevState) => ({
-                        ...prevState,
-                        amount: formattedText,
-                      }));
-                    }
-                  }}
-                  value={transactionForm.amount}
-                />
-                <SizedBox height={sh(20)} />
-                <CustomTextInput
-                  maxLength={500}
-                  label={t("notes")}
-                  multiline
-                  value={transactionForm.note}
-                  onChangeText={(text) =>
-                    setTransactionForm((prevState) => ({
-                      ...prevState,
-                      note: text,
-                    }))
+                    );
                   }
-                />
-                <SizedBox height={sh(40)} />
-
-                {isEdit && (
+                }}
+                listComponents={
                   <>
-                    <SizedBox height={sh(20)} />
-                    <CustomButton
-                      disabled={isLoading}
-                      size={"medium"}
-                      type="secondary"
-                      title={t("delete")}
-                      onPress={() => {
-                        Alert.alert(
-                          t(`delete`) + " ?",
-                          "",
-                          [
-                            {
-                              text: t("no"),
-                              onPress: () => {},
-                              style: "cancel",
-                            },
-                            {
-                              text: t("yes"),
-                              onPress: () => {
-                                if (form._id) {
-                                  deleteItem(form._id);
-                                }
-                              },
-                            },
-                          ],
-                          { cancelable: false }
-                        );
+                    <View style={styles.bodyContainer}>
+                      <CustomText
+                        size="medium"
+                        label={"Image"}
+                        textStyle={{ color: Colors.matterhorn }}
+                      />
+                      {form.imagePath ? (
+                        <ModalZoomableImage
+                          buttonStyle={{
+                            borderWidth: 1,
+                            borderColor: Colors.suvaGrey,
+                            borderRadius: sw(5),
+                            marginLeft: "auto",
+                          }}
+                          listComponents={
+                            <>
+                              <Image
+                                style={{
+                                  width: sw(100),
+                                  height: sw(100),
+                                  objectFit: "cover",
+                                  borderRadius: sw(5),
+                                }}
+                                source={{ uri: form.imagePath }}
+                              />
+                            </>
+                          }
+                          imagePath={form.imagePath ?? ``}
+                        />
+                      ) : (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            marginLeft: "auto",
+                            borderWidth: 1,
+                            borderColor: Colors.suvaGrey,
+                            borderRadius: sw(5),
+                            padding:sw(10)
+                          }}
+                        >
+                          <ExpoVectorIcon
+                            name="upload"
+                            size={sw(20)}
+                            color={Colors.black}
+                          />
+                          <SizedBox width={sw(20)} />
+                          <View>
+                            <CustomText
+                              label="Upload file"
+                              containerStyle={{ marginLeft: "auto" }}
+                              textStyle={{
+                                color: Colors.primary,
+                                textDecorationLine: "underline",
+                              }}
+                              size="medium"
+                            />
+                          </View>
+                        </View>
+                      )}
+                    </View>
+                  </>
+                }
+              />
+              <SizedBox height={sh(20)} />
+              <CustomTextInput
+                contextMenuHidden={true}
+                itemLeft={
+                  <>
+                    <ModalCurrencyPicker
+                      buttonStyle={{}}
+                      onChange={(data) => {
+                        setForm((prevState) => ({
+                          ...prevState,
+                          currency: data,
+                        }));
                       }}
+                      currency={form.currency}
+                      listComponents={
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <CustomText size={"medium"} label={form.currency} />
+                          <SizedBox width={sw(5)} />
+                          <ExpoVectorIcon
+                            name="down"
+                            size={sw(10)}
+                            color={Colors.black}
+                          />
+                          <SizedBox width={sh(5)} />
+                        </View>
+                      }
                     />
                   </>
-                )}
-                <SizedBox height={sh(60)} />
-              </View>
-            )}
+                }
+                isRequired={form.amount == ""}
+                label={t("amount")}
+                placeholder={"0.00"}
+                keyboardType={"numeric"}
+                onChangeText={(text) => {
+                  if (isNumber(text)) {
+                    // Format the value with two decimal places
+                    let formattedText = text.replace(/[^0-9]/g, "");
+                    const length = formattedText.length;
+                    if (parseFloat(formattedText) <= 0) {
+                      formattedText = ``;
+                    } else if (length >= 2) {
+                      formattedText = `${formattedText.substring(
+                        0,
+                        length - 2
+                      )}.${formattedText.substring(length - 2)}`;
+                    } else if (length == 1) {
+                      formattedText = `0.0${formattedText}`;
+                    }
+                    if (
+                      parseFloat(formattedText) >= 0.99 &&
+                      parseFloat(formattedText) <= 0.1
+                    ) {
+                      formattedText = formattedText.replace(/^0+/, "0");
+                    } else if (parseFloat(formattedText) >= 1) {
+                      formattedText = formattedText.replace(/^0+/, "");
+                    }
+
+                    if (formattedText.substring(0, 2) == "00") {
+                      formattedText = formattedText.replace("00", "0");
+                    } else if (formattedText.substring(0, 1) == ".") {
+                      formattedText = formattedText.replace(".", "0.");
+                    }
+                    setForm((prevState) => ({
+                      ...prevState,
+                      amount: formattedText,
+                    }));
+                  }
+                }}
+                value={form.amount}
+              />
+              <SizedBox height={sh(20)} />
+              <CustomTextInput
+                maxLength={100}
+                label={t("notes")}
+                multiline
+                value={form.note}
+                onChangeText={(text) =>
+                  setForm((prevState) => ({
+                    ...prevState,
+                    note: text,
+                  }))
+                }
+              />
+              <SizedBox height={sh(40)} />
+              {isEdit && (
+                <>
+                  <SizedBox height={sh(20)} />
+                  <CustomButton
+                    disabled={isLoading}
+                    size={"medium"}
+                    type="secondary"
+                    title={t("delete")}
+                    onPress={() => {
+                      Alert.alert(
+                        t(`delete`) + " ?",
+                        "",
+                        [
+                          {
+                            text: t("no"),
+                            onPress: () => {},
+                            style: "cancel",
+                          },
+                          {
+                            text: t("yes"),
+                            onPress: () => {
+                              if (form._id) {
+                                deleteItem(form._id);
+                              }
+                            },
+                          },
+                        ],
+                        { cancelable: false }
+                      );
+                    }}
+                  />
+                </>
+              )}
+              <SizedBox height={sh(60)} />
+            </View>
             <LoadingCircle visible={isLoading} />
           </>
         </KeyboardLayout>
         <CustomButton
-          buttonStyle={{ marginHorizontal: sw(15) }}
+          buttonStyle={{ marginHorizontal: sw(15), marginBottom: sw(15) }}
           disabled={isLoading}
           type={"primary"}
           size={"medium"}
           title={isEdit ? t("edit") : t("add")}
           onPress={() => {
-            if (!transactionForm.transactionCategoryId) {
+            if (!form.transactionCategoryId) {
               Alert.alert(t("missingCategory"));
-            } else if (transactionForm.amount.trim().length == 0) {
+            } else if (form.amount.trim().length == 0) {
               Alert.alert(t("missingAmount"));
             } else {
-              submit(form as unknown as TTransactionForm);
+              submit();
             }
           }}
         />
