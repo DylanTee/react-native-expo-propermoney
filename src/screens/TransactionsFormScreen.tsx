@@ -83,7 +83,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
         amount: detail.amount.toString(),
         imagePath: detail.imagePath,
         note: detail.note ?? "",
-        transactedAt: detail.transactedAt,
+        transactedAt: new Date(detail.transactedAt),
       }));
     }
   }, [detail]);

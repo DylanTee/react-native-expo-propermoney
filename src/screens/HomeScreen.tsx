@@ -267,21 +267,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                 containerStyle={{ marginHorizontal: sw(15) }}
                 onPress={() => {
                   navigation.navigate("TransactionDetailScreen", {
-                    id: item._id,
-                    // form: {
-                    //   _id: item._id,
-                    //   transactionCategoryId: item.transactionCategoryId,
-                    //   transactionLabelIds: item.transactionLabelIds,
-                    //   transactedAt: new Date(item.transactedAt),
-                    //   currency: item.currency,
-                    //   amount: item.amount.toString(),
-                    //   imagePath: item.imagePath,
-                    //   note: item.note ?? "",
-                    // },
-                    // isEdit: true,
-                    // isUsePhotoAI: false,
-                    // onEdit: () => {},
-                    // onDelete: () => {},
+                    id: item._id
                   });
                 }}
               />
