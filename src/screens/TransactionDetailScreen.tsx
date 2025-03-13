@@ -28,6 +28,7 @@ import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
 import dayjs from "dayjs";
 import TransactionCategoryContainer from "@components/Shared/TransactionCategoryContainer";
+import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
 
 const TransactionDetailScreen: AppNavigationScreen<
   "TransactionDetailScreen"
@@ -160,6 +161,15 @@ const TransactionDetailScreen: AppNavigationScreen<
                     textStyle={{ color: Colors.matterhorn }}
                   />
                   <SizedBox width={sw(10)} />
+                  <View
+                    style={{
+                      marginLeft: "auto",
+                    }}
+                  >
+                    <TransactionLabelsContainer
+                      ids={detail.transactionLabelIds}
+                    />
+                  </View>
                 </View>
               )}
               {detail.note && (

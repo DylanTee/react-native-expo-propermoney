@@ -6,7 +6,7 @@ import {
   AppNavigationScreen,
   OverviewTransactionScreenParams,
 } from "@libs/react.navigation.lib";
-import { catchErrorDialog, isNumber } from "@libs/utils";
+import { catchErrorDialog, displayCurrency, isNumber } from "@libs/utils";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import {
   TGetTransactionDetailQuery,
@@ -37,14 +37,14 @@ import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
 import findAmountAndNameOfCategory from "@libs/findAmountAndNameOfCategory";
 import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
 import { Colors } from "@styles/Colors";
-import { Alert, Image, StyleSheet, View } from "react-native";
-import CustomTextInput from "@components/Shared/CustomTextInput";
-import ModalCurrencyPicker from "@components/Shared/CustomModal/ModalCurrencyPicker";
+import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import CustomText from "@components/Shared/CustomText";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import CustomButton from "@components/Shared/CustomButton";
 import TransactionCategoryContainer from "@components/Shared/TransactionCategoryContainer";
 import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
+import ModalTextInput from "@components/Shared/CustomModal/ModalTextInput";
+import ModalAmountTextInput from "@components/Shared/CustomModal/ModalAmountTextInput";
 
 const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
   navigation,
@@ -300,11 +300,81 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
         <Header
           containerStyle={{ paddingHorizontal: sw(15) }}
           onBack={() => navigation.goBack()}
+          itemRight={
+            <>
+              {isEdit && (
+                <TouchableOpacity
+                  onPress={() => {
+                    Alert.alert(
+                      t(`delete`) + " ?",
+                      "",
+                      [
+                        {
+                          text: t("no"),
+                          onPress: () => {},
+                          style: "cancel",
+                        },
+                        {
+                          text: t("yes"),
+                          onPress: () => {
+                            if (form._id) {
+                              deleteItem(form._id);
+                            }
+                          },
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  }}
+                >
+                  <ExpoVectorIcon
+                    name="delete"
+                    size={sw(20)}
+                    color={Colors.black}
+                  />
+                </TouchableOpacity>
+              )}
+            </>
+          }
         />
         <KeyboardLayout>
           <>
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               <SizedBox height={sh(20)} />
+              <ModalAmountTextInput
+                amount={form.amount}
+                currency={form.currency}
+                onChange={(data) => {
+                  setForm((prevState) => ({
+                    ...prevState,
+                    ...data,
+                  }));
+                }}
+                listComponents={
+                  <>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <CustomText
+                        size="2-extra-big"
+                        label={`${displayCurrency({
+                          currency: form.currency,
+                          amount: parseFloat(
+                            form.amount != "" ? form.amount : "0"
+                          ),
+                        })}`}
+                      />
+                      <SizedBox width={sw(10)} />
+                      <ExpoVectorIcon
+                        name="left"
+                        size={sw(20)}
+                        color={Colors.black}
+                      />
+                    </View>
+                  </>
+                }
+              />
+              <SizedBox height={sh(10)} />
               <ModalTransactionCategoryPicker
                 listComponents={
                   <>
@@ -422,6 +492,47 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                 }}
               />
               <SizedBox height={sh(20)} />
+              <ModalTextInput
+                headerText="Note"
+                onChange={(data) => {
+                  setForm((prevState) => ({ ...prevState, note: data }));
+                }}
+                value={form.note}
+                textInputLabel="For example - lunch with friend"
+                listComponents={
+                  <>
+                    <View style={[{ width: "100%", flexDirection: "row" }]}>
+                      <CustomText
+                        size="medium"
+                        label={`Note`}
+                        textStyle={{ color: Colors.matterhorn }}
+                      />
+                      <SizedBox width={sw(10)} />
+                      <CustomText
+                        label={
+                          form.note && form.note.length > 0 ? "Edit" : "Add"
+                        }
+                        containerStyle={{ marginLeft: "auto" }}
+                        textStyle={{
+                          color: Colors.primary,
+                          textDecorationLine: "underline",
+                        }}
+                        size="medium"
+                      />
+                    </View>
+                    <SizedBox height={sh(5)} />
+                    <CustomText
+                      textStyle={{
+                        color: Colors.matterhorn,
+                      }}
+                      containerStyle={{ flex: 1 }}
+                      size="medium"
+                      label={`${form.note}`}
+                    />
+                  </>
+                }
+              />
+              <SizedBox height={sh(20)} />
               <ModalImagePicker
                 type={"transaction_image"}
                 userId={authStore.user?._id ?? ""}
@@ -470,7 +581,13 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                 }}
                 listComponents={
                   <>
-                    <View style={styles.bodyContainer}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        paddingVertical: sh(10),
+                      }}
+                    >
                       <CustomText
                         size="medium"
                         label={"Image"}
@@ -507,7 +624,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                             borderWidth: 1,
                             borderColor: Colors.suvaGrey,
                             borderRadius: sw(5),
-                            padding:sw(10)
+                            padding: sw(10),
                           }}
                         >
                           <ExpoVectorIcon
@@ -533,129 +650,6 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                   </>
                 }
               />
-              <SizedBox height={sh(20)} />
-              <CustomTextInput
-                contextMenuHidden={true}
-                itemLeft={
-                  <>
-                    <ModalCurrencyPicker
-                      buttonStyle={{}}
-                      onChange={(data) => {
-                        setForm((prevState) => ({
-                          ...prevState,
-                          currency: data,
-                        }));
-                      }}
-                      currency={form.currency}
-                      listComponents={
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <CustomText size={"medium"} label={form.currency} />
-                          <SizedBox width={sw(5)} />
-                          <ExpoVectorIcon
-                            name="down"
-                            size={sw(10)}
-                            color={Colors.black}
-                          />
-                          <SizedBox width={sh(5)} />
-                        </View>
-                      }
-                    />
-                  </>
-                }
-                isRequired={form.amount == ""}
-                label={t("amount")}
-                placeholder={"0.00"}
-                keyboardType={"numeric"}
-                onChangeText={(text) => {
-                  if (isNumber(text)) {
-                    // Format the value with two decimal places
-                    let formattedText = text.replace(/[^0-9]/g, "");
-                    const length = formattedText.length;
-                    if (parseFloat(formattedText) <= 0) {
-                      formattedText = ``;
-                    } else if (length >= 2) {
-                      formattedText = `${formattedText.substring(
-                        0,
-                        length - 2
-                      )}.${formattedText.substring(length - 2)}`;
-                    } else if (length == 1) {
-                      formattedText = `0.0${formattedText}`;
-                    }
-                    if (
-                      parseFloat(formattedText) >= 0.99 &&
-                      parseFloat(formattedText) <= 0.1
-                    ) {
-                      formattedText = formattedText.replace(/^0+/, "0");
-                    } else if (parseFloat(formattedText) >= 1) {
-                      formattedText = formattedText.replace(/^0+/, "");
-                    }
-
-                    if (formattedText.substring(0, 2) == "00") {
-                      formattedText = formattedText.replace("00", "0");
-                    } else if (formattedText.substring(0, 1) == ".") {
-                      formattedText = formattedText.replace(".", "0.");
-                    }
-                    setForm((prevState) => ({
-                      ...prevState,
-                      amount: formattedText,
-                    }));
-                  }
-                }}
-                value={form.amount}
-              />
-              <SizedBox height={sh(20)} />
-              <CustomTextInput
-                maxLength={100}
-                label={t("notes")}
-                multiline
-                value={form.note}
-                onChangeText={(text) =>
-                  setForm((prevState) => ({
-                    ...prevState,
-                    note: text,
-                  }))
-                }
-              />
-              <SizedBox height={sh(40)} />
-              {isEdit && (
-                <>
-                  <SizedBox height={sh(20)} />
-                  <CustomButton
-                    disabled={isLoading}
-                    size={"medium"}
-                    type="secondary"
-                    title={t("delete")}
-                    onPress={() => {
-                      Alert.alert(
-                        t(`delete`) + " ?",
-                        "",
-                        [
-                          {
-                            text: t("no"),
-                            onPress: () => {},
-                            style: "cancel",
-                          },
-                          {
-                            text: t("yes"),
-                            onPress: () => {
-                              if (form._id) {
-                                deleteItem(form._id);
-                              }
-                            },
-                          },
-                        ],
-                        { cancelable: false }
-                      );
-                    }}
-                  />
-                </>
-              )}
               <SizedBox height={sh(60)} />
             </View>
             <LoadingCircle visible={isLoading} />
@@ -686,8 +680,8 @@ export default TransactionsFormScreen;
 const styles = StyleSheet.create({
   bodyContainer: {
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
     paddingVertical: sh(10),
   },
 });

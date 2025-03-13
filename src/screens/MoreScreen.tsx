@@ -61,7 +61,6 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
           <MemberCard currentRouteName="MoreScreen" />
           <View style={{ padding: sw(15) }}>
             <ModalTextInput
-              buttonStyle={{}}
               headerText="Change Display Name"
               onChange={(data) => {
                 handleUpdate({ displayName: data });

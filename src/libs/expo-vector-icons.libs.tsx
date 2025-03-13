@@ -29,6 +29,7 @@ interface ExpoVectorIconProps {
     | "scan1"
     | "edit"
     | "upload"
+    | "delete"
   size: number;
   color: ColorValue;
   style?: StyleProp<TextStyle>;
