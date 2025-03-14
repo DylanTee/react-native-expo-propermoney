@@ -197,7 +197,10 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
       {
         onSuccess: () => {
           resetQueries();
-          resetToOverviewTransactionScreen(new Date(transactedAt));
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "HomeScreen" }],
+          });
         },
         onError: (e) => {
           catchErrorDialog(e);
@@ -222,20 +225,6 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
         },
       }
     );
-  };
-
-  const resetToOverviewTransactionScreen = (transactedAt: Date) => {
-    const params: OverviewTransactionScreenParams = {
-      selectedUserId: authStore.user?._id,
-      startTransactedAt: transactedAt,
-    };
-    navigation.reset({
-      index: 0,
-      routes: [
-        { name: "HomeScreen" },
-        { name: "OverviewTransactionScreen", params: params },
-      ],
-    });
   };
 
   const [form, setForm] = useState<{

@@ -13,7 +13,6 @@ import { Alert, Linking, ScrollView, View } from "react-native";
 import CustomButton from "@components/Shared/CustomButton";
 import { Global } from "@styles/Global";
 import CustomText from "@components/Shared/CustomText";
-import { resetQueries } from "@libs/react.query.client.lib";
 import {
   TMission,
   TGetMissionResponse,
@@ -27,6 +26,7 @@ import {
   ESubscriptionEntitlement,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import { useAuthStore } from "@libs/zustand/authStore";
+import { resetQueries } from "@libs/react.query.client.lib";
 
 const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
   navigation,
