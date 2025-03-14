@@ -2,12 +2,12 @@ import { sh, sw } from "@libs/responsive.lib";
 import React from "react";
 import { Image, View, ViewStyle } from "react-native";
 import { TouchableOpacity } from "react-native";
-import SizedBox from "./SizedBox";
+import SizedBox from "../SizedBox";
 import { TTransaction } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import CustomText from "./CustomText";
+import CustomText from "../CustomText";
 import { displayCurrency, getAmountTextColor } from "@libs/utils";
 import { useAuthStore } from "@libs/zustand/authStore";
-import Avatar from "./Avatar";
+import Avatar from "../Avatar";
 
 interface TransactionCardProps {
   data: TTransaction;

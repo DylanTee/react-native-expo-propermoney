@@ -4,7 +4,7 @@ import { sh } from "@libs/responsive.lib";
 import { TTransactionLabel,TTransaction } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import SizedBox from "@components/Shared/SizedBox";
 import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
-import TransactionLabelCard from "@components/Shared/TransactionLabelCard";
+import TransactionLabelCard from "@components/Shared/Card/TransactionLabelCard";
 import CustomText from "@components/Shared/CustomText";
 import CustomTab from "@components/Shared/CustomTab";
 import { EOverviewTransactionsReport } from "@screens/OverviewTransactionScreen";

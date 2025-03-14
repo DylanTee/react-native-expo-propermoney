@@ -1,10 +1,9 @@
 import ContainerLayout from "@components/Layout/ContainerLayout";
-import Header from "@components/Shared/Header";
 import SizedBox from "@components/Shared/SizedBox";
 import { sfont, sh, sw } from "@libs/responsive.lib";
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "@styles/Colors";
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { ReactNode, useState } from "react";
 import {
   Alert,
   Linking,
@@ -16,9 +15,7 @@ import {
 } from "react-native";
 import { useTranslation } from "@libs/i18n/index";
 import CustomText from "@components/Shared/CustomText";
-import CustomButton from "@components/Shared/CustomButton";
 import LoadingCircle from "@components/Shared/LoadingCircle";
-import { Global } from "@styles/Global";
 import NextCreateButton from "@components/Shared/NextCreateButton";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
@@ -29,6 +26,7 @@ import {
 import { useAuthStore } from "@libs/zustand/authStore";
 import Form from "./form";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
+import useDebounce from "@libs/hooks/useDebounce";
 
 export type TTransactionLabelForm = {
   _id: string | undefined;
@@ -55,15 +53,15 @@ export default function ModalTransationLabelsPicker(
     props.ids
   );
   const [searchText, setSearchText] = useState<string>("");
-
+  const debounceSearchText = useDebounce(searchText, 500);
   const useGetTransactionLabelInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: ["/transaction-label", searchText],
+    queryKey: ["/transaction-label", debounceSearchText],
     queryFn: async ({ pageParam = 1 }) => {
       const query: TGetTransactionLabelQuery = {
         limit: 10,
         page: pageParam,
-        q: searchText,
+        q: debounceSearchText,
       };
       const { data } = await AxiosLibs.defaultClient.get(`/transaction-label`, {
         params: query,
@@ -103,7 +101,7 @@ export default function ModalTransationLabelsPicker(
     };
     useGetTransactionLabelInfiniteQuery.refetch();
     if (transactionLabelIds.find((x) => x == id)) {
-      const ids = transactionLabelIds.filter((id) => id != id);
+      const ids = transactionLabelIds.filter((z) => z != id);
       exitPicker(ids);
     } else if (transactionLabelIds.length >= 5) {
       Alert.alert("Maximum");
@@ -196,31 +194,15 @@ export default function ModalTransationLabelsPicker(
                   onChangeText={(text) => setSearchText(text)}
                 />
               </View>
-              {searchText.trim().length > 0 ? (
-                <>
-                  <NextCreateButton
-                    searchText={searchText}
-                    currentLength={labels.length}
-                    maximumLength={authStore.user?.feature.maximumLabels ?? 0}
-                    onNext={() => {
-                      setForm((prevState) => ({
-                        ...prevState,
-                        _id: undefined,
-                        name: searchText,
-                      }));
-                      setIsVisibleForm(true);
-                    }}
-                  />
-                </>
-              ) : (
-                <></>
-              )}
-              <SizedBox height={sh(20)} />
               <FlashList
                 data={labels}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    style={{ flexDirection: "row",padding:sw(20),alignItems:"center" }}
+                    style={{
+                      flexDirection: "row",
+                      padding: sw(20),
+                      alignItems: "center",
+                    }}
                     onPress={() => {
                       if (handleIsLabelNotExceededMaximum(item)) {
                         handleIds(item._id);
@@ -288,9 +270,35 @@ export default function ModalTransationLabelsPicker(
                 estimatedItemSize={30}
                 ListFooterComponent={
                   <>
+                    {searchText.trim().length > 0 &&
+                    labels.find(
+                      (z) => z.name.toLowerCase() == searchText.toLowerCase()
+                    ) == undefined &&
+                    useGetTransactionLabelInfiniteQuery.isSuccess ? (
+                      <>
+                        <NextCreateButton
+                          searchText={searchText}
+                          currentLength={labels.length}
+                          maximumLength={
+                            authStore.user?.feature.maximumLabels ?? 0
+                          }
+                          onNext={() => {
+                            setForm((prevState) => ({
+                              ...prevState,
+                              _id: undefined,
+                              name: searchText,
+                            }));
+                            setIsVisibleForm(true);
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <></>
+                    )}
                     <LoadingCircle
                       visible={useGetTransactionLabelInfiniteQuery.isLoading}
                     />
+                    <SizedBox height={sh(20)} />
                   </>
                 }
                 onEndReached={() => {

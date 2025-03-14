@@ -7,7 +7,6 @@ import {
   OverviewTransactionScreenParams,
 } from "@libs/react.navigation.lib";
 import { catchErrorDialog, displayCurrency, isNumber } from "@libs/utils";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import {
   TGetTransactionDetailQuery,
   TPostTransactionCreateBody,
@@ -338,85 +337,122 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
           }
         />
         <KeyboardLayout>
-          <>
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <SizedBox height={sh(20)} />
-              <ModalAmountTextInput
-                amount={form.amount}
-                currency={form.currency}
-                onChange={(data) => {
-                  setForm((prevState) => ({
-                    ...prevState,
-                    ...data,
-                  }));
-                }}
-                listComponents={
-                  <>
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <CustomText
-                        size="2-extra-big"
-                        label={`${displayCurrency({
-                          currency: form.currency,
-                          amount: parseFloat(
-                            form.amount != "" ? form.amount : "0"
-                          ),
-                        })}`}
-                      />
-                      <SizedBox width={sw(10)} />
-                      <ExpoVectorIcon
-                        name="left"
-                        size={sw(20)}
-                        color={Colors.black}
-                      />
-                    </View>
-                  </>
-                }
-              />
-              <SizedBox height={sh(10)} />
-              <ModalTransactionCategoryPicker
-                listComponents={
-                  <>
-                    <TransactionCategoryContainer
-                      containerStyle={{
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      id={form.transactionCategoryId ?? undefined}
-                    />
-                  </>
-                }
-                buttonStyle={{
-                  flexDirection: "row",
-                  borderWidth: 1,
-                  borderColor: Colors.suvaGrey,
-                  borderRadius: sw(5),
-                  padding: sw(5),
-                }}
-                id={form.transactionCategoryId}
-                onChange={(id) => {
-                  setForm((prevState) => ({
-                    ...prevState,
-                    transactionCategoryId: id,
-                  }));
-                }}
-              />
-              <SizedBox height={sh(40)} />
-            </View>
-            <View style={{ paddingHorizontal: sw(15) }}>
-              <ModalDateTimePicker
-                value={form.transactedAt}
-                buttonStyle={{}}
-                listComponents={
-                  <View style={styles.bodyContainer}>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <SizedBox height={sh(20)} />
+            <ModalAmountTextInput
+              amount={form.amount}
+              currency={form.currency}
+              onChange={(data) => {
+                setForm((prevState) => ({
+                  ...prevState,
+                  ...data,
+                }));
+              }}
+              listComponents={
+                <>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <CustomText
-                      size="medium"
-                      label={`When`}
-                      textStyle={{ color: Colors.matterhorn }}
+                      size="2-extra-big"
+                      label={`${displayCurrency({
+                        currency: form.currency,
+                        amount: parseFloat(
+                          form.amount != "" ? form.amount : "0"
+                        ),
+                      })}`}
                     />
                     <SizedBox width={sw(10)} />
+                    <ExpoVectorIcon
+                      name="left"
+                      size={sw(20)}
+                      color={Colors.black}
+                    />
+                  </View>
+                </>
+              }
+            />
+            <SizedBox height={sh(10)} />
+            <ModalTransactionCategoryPicker
+              listComponents={
+                <>
+                  <TransactionCategoryContainer
+                    containerStyle={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    id={form.transactionCategoryId ?? undefined}
+                  />
+                </>
+              }
+              buttonStyle={{
+                flexDirection: "row",
+                borderWidth: 1,
+                borderColor: Colors.suvaGrey,
+                borderRadius: sw(5),
+                padding: sw(5),
+              }}
+              id={form.transactionCategoryId}
+              onChange={(id) => {
+                setForm((prevState) => ({
+                  ...prevState,
+                  transactionCategoryId: id,
+                }));
+              }}
+            />
+            <SizedBox height={sh(40)} />
+          </View>
+          <View style={{ paddingHorizontal: sw(15) }}>
+            <ModalDateTimePicker
+              value={form.transactedAt}
+              buttonStyle={{}}
+              listComponents={
+                <View style={styles.bodyContainer}>
+                  <CustomText
+                    size="medium"
+                    label={`When`}
+                    textStyle={{ color: Colors.matterhorn }}
+                  />
+                  <SizedBox width={sw(10)} />
+                  <View
+                    style={{
+                      borderColor: Colors.suvaGrey,
+                      borderWidth: 1,
+                      borderRadius: sw(5),
+                      marginLeft: "auto",
+                      padding: sw(5),
+                    }}
+                  >
+                    <CustomText
+                      textStyle={{
+                        color: Colors.matterhorn,
+                      }}
+                      containerStyle={{ marginLeft: "auto" }}
+                      size="medium"
+                      label={`${dayjs(form.transactedAt).format(
+                        "DD/MM/YYYY (ddd)"
+                      )} ${getTransactionAtIsTodayOrYesterday()}`}
+                    />
+                  </View>
+                </View>
+              }
+              onChange={(date) => {
+                setForm((prevState) => ({
+                  ...prevState,
+                  transactedAt: date,
+                }));
+              }}
+            />
+            <SizedBox height={sh(20)} />
+            <ModalTransationLabelsPicker
+              listComponent={
+                <View style={styles.bodyContainer}>
+                  <CustomText
+                    size="medium"
+                    label={`Labels`}
+                    textStyle={{ color: Colors.matterhorn }}
+                  />
+                  <SizedBox width={sw(10)} />
+                  {form.transactionLabelIds.length > 0 ? (
                     <View
                       style={{
                         borderColor: Colors.suvaGrey,
@@ -426,234 +462,189 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                         padding: sw(5),
                       }}
                     >
-                      <CustomText
-                        textStyle={{
-                          color: Colors.matterhorn,
-                        }}
-                        containerStyle={{ marginLeft: "auto" }}
-                        size="medium"
-                        label={`${dayjs(form.transactedAt).format(
-                          "DD/MM/YYYY (ddd)"
-                        )} ${getTransactionAtIsTodayOrYesterday()}`}
+                      <TransactionLabelsContainer
+                        ids={form.transactionLabelIds}
                       />
                     </View>
-                  </View>
-                }
-                onChange={(date) => {
-                  setForm((prevState) => ({
-                    ...prevState,
-                    transactedAt: date,
-                  }));
-                }}
-              />
-              <SizedBox height={sh(20)} />
-              <ModalTransationLabelsPicker
-                listComponent={
-                  <View style={styles.bodyContainer}>
+                  ) : (
+                    <CustomText
+                      label="Add"
+                      containerStyle={{ marginLeft: "auto" }}
+                      textStyle={{
+                        color: Colors.primary,
+                        textDecorationLine: "underline",
+                      }}
+                      size="medium"
+                    />
+                  )}
+                </View>
+              }
+              ids={form.transactionLabelIds}
+              onChange={(ids) => {
+                setForm((prevState) => ({
+                  ...prevState,
+                  transactionLabelIds: ids,
+                }));
+              }}
+            />
+            <SizedBox height={sh(20)} />
+            <ModalTextInput
+              headerText="Note"
+              onChange={(data) => {
+                setForm((prevState) => ({ ...prevState, note: data }));
+              }}
+              value={form.note}
+              textInputLabel="For example - lunch with friend"
+              listComponents={
+                <>
+                  <View style={[{ width: "100%", flexDirection: "row" }]}>
                     <CustomText
                       size="medium"
-                      label={`Labels`}
+                      label={`Note`}
                       textStyle={{ color: Colors.matterhorn }}
                     />
                     <SizedBox width={sw(10)} />
-                    {form.transactionLabelIds.length > 0 ? (
-                      <View
-                        style={{
-                          borderColor: Colors.suvaGrey,
+                    <CustomText
+                      label={form.note && form.note.length > 0 ? "Edit" : "Add"}
+                      containerStyle={{ marginLeft: "auto" }}
+                      textStyle={{
+                        color: Colors.primary,
+                        textDecorationLine: "underline",
+                      }}
+                      size="medium"
+                    />
+                  </View>
+                  <SizedBox height={sh(5)} />
+                  <CustomText
+                    textStyle={{
+                      color: Colors.matterhorn,
+                    }}
+                    containerStyle={{ flex: 1 }}
+                    size="medium"
+                    label={`${form.note}`}
+                  />
+                </>
+              }
+            />
+            <SizedBox height={sh(20)} />
+            <ModalImagePicker
+              type={"transaction_image"}
+              userId={authStore.user?._id ?? ""}
+              onChange={(data) => {
+                setForm((prevState) => ({
+                  ...prevState,
+                  imagePath: data,
+                }));
+                if (isUsePhotoAI) {
+                  imageDetectMutation.mutate(
+                    {
+                      text: totalQuestionsOnText,
+                      imageUrl: data,
+                    },
+                    {
+                      onSuccess: (response) => {
+                        const result = response.data as TAIImageDetectResponse;
+                        if (result.messageContent != "") {
+                          const detectedText = findAmountAndNameOfCategory({
+                            message: result.messageContent,
+                          });
+                          setForm((prevState) => ({
+                            ...prevState,
+                            currency: detectedText.currency
+                              ? detectedText.currency
+                              : form.currency,
+                            amount: detectedText.amount
+                              ? isNumber(detectedText.amount)
+                                ? detectedText.amount
+                                : form.amount
+                              : form.amount,
+                            note: detectedText.note
+                              ? detectedText.note
+                              : form.note,
+                            imagePath: data,
+                          }));
+                        }
+                      },
+                      onError: (e) => {
+                        catchErrorDialog(e);
+                      },
+                    }
+                  );
+                }
+              }}
+              listComponents={
+                <>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      paddingVertical: sh(10),
+                    }}
+                  >
+                    <CustomText
+                      size="medium"
+                      label={"Image"}
+                      textStyle={{ color: Colors.matterhorn }}
+                    />
+                    {form.imagePath ? (
+                      <ModalZoomableImage
+                        buttonStyle={{
                           borderWidth: 1,
+                          borderColor: Colors.suvaGrey,
                           borderRadius: sw(5),
                           marginLeft: "auto",
-                          padding: sw(5)
+                        }}
+                        listComponents={
+                          <>
+                            <Image
+                              style={{
+                                width: sw(100),
+                                height: sw(100),
+                                objectFit: "cover",
+                                borderRadius: sw(5),
+                              }}
+                              source={{ uri: form.imagePath }}
+                            />
+                          </>
+                        }
+                        imagePath={form.imagePath ?? ``}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          marginLeft: "auto",
+                          borderWidth: 1,
+                          borderColor: Colors.suvaGrey,
+                          borderRadius: sw(5),
+                          padding: sw(10),
                         }}
                       >
-                        <TransactionLabelsContainer
-                          ids={form.transactionLabelIds}
+                        <ExpoVectorIcon
+                          name="upload"
+                          size={sw(20)}
+                          color={Colors.black}
                         />
+                        <SizedBox width={sw(20)} />
+                        <View>
+                          <CustomText
+                            label="Upload file"
+                            containerStyle={{ marginLeft: "auto" }}
+                            textStyle={{
+                              color: Colors.primary,
+                              textDecorationLine: "underline",
+                            }}
+                            size="medium"
+                          />
+                        </View>
                       </View>
-                    ) : (
-                      <CustomText
-                        label="Add"
-                        containerStyle={{ marginLeft: "auto" }}
-                        textStyle={{
-                          color: Colors.primary,
-                          textDecorationLine: "underline",
-                        }}
-                        size="medium"
-                      />
                     )}
                   </View>
-                }
-                ids={form.transactionLabelIds}
-                onChange={(ids) => {
-                  setForm((prevState) => ({
-                    ...prevState,
-                    transactionLabelIds: ids,
-                  }));
-                }}
-              />
-              <SizedBox height={sh(20)} />
-              <ModalTextInput
-                headerText="Note"
-                onChange={(data) => {
-                  setForm((prevState) => ({ ...prevState, note: data }));
-                }}
-                value={form.note}
-                textInputLabel="For example - lunch with friend"
-                listComponents={
-                  <>
-                    <View style={[{ width: "100%", flexDirection: "row" }]}>
-                      <CustomText
-                        size="medium"
-                        label={`Note`}
-                        textStyle={{ color: Colors.matterhorn }}
-                      />
-                      <SizedBox width={sw(10)} />
-                      <CustomText
-                        label={
-                          form.note && form.note.length > 0 ? "Edit" : "Add"
-                        }
-                        containerStyle={{ marginLeft: "auto" }}
-                        textStyle={{
-                          color: Colors.primary,
-                          textDecorationLine: "underline",
-                        }}
-                        size="medium"
-                      />
-                    </View>
-                    <SizedBox height={sh(5)} />
-                    <CustomText
-                      textStyle={{
-                        color: Colors.matterhorn,
-                      }}
-                      containerStyle={{ flex: 1 }}
-                      size="medium"
-                      label={`${form.note}`}
-                    />
-                  </>
-                }
-              />
-              <SizedBox height={sh(20)} />
-              <ModalImagePicker
-                type={"transaction_image"}
-                userId={authStore.user?._id ?? ""}
-                onChange={(data) => {
-                  setForm((prevState) => ({
-                    ...prevState,
-                    imagePath: data,
-                  }));
-                  if (isUsePhotoAI) {
-                    imageDetectMutation.mutate(
-                      {
-                        text: totalQuestionsOnText,
-                        imageUrl: data,
-                      },
-                      {
-                        onSuccess: (response) => {
-                          const result =
-                            response.data as TAIImageDetectResponse;
-                          if (result.messageContent != "") {
-                            const detectedText = findAmountAndNameOfCategory({
-                              message: result.messageContent,
-                            });
-                            setForm((prevState) => ({
-                              ...prevState,
-                              currency: detectedText.currency
-                                ? detectedText.currency
-                                : form.currency,
-                              amount: detectedText.amount
-                                ? isNumber(detectedText.amount)
-                                  ? detectedText.amount
-                                  : form.amount
-                                : form.amount,
-                              note: detectedText.note
-                                ? detectedText.note
-                                : form.note,
-                              imagePath: data,
-                            }));
-                          }
-                        },
-                        onError: (e) => {
-                          catchErrorDialog(e);
-                        },
-                      }
-                    );
-                  }
-                }}
-                listComponents={
-                  <>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        paddingVertical: sh(10),
-                      }}
-                    >
-                      <CustomText
-                        size="medium"
-                        label={"Image"}
-                        textStyle={{ color: Colors.matterhorn }}
-                      />
-                      {form.imagePath ? (
-                        <ModalZoomableImage
-                          buttonStyle={{
-                            borderWidth: 1,
-                            borderColor: Colors.suvaGrey,
-                            borderRadius: sw(5),
-                            marginLeft: "auto",
-                          }}
-                          listComponents={
-                            <>
-                              <Image
-                                style={{
-                                  width: sw(100),
-                                  height: sw(100),
-                                  objectFit: "cover",
-                                  borderRadius: sw(5),
-                                }}
-                                source={{ uri: form.imagePath }}
-                              />
-                            </>
-                          }
-                          imagePath={form.imagePath ?? ``}
-                        />
-                      ) : (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            marginLeft: "auto",
-                            borderWidth: 1,
-                            borderColor: Colors.suvaGrey,
-                            borderRadius: sw(5),
-                            padding: sw(10),
-                          }}
-                        >
-                          <ExpoVectorIcon
-                            name="upload"
-                            size={sw(20)}
-                            color={Colors.black}
-                          />
-                          <SizedBox width={sw(20)} />
-                          <View>
-                            <CustomText
-                              label="Upload file"
-                              containerStyle={{ marginLeft: "auto" }}
-                              textStyle={{
-                                color: Colors.primary,
-                                textDecorationLine: "underline",
-                              }}
-                              size="medium"
-                            />
-                          </View>
-                        </View>
-                      )}
-                    </View>
-                  </>
-                }
-              />
-              <SizedBox height={sh(60)} />
-            </View>
-            <LoadingCircle visible={isLoading} />
-          </>
+                </>
+              }
+            />
+            <SizedBox height={sh(60)} />
+          </View>
         </KeyboardLayout>
         <CustomButton
           buttonStyle={{ marginHorizontal: sw(15), marginBottom: sw(15) }}

@@ -18,7 +18,6 @@ import {
 } from "@libs/utils";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
 import { TPostRewardSubmitBody } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import CustomButton from "@components/Shared/CustomButton";
 import CustomText from "@components/Shared/CustomText";
 import { resetQueries } from "@libs/react.query.client.lib";
@@ -106,7 +105,6 @@ const MyRewardFormScreen: AppNavigationScreen<"MyRewardFormScreen"> = ({
   return (
     <ContainerLayout>
       <Header onBack={() => navigation.goBack()} />
-      <LoadingCircle visible={isLoading} />
       <KeyboardLayout>
           <SizedBox height={sh(20)} />
           <CustomText

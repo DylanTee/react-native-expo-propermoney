@@ -7,7 +7,7 @@ import { ESubscriptionEntitlement } from "@mcdylanproperenterprise/nodejs-proper
 import Avatar from "@components/Shared/Avatar";
 import { navigationRef } from "@libs/react.navigation.lib";
 import { useAuthStore } from "@libs/zustand/authStore";
-import CustomText from "./CustomText";
+import CustomText from "../CustomText";
 
 interface MemberCardProps {
   currentRouteName: "HomeScreen" | "MoreScreen";

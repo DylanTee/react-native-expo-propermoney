@@ -5,7 +5,7 @@ import { sh, sw } from "@libs/responsive.lib";
 import { Linking, RefreshControl, ScrollView, View } from "react-native";
 import { Colors } from "@styles/Colors";
 import { useTranslation } from "@libs/i18n/index";
-import MemberCard from "../components/Shared/MemberCard";
+import MemberCard from "../components/Shared/Card/MemberCard";
 import HomeCard, { HomeCardProps } from "../components/Shared/Card/HomeCard";
 import { FlashList } from "@shopify/flash-list";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
@@ -16,7 +16,7 @@ import {
   TGetTransactionQuery,
   TTransaction,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import TransactionCard from "@components/Shared/TransactionCard";
+import TransactionCard from "@components/Shared/Card/TransactionCard";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import CustomText from "@components/Shared/CustomText";
 import dayjs from "dayjs";
@@ -267,7 +267,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                 containerStyle={{ marginHorizontal: sw(15) }}
                 onPress={() => {
                   navigation.navigate("TransactionDetailScreen", {
-                    id: item._id
+                    id: item._id,
                   });
                 }}
               />
@@ -279,6 +279,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
             <>
               <LoadingCircle
                 visible={useGetTransactionInfiniteQuery.isFetching}
+                containerStyle={{ margin: sw(20) }}
               />
             </>
           }

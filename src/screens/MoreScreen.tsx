@@ -9,7 +9,7 @@ import { sh } from "@libs/responsive.lib";
 import { useTranslation } from "@libs/i18n/index";
 import CustomItemPicker from "@components/Shared/CustomItemPicker";
 import { View } from "react-native";
-import MemberCard from "@components/Shared/MemberCard";
+import MemberCard from "@components/Shared/Card/MemberCard";
 import ModalTextInput from "@components/Shared/CustomModal/ModalTextInput";
 import { useMutation } from "@tanstack/react-query";
 import { TPostUserUpdateBody } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
@@ -17,7 +17,6 @@ import { AxiosLibs } from "@libs/axios.lib";
 import { catchErrorDialog, handleLogOut } from "@libs/utils";
 import ModalLanguagePicker from "@components/Shared/CustomModal/ModalLanguagePicker";
 import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import ModalCurrencyPicker from "@components/Shared/CustomModal/ModalCurrencyPicker";
 import { useAuthStore } from "@libs/zustand/authStore";
 import VersionText from "@components/Shared/VersionText";
@@ -54,7 +53,6 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
   };
   return (
     <>
-      <LoadingCircle visible={userUpdateMutation.isPending} />
       <ContainerLayout>
         <Header onBack={() => navigation.goBack()} />
         <ScrollView bounces={false}>

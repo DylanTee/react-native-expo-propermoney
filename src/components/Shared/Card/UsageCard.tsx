@@ -1,11 +1,11 @@
 import React from "react";
 import { Linking, View } from "react-native";
-import CustomText from "./CustomText";
+import CustomText from "../CustomText";
 import { sh, sw } from "@libs/responsive.lib";
-import SizedBox from "./SizedBox";
+import SizedBox from "../SizedBox";
 import { Colors } from "@styles/Colors";
-import ProgressBar from "./ProgressBar";
-import CustomButton from "./CustomButton";
+import ProgressBar from "../ProgressBar";
+import CustomButton from "../CustomButton";
 import { useTranslation } from "react-i18next";
 
 interface UsageCardProps {

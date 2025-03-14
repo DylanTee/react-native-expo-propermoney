@@ -5,8 +5,7 @@ import {
   TSelectedUserId,
 } from "@libs/react.navigation.lib";
 import dayjs from "dayjs";
-import DateSwitch from "@components/overview-transaction/DateSwitch";
-import LoadingCircle from "@components/Shared/LoadingCircle";
+import DateSwitch from "@components/Shared/DateSwitch";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
 import Header from "@components/Shared/Header";
@@ -18,8 +17,6 @@ import {
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { Colors } from "@styles/Colors";
 import TransactionListings from "@components/overview-transaction/TransactionListings";
-import TransactionCategories from "@components/overview-transaction/TransactionCategories";
-import TransactionLabels from "@components/overview-transaction/TransactionLabels";
 import CustomButtonIcon from "@components/Shared/CustomButtonIcon";
 import CustomItemPicker from "@components/Shared/CustomItemPicker";
 import { useQuery } from "@tanstack/react-query";
@@ -27,7 +24,6 @@ import { AxiosLibs } from "@libs/axios.lib";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import ModalOverviewTransctionsReportPicker from "@components/Shared/CustomModal/ModalOverviewTransctionsReport";
 import { useAuthStore } from "@libs/zustand/authStore";
-import { EGetTransactionsByType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 
 export enum EOverviewTransactionsReport {
   Categories = "Categories",
@@ -187,7 +183,6 @@ const OverviewTransactionScreen: AppNavigationScreen<
   };
   return (
     <ContainerLayout>
-      <LoadingCircle visible={getTransactionsQuery.isLoading} />
       <Header
         itemRight={
           <>
@@ -280,42 +275,6 @@ const OverviewTransactionScreen: AppNavigationScreen<
         />
 
         <SizedBox height={sh(10)} />
-        {!getTransactionsQuery.isLoading ? (
-          <TransactionCategories
-            selectedReport={selectedReport}
-            transactions={isListToShowTransactions}
-            transactionCategories={isListToShowTransactionCategories}
-            handlePress={(data) => {
-              navigation.navigate("TransactionHistoryByCategoryOrLabelScreen", {
-                startTransactedAt: startTransactedAt,
-                endTransactedAt: endTransactedAt,
-                _id: data.categoryId,
-                targetUserId: data.targetUserId,
-                type: EGetTransactionsByType.category,
-              });
-            }}
-          />
-        ) : (
-          <></>
-        )}
-        {!getTransactionsQuery.isLoading ? (
-          <TransactionLabels
-            selectedReport={selectedReport}
-            transactions={isListToShowTransactions}
-            transactionLabels={isListToShowTransactionLabels}
-            handlePress={(data) => {
-              navigation.navigate("TransactionHistoryByCategoryOrLabelScreen", {
-                startTransactedAt: startTransactedAt,
-                endTransactedAt: endTransactedAt,
-                _id: data.labelId,
-                targetUserId: data.targetUserId,
-                type: EGetTransactionsByType.label,
-              });
-            }}
-          />
-        ) : (
-          <></>
-        )}
         {!getTransactionsQuery.isLoading ? (
           <TransactionListings
             selectedReport={selectedReport}

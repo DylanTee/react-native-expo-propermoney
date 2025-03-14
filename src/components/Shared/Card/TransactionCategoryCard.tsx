@@ -2,10 +2,10 @@ import { sh, sw } from "@libs/responsive.lib";
 import { Colors } from "@styles/Colors";
 import React from "react";
 import { Image, TouchableOpacity, View } from "react-native";
-import SizedBox from "./SizedBox";
+import SizedBox from "../SizedBox";
 import { Global } from "@styles/Global";
 import { displayCurrency } from "@libs/utils";
-import CustomText from "./CustomText";
+import CustomText from "../CustomText";
 import { useAuthStore } from "@libs/zustand/authStore";
 import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 

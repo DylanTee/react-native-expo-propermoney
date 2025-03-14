@@ -1,7 +1,6 @@
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import CustomText from "@components/Shared/CustomText";
 import Header from "@components/Shared/Header";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import SizedBox from "@components/Shared/SizedBox";
 import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import { sfont, sh, sw } from "@libs/responsive.lib";
@@ -121,14 +120,7 @@ const MyRewardStoreScreen: AppNavigationScreen<"MyRewardStoreScreen"> = ({
   };
   return (
     <ContainerLayout>
-      <Header  onBack={() => navigation.goBack()} />
-      <LoadingCircle
-        visible={
-          getTotalPointsQuery.isLoading ||
-          getRewardsStoreItemQuery.isLoading ||
-          redeemMutation.isPending
-        }
-      />
+      <Header onBack={() => navigation.goBack()} />
       <ScrollView
         style={{
           paddingHorizontal: sw(10),

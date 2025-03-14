@@ -20,8 +20,6 @@ import {
 import Header from "../Header";
 import { sw } from "@libs/responsive.lib";
 import ContainerLayout from "@components/Layout/ContainerLayout";
-import LoadingCircle from "../LoadingCircle";
-
 interface ModalImagePickerProps {
   userId: string;
   buttonStyle?: ViewStyle;
@@ -107,7 +105,6 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
   const list = [EMethods.camera, EMethods.gallery];
   return (
     <>
-      <LoadingCircle visible={getS3PresignedUrlMutation.isPending} />
       <TouchableOpacity
         style={props.buttonStyle}
         onPress={() => {

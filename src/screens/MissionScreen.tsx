@@ -1,6 +1,5 @@
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import Header from "@components/Shared/Header";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import SizedBox from "@components/Shared/SizedBox";
 import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import { sfont, sh, sw } from "@libs/responsive.lib";
@@ -131,7 +130,6 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
   return (
     <ContainerLayout>
       <Header onBack={() => navigation.goBack()} />
-      <LoadingCircle visible={isLoading} />
       <ScrollView>
         <View style={Global.shadowLine}>
           <CustomText label={t("youHave")} size={"small"} />

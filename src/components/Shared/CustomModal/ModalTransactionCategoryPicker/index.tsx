@@ -31,6 +31,7 @@ import React, {
 } from "react-native";
 import Form from "./form";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
+import useDebounce from "@libs/hooks/useDebounce";
 
 export type TTransactionCategoryForm = {
   _id: string | undefined;
@@ -64,17 +65,18 @@ export default function ModalTransactionCategoryPicker(
   const [isVisibleForm, setIsVisibleForm] = useState<boolean>(false);
   const [form, setForm] = useState<TTransactionCategoryForm>(initialFormState);
   const [searchText, setSearchText] = useState<string>("");
+  const debounceSearchText = useDebounce(searchText, 500);
   const [categoryType, setCategoryType] = useState<ETransactionCategoryType>(
     ETransactionCategoryType.expense
   );
   const useGetTransactionCategoryInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: ["/transaction-category", categoryType, searchText],
+    queryKey: ["/transaction-category", categoryType, debounceSearchText],
     queryFn: async ({ pageParam = 1 }) => {
       const query: TGetTransactionCategoryQuery = {
         limit: 10,
         page: pageParam,
-        q: searchText,
+        q: debounceSearchText,
         type: categoryType,
       };
       const { data } = await AxiosLibs.defaultClient.get(
@@ -203,29 +205,6 @@ export default function ModalTransactionCategoryPicker(
                   onChangeText={(text) => setSearchText(text)}
                 />
               </View>
-              {searchText.trim().length > 0 &&
-              categories.length == 0 &&
-              useGetTransactionCategoryInfiniteQuery.isSuccess ? (
-                <>
-                  <NextCreateButton
-                    searchText={searchText}
-                    currentLength={categoriesLength}
-                    maximumLength={
-                      authStore.user?.feature.maximumCategories ?? 0
-                    }
-                    onNext={() => {
-                      setForm((prevState) => ({
-                        ...prevState,
-                        _id: undefined,
-                        name: searchText,
-                      }));
-                      setIsVisibleForm(true);
-                    }}
-                  />
-                </>
-              ) : (
-                <></>
-              )}
               <FlashList
                 data={categories}
                 ItemSeparatorComponent={() => <SizedBox height={sw(20)} />}
@@ -325,9 +304,35 @@ export default function ModalTransactionCategoryPicker(
                 ListFooterComponent={
                   <>
                     <LoadingCircle
+                      containerStyle={{ margin: sw(20) }}
                       visible={useGetTransactionCategoryInfiniteQuery.isLoading}
                     />
-                    <SizedBox height={sh(60)} />
+                    {searchText.trim().length > 0 &&
+                    categories.find(
+                      (z) => z.name.toLowerCase() == searchText.toLowerCase()
+                    ) == undefined &&
+                    useGetTransactionCategoryInfiniteQuery.isSuccess ? (
+                      <>
+                        <NextCreateButton
+                          searchText={searchText}
+                          currentLength={categoriesLength}
+                          maximumLength={
+                            authStore.user?.feature.maximumCategories ?? 0
+                          }
+                          onNext={() => {
+                            setForm((prevState) => ({
+                              ...prevState,
+                              _id: undefined,
+                              name: searchText,
+                            }));
+                            setIsVisibleForm(true);
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                    <SizedBox height={sh(20)} />
                   </>
                 }
                 onEndReached={() => {

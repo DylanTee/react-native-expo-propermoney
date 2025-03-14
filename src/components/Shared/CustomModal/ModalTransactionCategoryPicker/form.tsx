@@ -2,7 +2,6 @@ import ContainerLayout from "@components/Layout/ContainerLayout";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
 import Header from "@components/Shared/Header";
 import CustomTextInput from "@components/Shared/CustomTextInput";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
 import { Colors } from "@styles/Colors";
@@ -20,6 +19,8 @@ import CustomButton from "@components/Shared/CustomButton";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { TTransactionCategoryForm } from ".";
+import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
+import CustomText from "@components/Shared/CustomText";
 
 interface TransactionCategoryFormProps {
   form: TTransactionCategoryForm;
@@ -181,123 +182,14 @@ export default function Form(props: TransactionCategoryFormProps) {
   return (
     <ContainerLayout>
       <Header
+        containerStyle={{ padding: sw(15) }}
         onBack={() => {
           props.onClose();
         }}
-      />
-      <LoadingCircle visible={isLoading} />
-      <KeyboardLayout>
-          <CustomTextInput
-            maxLength={25}
-            label={"Category Name"}
-            value={form.name}
-            onChangeText={(text) =>
-              setForm((prevState) => ({
-                ...prevState,
-                name: text,
-              }))
-            }
-          />
-          <SizedBox height={sh(20)} />
-          <View
-            style={{
-              width: sw(40),
-              height: sw(40),
-              borderRadius: sw(50) / 2,
-              padding: sw(10),
-              alignSelf: "center",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor:
-                form.backgroundColor.trim().length > 0
-                  ? form.backgroundColor
-                  : Colors.gainsboro,
-            }}
-          >
-            <Image
-              style={{
-                width: "100%",
-                height: "100%",
-                position: "absolute",
-                zIndex: 1,
-              }}
-              resizeMode="contain"
-              source={{ uri: form.imagePath }}
-            />
-          </View>
-          <SizedBox height={sh(20)} />
-          <View style={{ flexWrap: "wrap", flexDirection: "row" }}>
-            {icons.map((data) => (
+        itemRight={
+          <>
+            {isEdit && (
               <TouchableOpacity
-                key={data}
-                style={{
-                  width: sw(30),
-                  height: sw(30),
-                  marginRight: sw(30),
-                  borderWidth: 2,
-                  borderRadius: sw(10) / 2,
-                  borderColor:
-                    data == form.imagePath ? Colors.black : "transparent",
-                  margin: sw(5),
-                }}
-                onPress={() =>
-                  setForm((prevState) => ({
-                    ...prevState,
-                    imagePath: data,
-                  }))
-                }
-              >
-                <Image
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                  }}
-                  resizeMode="contain"
-                  source={{ uri: data }}
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-          <SizedBox height={sh(20)} />
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {backgroundColors.map((data) => (
-              <TouchableOpacity
-                key={data}
-                onPress={() =>
-                  setForm((prevState) => ({
-                    ...prevState,
-                    backgroundColor: data,
-                  }))
-                }
-                style={{
-                  backgroundColor: data,
-                  width: sw(40),
-                  height: sw(40),
-                  marginRight: sw(20),
-                  borderWidth: 2,
-                  borderRadius: sw(20) / 2,
-                  borderColor:
-                    data == form.backgroundColor ? Colors.black : "transparent",
-                }}
-              />
-            ))}
-          </ScrollView>
-          <SizedBox height={sh(40)} />
-          <CustomButton
-            disabled={isLoading}
-            type={"primary"}
-            size={"medium"}
-            title={t("confirm")}
-            onPress={() => btnConfirm()}
-          />
-          {isEdit && (
-            <>
-              <SizedBox height={sh(20)} />
-              <CustomButton
-                disabled={isLoading}
-                size={"medium"}
-                type="secondary"
-                title={t("delete")}
                 onPress={() => {
                   Alert.alert(
                     t(`delete`) + " " + form?.name + "?",
@@ -316,11 +208,125 @@ export default function Form(props: TransactionCategoryFormProps) {
                     { cancelable: false }
                   );
                 }}
+              >
+                <ExpoVectorIcon
+                  name="delete"
+                  size={sw(20)}
+                  color={Colors.black}
+                />
+              </TouchableOpacity>
+            )}
+          </>
+        }
+      />
+      <KeyboardLayout>
+        <View
+          style={{
+            width: sw(50),
+            height: sw(50),
+            borderRadius: sw(50) / 2,
+            padding: sw(10),
+            alignSelf: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor:
+              form.backgroundColor.trim().length > 0
+                ? form.backgroundColor
+                : Colors.gainsboro,
+          }}
+        >
+          <Image
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              zIndex: 1,
+            }}
+            resizeMode="contain"
+            source={{ uri: form.imagePath }}
+          />
+        </View>
+        <SizedBox height={sh(20)} />
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          {icons.map((data) => (
+            <TouchableOpacity
+              key={data}
+              style={{
+                width: sw(30),
+                height: sw(30),
+                marginRight: sw(30),
+                borderWidth: 2,
+                borderRadius: sw(10) / 2,
+                borderColor:
+                  data == form.imagePath ? Colors.black : "transparent",
+                margin: sw(5),
+              }}
+              onPress={() =>
+                setForm((prevState) => ({
+                  ...prevState,
+                  imagePath: data,
+                }))
+              }
+            >
+              <Image
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+                resizeMode="contain"
+                source={{ uri: data }}
               />
-              <SizedBox height={sh(40)} />
-            </>
-          )}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <SizedBox height={sh(20)} />
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          {backgroundColors.map((data) => (
+            <TouchableOpacity
+              key={data}
+              onPress={() =>
+                setForm((prevState) => ({
+                  ...prevState,
+                  backgroundColor: data,
+                }))
+              }
+              style={{
+                backgroundColor: data,
+                width: sw(40),
+                height: sw(40),
+                marginRight: sw(20),
+                borderWidth: 2,
+                borderRadius: sw(20) / 2,
+                borderColor:
+                  data == form.backgroundColor ? Colors.black : "transparent",
+              }}
+            />
+          ))}
+        </ScrollView>
+        <SizedBox height={sh(20)} />
+        <View style={{ paddingHorizontal: sw(15) }}>
+          <CustomTextInput
+            maxLength={25}
+            label={"Name"}
+            value={form.name}
+            onChangeText={(text) =>
+              setForm((prevState) => ({
+                ...prevState,
+                name: text,
+              }))
+            }
+          />
+        </View>
+        <SizedBox height={sh(40)} />
       </KeyboardLayout>
+      <CustomButton
+        buttonStyle={{ marginBottom: sh(25), marginHorizontal: sw(15) }}
+        disabled={isLoading}
+        type={"primary"}
+        size={"medium"}
+        title={t("confirm")}
+        onPress={() => btnConfirm()}
+      />
     </ContainerLayout>
   );
 }

@@ -2,7 +2,6 @@ import ContainerLayout from "@components/Layout/ContainerLayout";
 import Avatar from "@components/Shared/Avatar";
 import CustomText from "@components/Shared/CustomText";
 import Header from "@components/Shared/Header";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import SizedBox from "@components/Shared/SizedBox";
 import { AxiosLibs } from "@libs/axios.lib";
 import { AppNavigationScreen } from "@libs/react.navigation.lib";
@@ -236,7 +235,6 @@ const TransactionDetailScreen: AppNavigationScreen<
           </>
         )}
       </ScrollView>
-      <LoadingCircle visible={useGetTransactionDetailQuery.isFetching} />
     </ContainerLayout>
   );
 };

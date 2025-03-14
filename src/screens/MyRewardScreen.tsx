@@ -10,7 +10,6 @@ import {
   TReward,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { catchErrorDialog } from "@libs/utils";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 import RewardCard from "@components/Shared/Card/RewardCard";
@@ -111,27 +110,18 @@ const MyRewardScreen: AppNavigationScreen<"MyRewardScreen"> = ({
   return (
     <ContainerLayout>
       <Header onBack={() => navigation.goBack()} />
-      <LoadingCircle
-        visible={
-          getInvalidRewardsInfiniteQuery.isLoading ||
-          getValidRewardsInfiniteQuery.isLoading ||
-          redeemPointMutation.isPending
-        }
+      <CustomTab
+        value={rewardTab}
+        data={[
+          { label: t("valid"), value: ERewardTab.valid },
+          { label: t("invalid"), value: ERewardTab.invalid },
+        ]}
+        onChange={(data) => {
+          setRewardTab(data as ERewardTab);
+          getValidRewardsInfiniteQuery.refetch();
+          getInvalidRewardsInfiniteQuery.refetch();
+        }}
       />
-      
-        <CustomTab
-          value={rewardTab}
-          data={[
-            { label: t("valid"), value: ERewardTab.valid },
-            { label: t("invalid"), value: ERewardTab.invalid },
-          ]}
-          onChange={(data) => {
-            setRewardTab(data as ERewardTab);
-            getValidRewardsInfiniteQuery.refetch();
-            getInvalidRewardsInfiniteQuery.refetch();
-          }}
-        />
-      
       <SizedBox height={sh(10)} />
       <FlashList
         data={

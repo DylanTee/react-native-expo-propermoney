@@ -11,7 +11,7 @@ import { Colors } from "@styles/Colors";
 import { useNavigation } from "@react-navigation/native";
 import { AppStackNavigationProp } from "@libs/react.navigation.lib";
 import dayjs from "dayjs";
-import TransactionCard from "@components/Shared/TransactionCard";
+import TransactionCard from "@components/Shared/Card/TransactionCard";
 import { displayCurrency } from "@libs/utils";
 import CustomText from "@components/Shared/CustomText";
 import { EOverviewTransactionsReport } from "@screens/OverviewTransactionScreen";

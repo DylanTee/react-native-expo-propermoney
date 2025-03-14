@@ -2,12 +2,11 @@ import ContainerLayout from "@components/Layout/ContainerLayout";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
 import Header from "@components/Shared/Header";
 import CustomTextInput from "@components/Shared/CustomTextInput";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import SizedBox from "@components/Shared/SizedBox";
-import { sh } from "@libs/responsive.lib";
+import { sh, sw } from "@libs/responsive.lib";
 import { catchErrorDialog } from "@libs/utils";
 import React, { useState } from "react";
-import { Alert } from "react-native";
+import { Alert, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "@libs/i18n/index";
 import {
   TPostTransactionLabelCreateBody,
@@ -18,6 +17,9 @@ import CustomButton from "@components/Shared/CustomButton";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { TTransactionLabelForm } from ".";
+import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
+import { Colors } from "@styles/Colors";
+import CustomText from "@components/Shared/CustomText";
 
 interface TransactionLabelFormProps {
   form: TTransactionLabelForm;
@@ -126,39 +128,14 @@ export default function Form(props: TransactionLabelFormProps) {
   return (
     <ContainerLayout>
       <Header
+        containerStyle={{ padding: sw(15) }}
         onBack={() => {
           props.onClose();
         }}
-      />
-      <LoadingCircle visible={isLoading} />
-      <KeyboardLayout>
-          <CustomTextInput
-            maxLength={25}
-            label={"Label"}
-            value={form.name}
-            onChangeText={(text) =>
-              setForm((prevState) => ({
-                ...prevState,
-                name: text,
-              }))
-            }
-          />
-          <SizedBox height={sh(40)} />
-          <CustomButton
-            disabled={isLoading}
-            type={"primary"}
-            size={"medium"}
-            title={t("confirm")}
-            onPress={() => btnConfirm()}
-          />
-          {isEdit && (
-            <>
-              <SizedBox height={sh(20)} />
-              <CustomButton
-                disabled={isLoading}
-                size={"medium"}
-                type="secondary"
-                title={t("delete")}
+        itemRight={
+          <>
+            {isEdit && (
+              <TouchableOpacity
                 onPress={() => {
                   Alert.alert(
                     t(`delete`) + " " + form?.name + "?",
@@ -177,12 +154,44 @@ export default function Form(props: TransactionLabelFormProps) {
                     { cancelable: false }
                   );
                 }}
-              />
-
-              <SizedBox height={sh(40)} />
-            </>
-          )}
+              >
+                <ExpoVectorIcon
+                  name="delete"
+                  size={sw(20)}
+                  color={Colors.black}
+                />
+              </TouchableOpacity>
+            )}
+          </>
+        }
+      />
+      <KeyboardLayout>
+        <View style={{ padding: sw(15) }}>
+          <SizedBox height={sh(20)} />
+          <CustomText label="Label" size="extra-big" />
+          <CustomTextInput
+            autoFocus={true}
+            maxLength={25}
+            label={""}
+            value={form.name}
+            onChangeText={(text) =>
+              setForm((prevState) => ({
+                ...prevState,
+                name: text,
+              }))
+            }
+          />
+          <SizedBox height={sh(40)} />
+        </View>
       </KeyboardLayout>
+      <CustomButton
+        buttonStyle={{ marginBottom: sh(25), marginHorizontal: sw(15) }}
+        disabled={isLoading}
+        type={"primary"}
+        size={"medium"}
+        title={t("confirm")}
+        onPress={() => btnConfirm()}
+      />
     </ContainerLayout>
   );
 }

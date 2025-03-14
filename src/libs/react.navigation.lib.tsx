@@ -28,7 +28,6 @@ import OverviewTransactionScreen from "@screens/OverviewTransactionScreen";
 import TransactionSettingsScreen from "@screens/TransactionSettingsScreen";
 import TransactionAccountSwitchScreen from "@screens/TransactionAccountSwitchScreen";
 import { TReward } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import TransactionHistoryByCategoryOrLabelScreen from "@screens/TransactionHistoryByCategoryOrLabelScreen";
 import TransactionDetailScreen from "@screens/TransactionDetailScreen";
 
 export type OverviewTransactionScreenParams = {
@@ -74,13 +73,6 @@ export type AppStackParamList = {
   TransactionAccountSwitchScreen: {
     userId: string | undefined;
     onSelect(userId: string | undefined): void;
-  };
-  TransactionHistoryByCategoryOrLabelScreen: {
-    startTransactedAt: Date | null;
-    endTransactedAt: Date | null;
-    targetUserId: string;
-    type: EGetTransactionsByType;
-    _id: string;
   };
 };
 
@@ -184,11 +176,6 @@ export default function Router() {
         <AppStack.Screen
           name="TransactionAccountSwitchScreen"
           component={TransactionAccountSwitchScreen}
-          options={options}
-        />
-        <AppStack.Screen
-          name="TransactionHistoryByCategoryOrLabelScreen"
-          component={TransactionHistoryByCategoryOrLabelScreen}
           options={options}
         />
       </AppStack.Navigator>

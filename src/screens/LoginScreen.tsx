@@ -10,7 +10,6 @@ import {
   getRandomNumber,
   removeSpecialCharacters,
 } from "@libs/utils";
-import LoadingCircle from "@components/Shared/LoadingCircle";
 import {
   TPostUserRequestOTPBody,
   TPostUserRequestOTPResponse,
@@ -113,91 +112,89 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
 
   return (
     <>
-      <LoadingCircle visible={isLoading} />
       <ContainerLayout>
         <KeyboardLayout>
-          
-            <SizedBox height={sh(40)} />
-            <Image
-              source={require("@assets/logo.png")}
-              style={{
-                height: sw(50),
-                width: sw(50),
-                borderRadius: sw(50 / 2),
-                alignSelf: "center",
-              }}
-              resizeMode={"contain"}
-              onError={(e) => {}}
-            />
-            <SizedBox height={sh(40)} />
-            <CustomTextInput
-              itemLeft={
-                <ModalCountryPicker
-                  listComponents={
-                    <>
-                      <CustomText
-                        size={"medium"}
-                        label={phoneNumber.selectedCountry.countryCode}
-                      />
-                      <SizedBox width={sw(5)} />
-                      <ExpoVectorIcon
-                        name="down"
-                        size={sw(10)}
-                        color={Colors.black}
-                      />
-                      <SizedBox width={sw(5)} />
-                    </>
-                  }
-                  buttonStyle={{
-                    flexDirection: "row",
-                    borderRightWidth: 1.5,
-                    borderColor: Colors.gainsboro,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  countryCode={phoneNumber.selectedCountry.countryCode}
-                  onChange={(data) => {
-                    setPhoneNumber({ ...phoneNumber, selectedCountry: data });
-                  }}
-                />
-              }
-              label={t("phoneNumber")}
-              keyboardType={"phone-pad"}
-              autoCapitalize="none"
-              onChangeText={(text) =>
-                setPhoneNumber({
-                  ...phoneNumber,
-                  text: removeSpecialCharacters(text.trim()),
-                })
-              }
-              value={phoneNumber.text}
-            />
-            <SizedBox height={sh(5)} />
-            <TouchableOpacity
-              onPress={() => {
-                Linking.openURL("https://pr0per.vercel.app/privacy-policy");
-              }}
-            >
-              <CustomText
-                label="By submitting your phone number, you confirm you've read the Privacy Policy"
-                size="small"
+          <SizedBox height={sh(40)} />
+          <Image
+            source={require("@assets/logo.png")}
+            style={{
+              height: sw(50),
+              width: sw(50),
+              borderRadius: sw(50 / 2),
+              alignSelf: "center",
+            }}
+            resizeMode={"contain"}
+            onError={(e) => {}}
+          />
+          <SizedBox height={sh(40)} />
+          <CustomTextInput
+            itemLeft={
+              <ModalCountryPicker
+                listComponents={
+                  <>
+                    <CustomText
+                      size={"medium"}
+                      label={phoneNumber.selectedCountry.countryCode}
+                    />
+                    <SizedBox width={sw(5)} />
+                    <ExpoVectorIcon
+                      name="down"
+                      size={sw(10)}
+                      color={Colors.black}
+                    />
+                    <SizedBox width={sw(5)} />
+                  </>
+                }
+                buttonStyle={{
+                  flexDirection: "row",
+                  borderRightWidth: 1.5,
+                  borderColor: Colors.gainsboro,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                countryCode={phoneNumber.selectedCountry.countryCode}
+                onChange={(data) => {
+                  setPhoneNumber({ ...phoneNumber, selectedCountry: data });
+                }}
               />
-            </TouchableOpacity>
-            <SizedBox height={sh(40)} />
-            <CustomButton
-              isTimer={true}
-              disabled={
-                phoneNumber.text.trim().length == 0 ||
-                userRequestOTPMutation.isPending ||
-                isLoading
-              }
-              type={"primary"}
-              size={"medium"}
-              title={"Log In"}
-              onPress={() => handleLogin()}
+            }
+            label={t("phoneNumber")}
+            keyboardType={"phone-pad"}
+            autoCapitalize="none"
+            onChangeText={(text) =>
+              setPhoneNumber({
+                ...phoneNumber,
+                text: removeSpecialCharacters(text.trim()),
+              })
+            }
+            value={phoneNumber.text}
+          />
+          <SizedBox height={sh(5)} />
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL("https://pr0per.vercel.app/privacy-policy");
+            }}
+          >
+            <CustomText
+              label="By submitting your phone number, you confirm you've read the Privacy Policy"
+              size="small"
             />
-            <SizedBox height={sh(20)} />
-            <VersionText />
+          </TouchableOpacity>
+          <SizedBox height={sh(40)} />
+          <CustomButton
+            isTimer={true}
+            disabled={
+              phoneNumber.text.trim().length == 0 ||
+              userRequestOTPMutation.isPending ||
+              isLoading
+            }
+            type={"primary"}
+            size={"medium"}
+            title={"Log In"}
+            onPress={() => handleLogin()}
+          />
+          <SizedBox height={sh(20)} />
+          <VersionText />
         </KeyboardLayout>
       </ContainerLayout>
     </>
