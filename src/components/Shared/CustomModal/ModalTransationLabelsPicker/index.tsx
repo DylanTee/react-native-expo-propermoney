@@ -1,7 +1,7 @@
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import Header from "@components/Shared/Header";
 import SizedBox from "@components/Shared/SizedBox";
-import { sh, sw } from "@libs/responsive.lib";
+import { sfont, sh, sw } from "@libs/responsive.lib";
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "@styles/Colors";
 import React, { ReactNode, useMemo, useState } from "react";
@@ -10,17 +10,16 @@ import {
   Linking,
   Modal,
   Platform,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useTranslation } from "@libs/i18n/index";
-import SearchBar from "@components/Shared/SeachBar";
 import CustomText from "@components/Shared/CustomText";
 import CustomButton from "@components/Shared/CustomButton";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import { Global } from "@styles/Global";
 import NextCreateButton from "@components/Shared/NextCreateButton";
-import UsageCard from "@components/Shared/UsageCard";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import {
@@ -29,6 +28,7 @@ import {
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { useAuthStore } from "@libs/zustand/authStore";
 import Form from "./form";
+import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 
 export type TTransactionLabelForm = {
   _id: string | undefined;
@@ -84,16 +84,6 @@ export default function ModalTransationLabelsPicker(
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isVisibleForm, setIsVisibleForm] = useState<boolean>(false);
   const [form, setForm] = useState<TTransactionLabelForm>(initialFormState);
-
-  const listToShow = useMemo(() => {
-    let list = labels;
-    if (searchText.length > 0) {
-      list = labels.filter((x) =>
-        x.name.toLowerCase().trim().includes(searchText.toLowerCase())
-      );
-    }
-    return list;
-  }, [labels, searchText]);
 
   const handleIsLabelNotExceededMaximum = (item: TTransactionLabel) => {
     const index = labels.findIndex((x) => x._id == item._id);
@@ -160,27 +150,52 @@ export default function ModalTransationLabelsPicker(
                 paddingTop: Platform.OS === "android" ? 0 : sw(50),
               }}
             >
-              <Header
-                onBack={() => {
-                  setIsVisible(false);
+              <SizedBox height={sh(15)} />
+              <View
+                style={{
+                  flexDirection: "row",
+                  padding: sw(10),
+                  paddingTop: 0,
+                  paddingHorizontal: sw(15),
+                  borderBottomWidth: 2,
+                  borderColor: Colors.gainsboro,
+                  alignItems: "center",
                 }}
-              />
-              <LoadingCircle
-                visible={useGetTransactionLabelInfiniteQuery.isFetching}
-              />
-
-              <UsageCard
-                title={t("labels")}
-                currentLength={labels.length}
-                maximumLength={authStore.user?.feature.maximumLabels ?? 0}
-              />
-              <SizedBox height={sh(10)} />
-              <SearchBar
-                autoFocus={true}
-                placeholder={t("searchToAdd")}
-                value={searchText}
-                onChangeText={(text) => setSearchText(text)}
-              />
+              >
+                <TouchableOpacity
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: sw(40),
+                    height: sw(40),
+                    borderRadius: sw(40 / 2),
+                    backgroundColor: "#DDE0DA",
+                  }}
+                  onPress={() => {
+                    setIsVisible(false);
+                    setSearchText("");
+                  }}
+                >
+                  <ExpoVectorIcon
+                    name={"close"}
+                    size={sw(20)}
+                    color={Colors.black}
+                  />
+                </TouchableOpacity>
+                <SizedBox width={sw(10)} />
+                <TextInput
+                  style={{
+                    width: "95%",
+                    color: Colors.black,
+                    fontSize: sfont(14),
+                  }}
+                  autoFocus={true}
+                  placeholderTextColor={Colors.rocketMetalic}
+                  placeholder={t("searchToAdd")}
+                  value={searchText}
+                  onChangeText={(text) => setSearchText(text)}
+                />
+              </View>
               {searchText.trim().length > 0 ? (
                 <>
                   <NextCreateButton
@@ -202,93 +217,73 @@ export default function ModalTransationLabelsPicker(
               )}
               <SizedBox height={sh(20)} />
               <FlashList
-                data={listToShow}
-                ItemSeparatorComponent={() => <SizedBox height={sh(20)} />}
+                data={labels}
                 renderItem={({ item }) => (
-                  <View
-                    style={[
-                      {
-                        padding: sw(10),
-                        marginHorizontal: sw(15),
-                        backgroundColor: Colors.white,
-                        borderRadius: sw(5),
-                      },
-                      Global.shadowLine,
-                    ]}
-                  >
-                    <CustomText size={"medium"} label={item.name} />
-                    <View style={{ flexDirection: "row", marginLeft: "auto" }}>
-                      {/* {route.params.isShowTransactions && (
-                    <CustomButton
-                      type={"primary"}
-                      size={"small"}
-                      title={t("transaction")}
-                      onPress={() => {
-                        if (authStore.user) {
-                          navigation.replace(
-                            "TransactionHistoryByCategoryOrLabelScreen",
+                  <TouchableOpacity
+                    style={{ flexDirection: "row",padding:sw(20),alignItems:"center" }}
+                    onPress={() => {
+                      if (handleIsLabelNotExceededMaximum(item)) {
+                        handleIds(item._id);
+                      } else {
+                        Alert.alert(
+                          "Upgrade",
+                          `In order to choose ${item.name}`,
+                          [
                             {
-                              type: EGetTransactionsByType.label,
-                              _id: item._id,
-                              targetUserId: authStore.user._id,
-                              startTransactedAt: null,
-                              endTransactedAt: null,
-                            }
-                          );
-                        }
-                      }}
+                              text: t("ok"),
+                              onPress: () => {
+                                Linking.openURL(
+                                  `https://pr0per.vercel.app/topup?projectId=propermoney&userId=${authStore.user?._id}`
+                                );
+                              },
+                              style: "cancel",
+                            },
+                          ],
+                          { cancelable: false }
+                        );
+                      }
+                    }}
+                  >
+                    <CustomText
+                      containerStyle={{ flex: 1 }}
+                      label={item.name}
+                      size="medium"
                     />
-                  )} */}
-
-                      <CustomButton
-                        type={
-                          transactionLabelIds.find((x) => x == item._id)
-                            ? "secondary"
-                            : "primary"
-                        }
-                        size={"small"}
-                        title={
-                          transactionLabelIds.find((x) => x == item._id)
-                            ? t("remove")
-                            : t("choose")
-                        }
-                        onPress={() => {
-                          if (handleIsLabelNotExceededMaximum(item)) {
-                            handleIds(item._id);
-                          } else {
-                            Alert.alert(
-                              "Upgrade",
-                              `In order to choose ${item.name}`,
-                              [
-                                {
-                                  text: t("ok"),
-                                  onPress: () => {
-                                    Linking.openURL(
-                                      `https://pr0per.vercel.app/topup?projectId=propermoney&userId=${authStore.user?._id}`
-                                    );
-                                  },
-                                  style: "cancel",
-                                },
-                              ],
-                              { cancelable: false }
-                            );
-                          }
+                    <TouchableOpacity
+                      onPress={() => {
+                        setForm(item);
+                        setIsVisibleForm(true);
+                      }}
+                    >
+                      <ExpoVectorIcon
+                        name="edit"
+                        size={sw(20)}
+                        color={Colors.suvaGrey}
+                      />
+                    </TouchableOpacity>
+                    <SizedBox width={sw(20)} />
+                    <View
+                      style={{
+                        borderWidth: 2,
+                        borderColor: props.ids.includes(item._id)
+                          ? "#1D3600"
+                          : Colors.suvaGrey,
+                        padding: sw(2),
+                        borderRadius: sw(100 / 2),
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: sw(10),
+                          height: sw(10),
+                          backgroundColor: props.ids.includes(item._id)
+                            ? "#1D3600"
+                            : "transparent",
+                          borderRadius: sw(100 / 2),
                         }}
                       />
-                      <>
-                        <SizedBox width={sw(10)} />
-                        <CustomButton
-                          type={"primary"}
-                          size={"small"}
-                          title={t("edit")}
-                          onPress={() => {
-                            setForm(item);
-                            setIsVisibleForm(true);
-                          }}
-                        />
-                      </>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 )}
                 estimatedItemSize={30}
                 ListFooterComponent={

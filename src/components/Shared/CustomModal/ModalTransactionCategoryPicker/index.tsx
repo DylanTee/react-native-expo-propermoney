@@ -1,16 +1,12 @@
 import ContainerLayout from "@components/Layout/ContainerLayout";
-import CustomButton from "@components/Shared/CustomButton";
-import CustomItemPicker from "@components/Shared/CustomItemPicker";
 import CustomTab from "@components/Shared/CustomTab";
 import CustomText from "@components/Shared/CustomText";
 import Header from "@components/Shared/Header";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import NextCreateButton from "@components/Shared/NextCreateButton";
-import SearchBar from "@components/Shared/SeachBar";
 import SizedBox from "@components/Shared/SizedBox";
-import UsageCard from "@components/Shared/UsageCard";
 import { AxiosLibs } from "@libs/axios.lib";
-import { sh, sw } from "@libs/responsive.lib";
+import { sfont, sh, sw } from "@libs/responsive.lib";
 import { useAuthStore } from "@libs/zustand/authStore";
 import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import {
@@ -19,8 +15,7 @@ import {
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "@styles/Colors";
-import { Global } from "@styles/Global";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import React, {
@@ -29,11 +24,13 @@ import React, {
   Linking,
   Modal,
   Platform,
+  TextInput,
   TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
 import Form from "./form";
+import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 
 export type TTransactionCategoryForm = {
   _id: string | undefined;
@@ -63,10 +60,6 @@ export default function ModalTransactionCategoryPicker(
 ) {
   const authStore = useAuthStore();
   const { t } = useTranslation();
-  const [transasctionCategoryId, setTransasctionCategoryId] = useState<
-    string | null
-  >(props.id);
-
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isVisibleForm, setIsVisibleForm] = useState<boolean>(false);
   const [form, setForm] = useState<TTransactionCategoryForm>(initialFormState);
@@ -141,7 +134,6 @@ export default function ModalTransactionCategoryPicker(
                 useGetTransactionCategoryInfiniteQuery.refetch();
               }}
               onChange={(_id) => {
-                setTransasctionCategoryId(_id);
                 useGetTransactionCategoryInfiniteQuery.refetch();
                 props.onChange(_id);
                 setIsVisibleForm(false);
@@ -157,42 +149,60 @@ export default function ModalTransactionCategoryPicker(
                 paddingTop: Platform.OS === "android" ? 0 : sw(50),
               }}
             >
-              <Header onBack={() => setIsVisible(false)} />
-              <LoadingCircle
-                visible={useGetTransactionCategoryInfiniteQuery.isFetching}
+              <Header
+                containerStyle={{ paddingHorizontal: sw(15) }}
+                itemRight={
+                  <CustomTab
+                    value={categoryType}
+                    data={[
+                      {
+                        label: t("income"),
+                        value: ETransactionCategoryType.income,
+                      },
+                      {
+                        label: t("expenses"),
+                        value: ETransactionCategoryType.expense,
+                      },
+                    ]}
+                    onChange={(data) =>
+                      setCategoryType(data as ETransactionCategoryType)
+                    }
+                  />
+                }
+                onBack={() => setIsVisible(false)}
               />
-              <>
-                <UsageCard
-                  title={t("categories")}
-                  currentLength={categoriesLength}
-                  maximumLength={authStore.user?.feature.maximumCategories ?? 0}
+
+              <SizedBox height={sh(10)} />
+              <View
+                style={{
+                  flexDirection: "row",
+                  padding: sw(10),
+                  paddingTop: 0,
+                  paddingHorizontal: sw(15),
+                  borderBottomWidth: 2,
+                  borderColor: Colors.gainsboro,
+                  alignItems: "center",
+                }}
+              >
+                <ExpoVectorIcon
+                  name="search1"
+                  size={sw(15)}
+                  color={Colors.black}
                 />
-                <SizedBox height={sh(10)} />
-                <CustomTab
-                  value={categoryType}
-                  data={[
-                    {
-                      label: t("income"),
-                      value: ETransactionCategoryType.income,
-                    },
-                    {
-                      label: t("expenses"),
-                      value: ETransactionCategoryType.expense,
-                    },
-                  ]}
-                  onChange={(data) =>
-                    setCategoryType(data as ETransactionCategoryType)
-                  }
-                />
-                <SizedBox height={sh(10)} />
-                <SearchBar
+                <SizedBox width={sw(10)} />
+                <TextInput
+                  style={{
+                    width: "95%",
+                    color: Colors.black,
+                    fontSize: sfont(14),
+                  }}
                   autoFocus={true}
+                  placeholderTextColor={Colors.rocketMetalic}
                   placeholder={t("searchToAdd")}
                   value={searchText}
                   onChangeText={(text) => setSearchText(text)}
                 />
-                <SizedBox height={sh(20)} />
-              </>
+              </View>
               {searchText.trim().length > 0 &&
               categories.length == 0 &&
               useGetTransactionCategoryInfiniteQuery.isSuccess ? (
@@ -220,110 +230,96 @@ export default function ModalTransactionCategoryPicker(
                 data={categories}
                 ItemSeparatorComponent={() => <SizedBox height={sw(20)} />}
                 renderItem={({ item }) => (
-                  <View
-                    style={[
-                      Global.shadowLine,
-                      {
-                        padding: sw(10),
-                        backgroundColor: Colors.white,
-                        marginHorizontal: sw(15),
-                      },
-                    ]}
+                  <TouchableOpacity
+                    style={{
+                      padding: sw(15),
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      if (handleIsLabelNotExceededMaximum(item)) {
+                        props.onChange(item._id);
+                        setIsVisible(false);
+                      } else {
+                        Alert.alert(
+                          "Upgrade",
+                          `In order to choose ${item.name}`,
+                          [
+                            {
+                              text: t("ok"),
+                              onPress: () => {
+                                Linking.openURL(
+                                  `https://pr0per.vercel.app/topup?projectId=propermoney`
+                                );
+                              },
+                              style: "cancel",
+                            },
+                          ],
+                          { cancelable: false }
+                        );
+                      }
+                    }}
                   >
                     <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
+                      style={{
+                        width: sw(45),
+                        height: sw(45),
+                        borderRadius: sw(45) / 2,
+                        padding: sw(10),
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: item.backgroundColor,
+                      }}
+                    >
+                      <Image
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          position: "absolute",
+                          zIndex: 1,
+                        }}
+                        source={{ uri: item.imagePath }}
+                      />
+                    </View>
+                    <SizedBox width={sw(10)} />
+                    <CustomText
+                      containerStyle={{ flex: 1 }}
+                      label={item.name}
+                      size="medium"
+                    />
+                    <TouchableOpacity
+                      onPress={() => {
+                        setForm(item);
+                        setIsVisibleForm(true);
+                      }}
+                    >
+                      <ExpoVectorIcon
+                        name="edit"
+                        size={sw(20)}
+                        color={Colors.suvaGrey}
+                      />
+                    </TouchableOpacity>
+                    <SizedBox width={sw(20)} />
+                    <View
+                      style={{
+                        borderWidth: 2,
+                        borderColor:
+                          props.id == item._id ? "#1D3600" : Colors.suvaGrey,
+                        padding: sw(2),
+                        borderRadius: sw(100 / 2),
+                      }}
                     >
                       <View
                         style={{
-                          width: sw(30),
-                          height: sw(30),
-                          borderRadius: sw(50) / 2,
-                          padding: sw(5),
-                          justifyContent: "center",
-                          alignItems: "center",
-                          backgroundColor: item.backgroundColor,
-                        }}
-                      >
-                        <Image
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            position: "absolute",
-                            zIndex: 1,
-                          }}
-                          resizeMode="contain"
-                          source={{ uri: item.imagePath }}
-                        />
-                      </View>
-                      <SizedBox width={sw(10)} />
-                      <CustomText size={`medium`} label={item.name} />
-                    </View>
-                    <View style={{ flexDirection: "row", marginLeft: "auto" }}>
-                      {/* {route.params.isShowTransactions && (
-              <CustomButton
-                type={"primary"}
-                size="small"
-                title={t("transaction")}
-                onPress={() => {
-                  if (authStore.user) {
-                    navigation.replace(
-                      "TransactionHistoryByCategoryOrLabelScreen",
-                      {
-                        type: EGetTransactionsByType.category,
-                        _id: item._id,
-                        targetUserId: authStore.user._id,
-                        startTransactedAt: null,
-                        endTransactedAt: null,
-                      }
-                    );
-                  }
-                }}
-              />
-            )} */}
-
-                      <CustomButton
-                        type={"primary"}
-                        size="small"
-                        title={t("choose")}
-                        onPress={() => {
-                          if (handleIsLabelNotExceededMaximum(item)) {
-                            props.onChange(item._id);
-                            setTransasctionCategoryId(item._id);
-                            setIsVisible(false);
-                          } else {
-                            Alert.alert(
-                              "Upgrade",
-                              `In order to choose ${item.name}`,
-                              [
-                                {
-                                  text: t("ok"),
-                                  onPress: () => {
-                                    Linking.openURL(
-                                      `https://pr0per.vercel.app/topup?projectId=propermoney`
-                                    );
-                                  },
-                                  style: "cancel",
-                                },
-                              ],
-                              { cancelable: false }
-                            );
-                          }
+                          width: sw(10),
+                          height: sw(10),
+                          backgroundColor:
+                            props.id == item._id ? "#1D3600" : "transparent",
+                          borderRadius: sw(100 / 2),
                         }}
                       />
-                      <>
-                        <SizedBox width={sw(10)} />
-                        <CustomButton
-                          type={"primary"}
-                          size="small"
-                          title={t("edit")}
-                          onPress={() => {
-                            setForm(item);
-                            setIsVisibleForm(true);
-                          }}
-                        />
-                      </>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 )}
                 estimatedItemSize={30}
                 ListFooterComponent={
@@ -331,6 +327,7 @@ export default function ModalTransactionCategoryPicker(
                     <LoadingCircle
                       visible={useGetTransactionCategoryInfiniteQuery.isLoading}
                     />
+                    <SizedBox height={sh(60)} />
                   </>
                 }
                 onEndReached={() => {

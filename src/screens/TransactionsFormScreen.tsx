@@ -463,7 +463,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                           borderWidth: 1,
                           borderRadius: sw(5),
                           marginLeft: "auto",
-                          padding: sw(5),
+                          padding: sw(5)
                         }}
                       >
                         <TransactionLabelsContainer

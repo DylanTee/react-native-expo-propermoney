@@ -102,25 +102,6 @@ const TransactionHistoryByCategoryOrLabelScreen: AppNavigationScreen<
     transactionsByCategoryData?.pages.flatMap((page) => {
       return page.totalTransactionsLength;
     }) ?? 0;
-  const getHeaderTitle = () => {
-    if (
-      transactions.length > 0 &&
-      route.params.type == EGetTransactionsByType.category
-    ) {
-      return transactions[0].transactionCategory.name;
-    } else if (
-      transactions.length > 0 &&
-      route.params.type == EGetTransactionsByType.label
-    ) {
-      return (
-        transactions[0].transactionLabels?.filter(
-          (z) => z._id == route.params._id
-        )[0].name ?? ""
-      );
-    } else {
-      return t("back");
-    }
-  };
 
   return (
     <ContainerLayout>
@@ -131,33 +112,6 @@ const TransactionHistoryByCategoryOrLabelScreen: AppNavigationScreen<
       />
       <Header onBack={() => navigation.goBack()} />
       <>
-        {/* <ModalSortPicker
-          buttonStyle={{}}
-          onChange={(data) => {
-            setSortBy(data);
-            getTransactionGetTransactionsByCategoryIdInfiniteQuery.refetch();
-          }}
-          sortBy={sortBy}
-          listComponents={
-            <>
-              <CustomItemPicker pickedText={sortBy} title={"Sort by"} />
-            </>
-          }
-        />
-        <SizedBox height={sh(10)} />
-        <ModalYearPicker
-          buttonStyle={{}}
-          onChange={(data) => {
-            setYear(data);
-            getTransactionGetTransactionsByCategoryIdInfiniteQuery.refetch();
-          }}
-          year={year}
-          listComponents={
-            <>
-              <CustomItemPicker pickedText={year.toString()} title={"Year"} />
-            </>
-          }
-        /> */}
         {year != "All" && transactions.length > 0 ? (
           <>
             <SizedBox height={sh(5)} />
