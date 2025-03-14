@@ -17,21 +17,6 @@ function removeSpecialCharacters(text: string) {
   return text.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, "");
 }
 
-async function catchErrorDialog(e: any) {
-  Alert.alert(
-    "Proper Money",
-    JSON.stringify(Axios.isAxiosError(e) ? e.response?.data.error : e, null, 2),
-    [
-      {
-        text: "Ok",
-        onPress: () => {},
-        style: "cancel",
-      },
-    ],
-    { cancelable: false }
-  );
-}
-
 function convertPhoneNumber({
   countryCode,
   text,
@@ -173,7 +158,6 @@ export {
   isValidDate,
   getRandomNumber,
   removeSpecialCharacters,
-  catchErrorDialog,
   convertPhoneNumber,
   isNumber,
   addFiveMinitunes,

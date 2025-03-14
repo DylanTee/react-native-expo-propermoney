@@ -6,7 +6,6 @@ import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import { sfont, sh, sw } from "@libs/responsive.lib";
 import { Colors } from "@styles/Colors";
 import { Global } from "@styles/Global";
-import { catchErrorDialog } from "@libs/utils";
 import { ERewardType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import {
   TGetPointTotalResponse,
@@ -108,7 +107,7 @@ const MyRewardStoreScreen: AppNavigationScreen<"MyRewardStoreScreen"> = ({
                   }
                 },
                 onError: (e) => {
-                  catchErrorDialog(e);
+                  Alert.alert(e.message);
                 },
               }
             );

@@ -9,7 +9,6 @@ import {
   TPostRewardClaimBody,
   TReward,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import { catchErrorDialog } from "@libs/utils";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
 import RewardCard from "@components/Shared/Card/RewardCard";
@@ -18,6 +17,7 @@ import { ERewardType } from "@mcdylanproperenterprise/nodejs-proper-money-types/
 import CustomTab from "@components/Shared/CustomTab";
 import { resetQueries } from "@libs/react.query.client.lib";
 import { AxiosLibs } from "@libs/axios.lib";
+import { Alert } from "react-native";
 
 export enum ERewardTab {
   valid = 0,
@@ -95,7 +95,7 @@ const MyRewardScreen: AppNavigationScreen<"MyRewardScreen"> = ({
             resetQueries();
           },
           onError: (e) => {
-            catchErrorDialog(e);
+            Alert.alert(e.message);
           },
         }
       );

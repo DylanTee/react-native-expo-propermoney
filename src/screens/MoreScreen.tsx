@@ -14,7 +14,7 @@ import ModalTextInput from "@components/Shared/CustomModal/ModalTextInput";
 import { useMutation } from "@tanstack/react-query";
 import { TPostUserUpdateBody } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { AxiosLibs } from "@libs/axios.lib";
-import { catchErrorDialog, handleLogOut } from "@libs/utils";
+import { handleLogOut } from "@libs/utils";
 import ModalLanguagePicker from "@components/Shared/CustomModal/ModalLanguagePicker";
 import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
 import ModalCurrencyPicker from "@components/Shared/CustomModal/ModalCurrencyPicker";
@@ -45,9 +45,8 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
           Alert.alert("Saved");
         },
         onError: (e) => {
-          catchErrorDialog(e);
-        },
-        onSettled: () => {},
+          Alert.alert(e.message);
+        }
       }
     );
   };

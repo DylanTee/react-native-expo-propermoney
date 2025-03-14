@@ -49,7 +49,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
     useState<EOverviewTransactionsReport>(
       EOverviewTransactionsReport.Transactions
     );
-  const getTransactionsQuery = useQuery({
+  const useGetDashboardQuery = useQuery({
     queryKey: ["dashboard", startTransactedAt, endTransactedAt],
     queryFn: async () => {
       const query: TGetTransactionsDashboardQuery = {
@@ -68,31 +68,33 @@ const OverviewTransactionScreen: AppNavigationScreen<
     },
   });
 
-  const getTransactionsQueryData = getTransactionsQuery.data as
+  const useGetDashboardQueryData = useGetDashboardQuery.data??undefined as
     | TGetTransactionDashboardResponse
     | undefined;
-  const userTransactions = getTransactionsQueryData?.user.transactions ?? [];
-  const userTransactionCategories =
-    getTransactionsQueryData?.user.transactionCategories ?? [];
-  const userTransactionLabels =
-    getTransactionsQueryData?.user.transactionLabels ?? [];
-  const userTimelineTransactions =
-    getTransactionsQueryData?.user.timelineTransactions ?? [];
-  const sharedUserTransactions =
-    getTransactionsQueryData?.sharedUser.transactions ?? [];
-  const sharedUserTimelineTransactions =
-    getTransactionsQueryData?.sharedUser.timelineTransactions ?? [];
-  const sharedUserTransactionCategories =
-    getTransactionsQueryData?.sharedUser.transactionCategories ?? [];
-  const sharedUserTransactionLabels =
-    getTransactionsQueryData?.sharedUser.transactionLabels ?? [];
-  const totalTransactions = getTransactionsQueryData?.total.transactions ?? [];
-  const totalTransactionCategories =
-    getTransactionsQueryData?.total.transactionCategories ?? [];
-  const totalTransactionLabels =
-    getTransactionsQueryData?.total.transactionLabels ?? [];
-  const totalTimelineTransactions =
-    getTransactionsQueryData?.total.timelineTransactions ?? [];
+  const userTransactions = [] as any
+  //useGetDashboardQueryData?.user?.transactions ?? [];
+  const userTransactionCategories = [] as any
+  //  useGetDashboardQueryData?.user?.transactionCategories ?? [];
+  const userTransactionLabels = [] as any
+  //  useGetDashboardQueryData?.user?.transactionLabels ?? [];
+  const userTimelineTransactions = [] as any
+  //  useGetDashboardQueryData?.user?.timelineTransactions ?? [];
+  const sharedUserTransactions = [] as any
+  //  useGetDashboardQueryData?.sharedUser?.transactions ?? [];
+  const sharedUserTimelineTransactions = [] as any
+  //  useGetDashboardQueryData?.sharedUser?.timelineTransactions ?? [];
+  const sharedUserTransactionCategories = [] as any
+   // useGetDashboardQueryData?.sharedUser?.transactionCategories ?? [];
+  const sharedUserTransactionLabels =[] as any
+   // useGetDashboardQueryData?.sharedUser?.transactionLabels ?? [];
+  const totalTransactions =[] as any
+  // useGetDashboardQueryData?.total?.transactions ?? [];
+  const totalTransactionCategories =[] as any
+   // useGetDashboardQueryData?.total?.transactionCategories ?? [];
+  const totalTransactionLabels =[] as any
+   // useGetDashboardQueryData?.total?.transactionLabels ?? [];
+  const totalTimelineTransactions = [] as any
+    //useGetDashboardQueryData?.total?.timelineTransactions ?? [];
   const isListToShowTransactions = useMemo(() => {
     if (selectedUserId) {
       if (selectedUserId == authStore.user?._id) {
@@ -161,8 +163,6 @@ const OverviewTransactionScreen: AppNavigationScreen<
     authStore.user?._id,
     userTimelineTransactions,
   ]);
-  const isThisMonth =
-    dayjs().format("YYYY-MM") == dayjs(startTransactedAt).format("YYYY-MM");
   const getDisplayName = () => {
     if (
       authStore.user?.sharedUserInfo &&
@@ -213,7 +213,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
           startTransactedAt={startTransactedAt}
           endTransactedAt={endTransactedAt}
           onDateChange={(start, end) => {
-            if (!getTransactionsQuery.isLoading) {
+            if (!useGetDashboardQuery.isLoading) {
               setStartTransactedAt(start);
               setEndTransactedAt(end);
             }
@@ -234,7 +234,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
         />
 
         <SizedBox height={sh(10)} />
-        {!getTransactionsQuery.isLoading ? (
+        {!useGetDashboardQuery.isLoading ? (
           <TransactionListings
             selectedReport={selectedReport}
             transactions={isListToShowTransactions}

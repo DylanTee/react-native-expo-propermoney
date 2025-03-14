@@ -6,7 +6,7 @@ import { sfont, sh, sw } from "@libs/responsive.lib";
 import ProgressBar from "@components/Shared/ProgressBar";
 import { Colors } from "@styles/Colors";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { catchErrorDialog, isAbleClaim } from "@libs/utils";
+import { isAbleClaim } from "@libs/utils";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Linking, ScrollView, View } from "react-native";
@@ -103,7 +103,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
             resetQueries();
           },
           onError: (e) => {
-            catchErrorDialog(e);
+            Alert.alert(e.message);
           },
         }
       );

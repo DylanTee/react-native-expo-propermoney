@@ -4,7 +4,6 @@ import Header from "@components/Shared/Header";
 import CustomTextInput from "@components/Shared/CustomTextInput";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
-import { catchErrorDialog } from "@libs/utils";
 import React, { useState } from "react";
 import { Alert, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "@libs/i18n/index";
@@ -79,7 +78,7 @@ export default function Form(props: TransactionLabelFormProps) {
                       props.onChange(form._id as unknown as string);
                     },
                     onError: (e) => {
-                      catchErrorDialog(e);
+                      Alert.alert(e.message);
                     },
                   }
                 );
@@ -92,7 +91,7 @@ export default function Form(props: TransactionLabelFormProps) {
                       props.onChange(response.data.id);
                     },
                     onError: (e) => {
-                      catchErrorDialog(e);
+                      Alert.alert(e.message);
                     },
                   }
                 );
@@ -114,7 +113,7 @@ export default function Form(props: TransactionLabelFormProps) {
           props.onClose();
         },
         onError: (e) => {
-          catchErrorDialog(e);
+          Alert.alert(e.message);
         },
       }
     );

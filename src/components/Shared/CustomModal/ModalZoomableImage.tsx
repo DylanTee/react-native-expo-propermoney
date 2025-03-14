@@ -2,6 +2,7 @@ import Header from "@components/Shared/Header";
 import { Colors } from "@styles/Colors";
 import React, { ReactNode, useState } from "react";
 import {
+  Alert,
   Image,
   Modal,
   Platform,
@@ -66,7 +67,6 @@ export default function ModalZoomableImage(props: ModalZoomableImageProps) {
                     width: "100%",
                   }}
                   resizeMode={"contain"}
-                  onError={(e) => {}}
                 />
               </ReactNativeZoomableView>
             </View>

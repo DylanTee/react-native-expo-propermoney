@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import {
+  Alert,
   Keyboard,
   NativeSyntheticEvent,
   StyleSheet,
@@ -25,8 +26,9 @@ import {
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { AsyncStorageLib } from "@libs/async.storage.lib";
 import CustomButton from "@components/Shared/CustomButton";
-import { catchErrorDialog, getRandomNumber } from "@libs/utils";
+import { getRandomNumber } from "@libs/utils";
 import { useAuthStore } from "@libs/zustand/authStore";
+import LoadingCircle from "@components/Shared/LoadingCircle";
 
 const VerifyOneTimePasswordScreen: AppNavigationScreen<
   "VerifyOneTimePasswordScreen"
@@ -48,19 +50,19 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
     five: "",
     six: "",
   });
-  const verificationVerifyMutation = useMutation({
+  const usePostVerifyMutation = useMutation({
     mutationFn: (data: TPostVerificationVerifyBody) => {
       return AxiosLibs.defaultClient.post("/verification/verify", data);
     },
   });
-  const requestOTPMutation = useMutation({
+  const usePostRequestOTPMutation = useMutation({
     mutationFn: (data: TPostUserRequestOTPBody) => {
       return AxiosLibs.defaultClient.post("/user/request-otp", data);
     },
   });
   useEffect(() => {
     if (Object.values(oneTimePassword).filter((x) => x === "").length === 0) {
-      verificationVerifyMutation.mutate(
+      usePostVerifyMutation.mutate(
         {
           phoneNumber: phoneNumber,
           oneTimePassword: Object.values(oneTimePassword)
@@ -132,7 +134,7 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
   };
 
   const handleResendCode = () => {
-    requestOTPMutation.mutate(
+    usePostRequestOTPMutation.mutate(
       {
         phoneNumber: phoneNumber,
       },
@@ -140,8 +142,8 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
         onSuccess: () => {
           AsyncStorageLib.setTimerToRequestOTP(getRandomNumber(30, 59));
         },
-        onError: (error) => {
-          catchErrorDialog(error);
+        onError: (e) => {
+          Alert.alert(e.message);
         },
       }
     );
@@ -241,8 +243,8 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
           <CustomButton
             isTimer={true}
             disabled={
-              verificationVerifyMutation.isPending ||
-              requestOTPMutation.isPending
+              usePostVerifyMutation.isPending ||
+              usePostRequestOTPMutation.isPending
             }
             type="tertiary"
             size="small"
@@ -250,6 +252,13 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
             onPress={() => handleResendCode()}
           />
         </View>
+        <LoadingCircle
+          containerStyle={{ margin: sw(20) }}
+          visible={
+            usePostRequestOTPMutation.isPending ||
+            usePostVerifyMutation.isPending
+          }
+        />
       </KeyboardLayout>
     </ContainerLayout>
   );

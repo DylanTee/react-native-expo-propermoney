@@ -5,7 +5,6 @@ import CustomTextInput from "@components/Shared/CustomTextInput";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
 import { Colors } from "@styles/Colors";
-import { catchErrorDialog } from "@libs/utils";
 import {
   TGetTransactionCategoryAssetsResponse,
   TPostTransactionCategoryCreateBody,
@@ -20,7 +19,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { TTransactionCategoryForm } from ".";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
-import CustomText from "@components/Shared/CustomText";
 
 interface TransactionCategoryFormProps {
   form: TTransactionCategoryForm;
@@ -141,7 +139,7 @@ export default function Form(props: TransactionCategoryFormProps) {
                       props.onChange(form._id as unknown as string);
                     },
                     onError: (e) => {
-                      catchErrorDialog(e);
+                      Alert.alert(e.message);
                     },
                   }
                 );
@@ -151,7 +149,7 @@ export default function Form(props: TransactionCategoryFormProps) {
                     props.onChange(response.data.id);
                   },
                   onError: (e) => {
-                    catchErrorDialog(e);
+                    Alert.alert(e.message);
                   },
                 });
               }
@@ -173,7 +171,7 @@ export default function Form(props: TransactionCategoryFormProps) {
             props.onClose();
           },
           onError: (e) => {
-            catchErrorDialog(e);
+            Alert.alert(e.message);
           },
         }
       );

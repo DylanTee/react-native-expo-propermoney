@@ -10,6 +10,7 @@ import { Buffer } from "buffer";
 import { ENV } from "../../../../environment/index";
 import axios from "axios";
 import {
+  Alert,
   Modal,
   Platform,
   ScrollView,
@@ -65,7 +66,9 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
           props.onChange(`${ENV.S3_BUCKET_NAME_BASE_URL}/${imagePathKey}`);
           setIsVisible(false);
         },
-        onError: (e) => {},
+        onError: (e) => {
+          Alert.alert(e.message);
+        },
       }
     );
   };

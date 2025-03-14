@@ -9,8 +9,8 @@ import {
   memberFeaturePremium,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { AxiosLibs } from "../axios.lib";
-import { ExpoUpdatesLibs } from "@libs/expo-updates.libs";
 import { ESubscriptionEntitlement } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
+import { navigationRef } from "@libs/react.navigation.lib";
 
 type AuthStore = {
   user:
@@ -26,45 +26,38 @@ type AuthStore = {
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   getDetail: async () => {
-    try {
-      const tokens =
-        (await AsyncStorageLib.getJWTtoken()) as unknown as TJwtToken;
-      if (tokens) {
-        AxiosLibs.setAccessToken(tokens.accessToken);
-        try {
-          const { data } = await AxiosLibs.defaultClient.get("/user/detail");
-          let premiumMemberTrialEndAt: Date | null = null;
-          let topUpMemberEndAt = null;
-          let feature: TMemberFeature = memberFeatureFree;
-          if (data.premiumMemberTrialEndAt) {
-            premiumMemberTrialEndAt = data.premiumMemberTrialEndAt;
+    const tokens =
+      (await AsyncStorageLib.getJWTtoken()) as unknown as TJwtToken;
+    if (tokens) {
+      try {
+        const { data } = await AxiosLibs.defaultClient.get("/user/detail");
+        let premiumMemberTrialEndAt: Date | null = null;
+        let topUpMemberEndAt = null;
+        let feature: TMemberFeature = memberFeatureFree;
+        if (data.premiumMemberTrialEndAt) {
+          premiumMemberTrialEndAt = data.premiumMemberTrialEndAt;
+          feature = memberFeaturePremium;
+        }
+        if (data.topUpMemberRole) {
+          premiumMemberTrialEndAt = null;
+          topUpMemberEndAt = data.topUpMemberEndAt;
+          if (data.topUpMemberRole == ESubscriptionEntitlement.plus) {
+            feature = memberFeaturePlus;
+          } else if (data.topUpMemberRole == ESubscriptionEntitlement.premium) {
             feature = memberFeaturePremium;
           }
-          if (data.topUpMemberRole) {
-            premiumMemberTrialEndAt = null;
-            topUpMemberEndAt = data.topUpMemberEndAt;
-            if (data.topUpMemberRole == ESubscriptionEntitlement.plus) {
-              feature = memberFeaturePlus;
-            } else if (
-              data.topUpMemberRole == ESubscriptionEntitlement.premium
-            ) {
-              feature = memberFeaturePremium;
-            }
-          }
-          set((state) => ({
-            ...state,
-            user: {
-              ...data,
-              premiumMemberTrialEndAt: premiumMemberTrialEndAt,
-              feature: feature,
-            },
-          }));
-        } catch (e) {
-          ExpoUpdatesLibs.handleAppRestart();
         }
+        set((state) => ({
+          ...state,
+          user: {
+            ...data,
+            premiumMemberTrialEndAt: premiumMemberTrialEndAt,
+            feature: feature,
+          },
+        }));
+      } catch (e) {
+        throw e;
       }
-    } catch (e) {
-      throw e;
     }
   },
   logOut: () => {
@@ -73,12 +66,14 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       ...state,
       user: null,
     }));
-    ExpoUpdatesLibs.handleAppRestart();
   },
   logIn: async (data) => {
     await AsyncStorageLib.setJWTtoken(data);
     Promise.all([get().getDetail()]).then(() => {
-      ExpoUpdatesLibs.handleAppRestart();
+      navigationRef.reset({
+        index: 0,
+        routes: [{ name: "HomeScreen" }],
+      });
     });
   },
 }));

@@ -3,18 +3,33 @@ import Axios from "axios";
 import { AsyncStorageLib } from "./async.storage.lib";
 import { TJwtToken } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import axios from "axios";
-import { ExpoUpdatesLibs } from "./expo-updates.libs";
 
 const defaultClient = Axios.create({
-  baseURL: ENV.API_URL,
-  //timeout: 60000,
+  baseURL: ENV.API_URL
 });
+
+defaultClient.interceptors.request.use(
+  async (config) => {
+    const cache = await AsyncStorageLib.getJWTtoken();
+    if (cache?.accessToken) {
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${cache.accessToken}`,
+      } as any;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 
 defaultClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  async (error) => {
+  async (e) => {
     try {
       const refreshUserAccessToken = async () => {
         try {
@@ -28,39 +43,33 @@ defaultClient.interceptors.response.use(
           });
           const data = response.data as TJwtToken;
           await AsyncStorageLib.setJWTtoken(data);
-          if (error.config) {
-            const newRequestConfig = { ...error.config };
+          if (e.config) {
+            const newRequestConfig = { ...e.config };
             newRequestConfig.headers = {
-              ...error.config.headers,
+              ...e.config.headers,
               Authorization: `Bearer ${tokens?.accessToken}`,
             } as any;
             return await defaultClient(newRequestConfig);
           }
           return true;
-        } catch (error) {
+        } catch (e) {
           AsyncStorageLib.clear();
-          ExpoUpdatesLibs.handleAppRestart();
         }
       };
       //accessToken expired, call api to get new token
-      if (Axios.isAxiosError(error) && error.response?.status === 401) {
+      if (Axios.isAxiosError(e) && e.response?.status === 401) {
         await refreshUserAccessToken();
       } else {
-        return Promise.reject(error);
+        return Promise.reject(e);
       }
-    } catch (error) {
-      return Promise.reject(error);
+    } catch (e) {
+      return Promise.reject(e);
     }
   }
 );
 
-const setAccessToken = async (accessToken: string) => {
-  defaultClient.defaults.headers.common[
-    "Authorization"
-  ] = `Bearer ${accessToken}`;
-};
+
 
 export const AxiosLibs = {
-  defaultClient,
-  setAccessToken,
+  defaultClient
 };

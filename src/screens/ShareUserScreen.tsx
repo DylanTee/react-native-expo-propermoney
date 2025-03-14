@@ -22,7 +22,6 @@ import {
   TPostUserRemoveSharedUserBody,
   TPostVerifyShareIdBody,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import { catchErrorDialog } from "@libs/utils";
 import { useTranslation } from "@libs/i18n/index";
 import dayjs from "dayjs";
 import CustomText from "@components/Shared/CustomText";
@@ -144,7 +143,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
             authStore.getDetail();
           },
           onError: (e) => {
-            catchErrorDialog(e);
+            Alert.alert(e.message);
           },
           onSettled: () => {
             setOneTimePassword({
@@ -191,7 +190,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                   {
                     onSuccess: () => {},
                     onError: (e) => {
-                      catchErrorDialog(e);
+                      Alert.alert(e.message);
                     },
                     onSettled: () => {
                       setOneTimePassword({

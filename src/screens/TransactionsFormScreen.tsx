@@ -2,11 +2,8 @@ import React, { useEffect, useState } from "react";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import Header from "@components/Shared/Header";
 import { useTranslation } from "@libs/i18n/index";
-import {
-  AppNavigationScreen,
-  OverviewTransactionScreenParams,
-} from "@libs/react.navigation.lib";
-import { catchErrorDialog, displayCurrency, isNumber } from "@libs/utils";
+import { AppNavigationScreen } from "@libs/react.navigation.lib";
+import { displayCurrency, isNumber } from "@libs/utils";
 import {
   TGetTransactionDetailQuery,
   TPostTransactionCreateBody,
@@ -163,7 +160,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
             navigation.goBack();
           },
           onError: (e) => {
-            catchErrorDialog(e);
+            Alert.alert(e.message);
           },
         }
       );
@@ -203,7 +200,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
           });
         },
         onError: (e) => {
-          catchErrorDialog(e);
+          Alert.alert(e.message);
         },
       }
     );
@@ -221,7 +218,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
           navigation.goBack();
         },
         onError: (e) => {
-          catchErrorDialog(e);
+          Alert.alert(e.message);
         },
       }
     );
@@ -555,7 +552,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                         }
                       },
                       onError: (e) => {
-                        catchErrorDialog(e);
+                        Alert.alert(e.message);
                       },
                     }
                   );

@@ -11,11 +11,7 @@ import {
   TCountry,
   countryList,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/lists/country";
-import {
-  catchErrorDialog,
-  convertPhoneNumber,
-  removeSpecialCharacters,
-} from "@libs/utils";
+import { convertPhoneNumber, removeSpecialCharacters } from "@libs/utils";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
 import { TPostRewardSubmitBody } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import CustomButton from "@components/Shared/CustomButton";
@@ -88,7 +84,7 @@ const MyRewardFormScreen: AppNavigationScreen<"MyRewardFormScreen"> = ({
                     navigation.goBack();
                   },
                   onError: (e) => {
-                    catchErrorDialog(e);
+                    Alert.alert(e.message);
                   },
                 }
               );
@@ -106,62 +102,62 @@ const MyRewardFormScreen: AppNavigationScreen<"MyRewardFormScreen"> = ({
     <ContainerLayout>
       <Header onBack={() => navigation.goBack()} />
       <KeyboardLayout>
-          <SizedBox height={sh(20)} />
-          <CustomText
-            label={t("provideEWalletPhoneNumberAccount")}
-            size={"medium"}
-          />
-          <SizedBox height={sh(20)} />
-          <CustomTextInput
-            itemLeft={
-              <ModalCountryPicker
-                listComponents={
-                  <>
-                    <CustomText
-                      size={"medium"}
-                      label={phoneNumber.selectedCountry.countryCode}
-                    />
-                    <SizedBox width={sw(5)} />
-                    <ExpoVectorIcon
-                      name="down"
-                      size={sw(10)}
-                      color={Colors.black}
-                    />
-                    <SizedBox width={sw(5)} />
-                  </>
-                }
-                buttonStyle={{
-                  flexDirection: "row",
-                  borderRightWidth: 1.5,
-                  borderColor: Colors.gainsboro,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                countryCode={phoneNumber.selectedCountry.countryCode}
-                onChange={(data) => {
-                  setPhoneNumber({ ...phoneNumber, selectedCountry: data });
-                }}
-              />
-            }
-            label={t("phoneNumber")}
-            keyboardType={"phone-pad"}
-            autoCapitalize="none"
-            onChangeText={(text) =>
-              setPhoneNumber({
-                ...phoneNumber,
-                text: removeSpecialCharacters(text.trim()),
-              })
-            }
-            value={phoneNumber.text}
-          />
-          <SizedBox height={sh(40)} />
-          <CustomButton
-            disabled={isLoading}
-            type={"primary"}
-            size={"big"}
-            title={t("submit")}
-            onPress={() => btnSubmit()}
-          />
+        <SizedBox height={sh(20)} />
+        <CustomText
+          label={t("provideEWalletPhoneNumberAccount")}
+          size={"medium"}
+        />
+        <SizedBox height={sh(20)} />
+        <CustomTextInput
+          itemLeft={
+            <ModalCountryPicker
+              listComponents={
+                <>
+                  <CustomText
+                    size={"medium"}
+                    label={phoneNumber.selectedCountry.countryCode}
+                  />
+                  <SizedBox width={sw(5)} />
+                  <ExpoVectorIcon
+                    name="down"
+                    size={sw(10)}
+                    color={Colors.black}
+                  />
+                  <SizedBox width={sw(5)} />
+                </>
+              }
+              buttonStyle={{
+                flexDirection: "row",
+                borderRightWidth: 1.5,
+                borderColor: Colors.gainsboro,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              countryCode={phoneNumber.selectedCountry.countryCode}
+              onChange={(data) => {
+                setPhoneNumber({ ...phoneNumber, selectedCountry: data });
+              }}
+            />
+          }
+          label={t("phoneNumber")}
+          keyboardType={"phone-pad"}
+          autoCapitalize="none"
+          onChangeText={(text) =>
+            setPhoneNumber({
+              ...phoneNumber,
+              text: removeSpecialCharacters(text.trim()),
+            })
+          }
+          value={phoneNumber.text}
+        />
+        <SizedBox height={sh(40)} />
+        <CustomButton
+          disabled={isLoading}
+          type={"primary"}
+          size={"big"}
+          title={t("submit")}
+          onPress={() => btnSubmit()}
+        />
       </KeyboardLayout>
     </ContainerLayout>
   );

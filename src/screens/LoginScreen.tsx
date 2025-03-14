@@ -5,7 +5,6 @@ import { sh, sw } from "@libs/responsive.lib";
 import { useTranslation } from "@libs/i18n/index";
 import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import {
-  catchErrorDialog,
   convertPhoneNumber,
   getRandomNumber,
   removeSpecialCharacters,
@@ -82,8 +81,8 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
                     oneTimePasswordType: data.verificationOneTimePasswordType,
                   });
                 },
-                onError: (error) => {
-                  catchErrorDialog(error);
+                onError: (e) => {
+                  Alert.alert(e.message);
                 },
               }
             );
@@ -124,7 +123,6 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
               alignSelf: "center",
             }}
             resizeMode={"contain"}
-            onError={(e) => {}}
           />
           <SizedBox height={sh(40)} />
           <CustomTextInput
