@@ -2,7 +2,13 @@ import ContainerLayout from "@components/Layout/ContainerLayout";
 import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import React from "react";
 import { sh, sw } from "@libs/responsive.lib";
-import { Linking, RefreshControl, ScrollView, View } from "react-native";
+import {
+  Linking,
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Colors } from "@styles/Colors";
 import { useTranslation } from "@libs/i18n/index";
 import MemberCard from "../components/Shared/Card/MemberCard";
@@ -69,18 +75,6 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
     },
     {
       index: 2,
-      label: t("overviewSpending"),
-      description: "Supervise your daily spending",
-      icon: <ExpoVectorIcon name="swap" size={sw(25)} color={Colors.black} />,
-      onPress: () => {
-        navigation.navigate("OverviewTransactionScreen", {
-          selectedUserId: authStore.user?._id,
-          startTransactedAt: new Date(),
-        });
-      },
-    },
-    {
-      index: 3,
       label: t("share"),
       description: "Share transactions record with your friends and family",
       icon: (
@@ -97,26 +91,8 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
         Linking.openURL("https://fb.watch/pk_8n0fyFQ/");
       },
     },
-    // {
-    //   index: 4,
-    //   label: `${t("categories")}`,
-    //   description: `Manage your ${t(
-    //     "categories"
-    //   )} such as edit, create and etc.`,
-    //   icon: (
-    //     <ExpoVectorIcon name="ellipsis1" size={sw(25)} color={Colors.black} />
-    //   ),
-    //   onPress: () => {
-    // },
-    // {
-    //   index: 5,
-    //   label: `${t("labels")}`,
-    //   description: `Manage your ${t("labels")} such as edit, create and etc.`,
-    //   icon: <ExpoVectorIcon name="tagso" size={sw(25)} color={Colors.black} />,
-    //   onPress: () => {},
-    // },
     {
-      index: 6,
+      index: 3,
       label: `${t("missions")}/${t("rewards")}`,
       description: "Earn reward points (RP) on every mission completed",
       icon: <ExpoVectorIcon name="flag" size={sw(25)} color={Colors.black} />,
@@ -125,7 +101,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       },
     },
     {
-      index: 7,
+      index: 4,
       label: `${t("contactSupport")}`,
       description: t("weValueYourFeedback"),
       icon: (
@@ -207,13 +183,33 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                 ))}
               </ScrollView>
               <SizedBox height={sh(20)} />
-              <CustomText
-                size="extra-big"
-                label="Transactions"
-                textStyle={{
-                  paddingHorizontal: sw(15),
-                }}
-              />
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <CustomText
+                  size="extra-big"
+                  label="Transactions"
+                  textStyle={{
+                    paddingHorizontal: sw(15),
+                  }}
+                />
+                <TouchableOpacity
+                  style={{ marginLeft: "auto", marginRight: sw(15) }}
+                  onPress={() => {
+                    navigation.navigate("OverviewTransactionScreen", {
+                      selectedUserId: authStore.user?._id,
+                      startTransactedAt: new Date(),
+                    });
+                  }}
+                >
+                  <CustomText
+                    label="See all"
+                    size="small"
+                    textStyle={{
+                      textDecorationLine: "underline",
+                      color: `#3E4D31`,
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
             </>
           }
           refreshControl={

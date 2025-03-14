@@ -183,48 +183,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
   };
   return (
     <ContainerLayout>
-      <Header
-        itemRight={
-          <>
-            <CustomButtonIcon
-              size="medium"
-              icon={
-                <ExpoVectorIcon
-                  name="plus"
-                  size={sw(15)}
-                  color={Colors.white}
-                />
-              }
-              onPress={() => {
-                if (authStore.user) {
-                  navigation.navigate("TransactionsFormScreen", {
-                    id: undefined,
-                    isEdit: false,
-                    isUsePhotoAI: false,
-                    onEdit: () => {},
-                    onDelete: () => {},
-                  });
-                }
-              }}
-            />
-            <SizedBox width={sw(10)} />
-            <CustomButtonIcon
-              size="medium"
-              icon={
-                <ExpoVectorIcon
-                  name="ellipsis1"
-                  size={sw(15)}
-                  color={Colors.white}
-                />
-              }
-              onPress={() => {
-                navigation.navigate("TransactionSettingsScreen");
-              }}
-            />
-          </>
-        }
-        onBack={() => navigation.goBack()}
-      />
+      <Header onBack={() => navigation.goBack()} />
       <ScrollView
         refreshControl={
           <RefreshControl
