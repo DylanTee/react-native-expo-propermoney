@@ -3,9 +3,11 @@ import CustomText from "./CustomText";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { TTransactionLabel } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
+import { TextStyle } from "react-native";
 
 interface TransactionLabelsContainerProps {
   ids: string[];
+  textStyle?: TextStyle;
 }
 
 export default function TransactionLabelsContainer(
@@ -31,9 +33,7 @@ export default function TransactionLabelsContainer(
 
   return (
     <CustomText
-      textStyle={{
-        color: "#5A5A5A",
-      }}
+      textStyle={props.textStyle}
       containerStyle={{ marginLeft: "auto" }}
       size="medium"
       label={`${details?.map((label) => label.name).join(", ")}`}

@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@mcdylanproperenterprise/nodejs-proper-money-types": "^0.0.14",
+    "@mcdylanproperenterprise/nodejs-proper-money-types": "^0.0.17",
     "@mcdylanproperenterprise/nodejs-proper-types": "^1.0.3",
     "@types/react": "^18.2.79",
     "babel-plugin-module-resolver": "^5.0.2",

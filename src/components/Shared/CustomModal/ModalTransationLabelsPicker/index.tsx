@@ -6,12 +6,12 @@ import { Colors } from "@styles/Colors";
 import React, { ReactNode, useState } from "react";
 import {
   Alert,
-  Linking,
   Modal,
   Platform,
   TextInput,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from "react-native";
 import { useTranslation } from "@libs/i18n/index";
 import CustomText from "@components/Shared/CustomText";
@@ -34,6 +34,7 @@ export type TTransactionLabelForm = {
 };
 
 interface ModalTransationLabelsPickerProps {
+  buttonStyle?: ViewStyle;
   ids: string[];
   listComponent: ReactNode;
   onChange(ids: string[]): void;
@@ -83,15 +84,6 @@ export default function ModalTransationLabelsPicker(
   const [isVisibleForm, setIsVisibleForm] = useState<boolean>(false);
   const [form, setForm] = useState<TTransactionLabelForm>(initialFormState);
 
-  const handleIsLabelNotExceededMaximum = (item: TTransactionLabel) => {
-    const index = labels.findIndex((x) => x._id == item._id);
-    if (authStore.user) {
-      return authStore.user.feature.maximumLabels > index;
-    } else {
-      return false;
-    }
-  };
-
   const handleIds = (id: string) => {
     const exitPicker = (ids: string[]) => {
       setTransactionLabelIds(ids);
@@ -114,6 +106,7 @@ export default function ModalTransationLabelsPicker(
   return (
     <>
       <TouchableOpacity
+        style={props.buttonStyle}
         onPress={() => {
           setIsVisible(true);
           setSearchText("");
@@ -204,26 +197,7 @@ export default function ModalTransationLabelsPicker(
                       alignItems: "center",
                     }}
                     onPress={() => {
-                      if (handleIsLabelNotExceededMaximum(item)) {
-                        handleIds(item._id);
-                      } else {
-                        Alert.alert(
-                          "Upgrade",
-                          `In order to choose ${item.name}`,
-                          [
-                            {
-                              text: t("ok"),
-                              onPress: () => {
-                                Linking.openURL(
-                                  `https://pr0per.vercel.app/topup?projectId=propermoney&userId=${authStore.user?._id}`
-                                );
-                              },
-                              style: "cancel",
-                            },
-                          ],
-                          { cancelable: false }
-                        );
-                      }
+                      handleIds(item._id);
                     }}
                   >
                     <CustomText

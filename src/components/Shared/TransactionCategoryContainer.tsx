@@ -3,7 +3,7 @@ import { sw } from "@libs/responsive.lib";
 import { TTransactionCategory } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import { Image, View, ViewStyle } from "react-native";
+import { Image, TextStyle, View, ViewStyle } from "react-native";
 import SizedBox from "./SizedBox";
 import CustomText from "./CustomText";
 import { Colors } from "@styles/Colors";
@@ -11,6 +11,7 @@ import { Colors } from "@styles/Colors";
 interface TransactionCategoryContainerProps {
   id: string | undefined;
   containerStyle?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
 export default function TransactionCategoryContainer(
@@ -58,7 +59,11 @@ export default function TransactionCategoryContainer(
         />
       </View>
       <SizedBox width={sw(5)} />
-      <CustomText size="medium" label={detail?.name ?? `Select`} />
+      <CustomText
+        size="medium"
+        textStyle={props.textStyle}
+        label={detail?.name ?? `Select`}
+      />
     </View>
   );
 }

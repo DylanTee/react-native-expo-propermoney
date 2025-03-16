@@ -97,23 +97,6 @@ export default function Form(props: TransactionCategoryFormProps) {
     } else if (form.backgroundColor.trim().length == 0) {
       Alert.alert("Missing background color");
     }
-    // else if (isNotAbleToConfirm) {
-    //   Alert.alert(
-    //     "Upgrade",
-    //     `Upgrade in order to create ${route.params.form.name}`,
-    //     [
-    //       {
-    //         text: t("ok"),
-    //         onPress: () => {
-    //           Linking.openURL(
-    //             `https://pr0per.vercel.app/topup?projectId=propermoney&userId`
-    //           );
-    //         },
-    //       },
-    //     ],
-    //     { cancelable: false }
-    //   );
-    // }
     else {
       Alert.alert(
         t("areYouSure") + "?",

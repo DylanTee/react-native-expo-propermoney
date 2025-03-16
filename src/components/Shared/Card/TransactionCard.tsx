@@ -22,23 +22,13 @@ const TransactionCard = ({
 }: TransactionCardProps) => {
   const authStore = useAuthStore();
   return (
-    <TouchableOpacity
-      style={containerStyle}
-      onPress={onPress}
-    >
+    <TouchableOpacity style={containerStyle} onPress={onPress}>
       <View
         style={{
           flexDirection: "row",
         }}
       >
-        <Avatar
-          size="big"
-          profileImage={
-            data.userId == authStore.user?._id
-              ? authStore.user.profileImage
-              : authStore.user?.sharedUserInfo?.profileImage ?? ""
-          }
-        />
+        <Avatar size="big" profileImage={data.user.profileImage} />
         <SizedBox width={sw(10)} />
         <View style={{ flex: 1, justifyContent: "center" }}>
           <View
@@ -58,7 +48,11 @@ const TransactionCard = ({
                 source={{ uri: data.transactionCategory.imagePath }}
               />
             </View>
-            <CustomText containerStyle={{flex:1}} size={"medium"} label={data.transactionCategory.name} />
+            <CustomText
+              containerStyle={{ flex: 1 }}
+              size={"medium"}
+              label={data.transactionCategory.name}
+            />
             <CustomText
               size={"medium"}
               label={displayCurrency({

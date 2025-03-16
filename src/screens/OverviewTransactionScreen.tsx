@@ -1,29 +1,26 @@
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import React, { useMemo, useState } from "react";
-import {
-  AppNavigationScreen,
-  TSelectedUserId,
-} from "@libs/react.navigation.lib";
+import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import dayjs from "dayjs";
-import DateSwitch from "@components/Shared/DateSwitch";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
 import Header from "@components/Shared/Header";
-import { Pressable, RefreshControl, ScrollView } from "react-native";
-import { useTranslation } from "@libs/i18n/index";
+import { RefreshControl, ScrollView, View } from "react-native";
 import {
-  TGetTransactionDashboardResponse,
-  TGetTransactionsDashboardQuery,
+  TGetTransactionQuery,
+  TTransaction,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { Colors } from "@styles/Colors";
-import TransactionListings from "@components/overview-transaction/TransactionListings";
-import CustomButtonIcon from "@components/Shared/CustomButtonIcon";
-import CustomItemPicker from "@components/Shared/CustomItemPicker";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
-import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
-import ModalOverviewTransctionsReportPicker from "@components/Shared/CustomModal/ModalOverviewTransctionsReport";
-import { useAuthStore } from "@libs/zustand/authStore";
+import { FlashList } from "@shopify/flash-list";
+import CustomText from "@components/Shared/CustomText";
+import TransactionCard from "@components/Shared/Card/TransactionCard";
+import LoadingCircle from "@components/Shared/LoadingCircle";
+import ModalTransactionCategoryPicker from "@components/Shared/CustomModal/ModalTransactionCategoryPicker";
+import TransactionCategoryContainer from "@components/Shared/TransactionCategoryContainer";
+import ModalTransationLabelsPicker from "@components/Shared/CustomModal/ModalTransationLabelsPicker";
+import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
 
 export enum EOverviewTransactionsReport {
   Categories = "Categories",
@@ -34,216 +31,225 @@ export enum EOverviewTransactionsReport {
 const OverviewTransactionScreen: AppNavigationScreen<
   "OverviewTransactionScreen"
 > = ({ navigation, route }) => {
-  const { t } = useTranslation();
-  const authStore = useAuthStore();
-  const [startTransactedAt, setStartTransactedAt] = useState<any>(
-    dayjs(route.params.startTransactedAt).startOf("month")
-  );
-  const [endTransactedAt, setEndTransactedAt] = useState<any>(
-    dayjs(route.params.startTransactedAt).endOf("month")
-  );
-  const [selectedUserId, setSelectedUserId] = useState<TSelectedUserId>(
-    route.params.selectedUserId
-  );
-  const [selectedReport, setSelectedReport] =
-    useState<EOverviewTransactionsReport>(
-      EOverviewTransactionsReport.Transactions
-    );
-  const useGetDashboardQuery = useQuery({
-    queryKey: ["dashboard", startTransactedAt, endTransactedAt],
-    queryFn: async () => {
-      const query: TGetTransactionsDashboardQuery = {
-        startTransactedAt: dayjs(startTransactedAt).startOf(
-          "month"
-        ) as unknown as string,
-        endTransactedAt: dayjs(endTransactedAt).endOf(
-          "month"
-        ) as unknown as string,
+  const [transactionCategoryId, setTransactionCategoryId] = useState<
+    undefined | string
+  >(undefined);
+  const [transactionLabelIds, setTransactionLabelIds] = useState<string[]>([]);
+
+  const useGetTransactionInfiniteQuery = useInfiniteQuery({
+    initialPageParam: 1,
+    queryKey: ["see-all", transactionCategoryId, transactionLabelIds],
+    queryFn: async ({ pageParam = 1 }) => {
+      const query: TGetTransactionQuery = {
+        limit: 10,
+        page: pageParam,
+        transactionCategoryId: transactionCategoryId,
+        transactionLabelIds: transactionLabelIds,
       };
-      const { data } = await AxiosLibs.defaultClient.get(
-        `/transaction/dashboard`,
-        { params: query }
-      );
+      const { data } = await AxiosLibs.defaultClient.get(`/transaction`, {
+        params: query,
+      });
       return data;
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      const hasNextPage = lastPage.pagination.has_next_page;
+      return hasNextPage ? allPages.length + 1 : undefined;
     },
   });
 
-  const useGetDashboardQueryData = useGetDashboardQuery.data??undefined as
-    | TGetTransactionDashboardResponse
-    | undefined;
-  const userTransactions = [] as any
-  //useGetDashboardQueryData?.user?.transactions ?? [];
-  const userTransactionCategories = [] as any
-  //  useGetDashboardQueryData?.user?.transactionCategories ?? [];
-  const userTransactionLabels = [] as any
-  //  useGetDashboardQueryData?.user?.transactionLabels ?? [];
-  const userTimelineTransactions = [] as any
-  //  useGetDashboardQueryData?.user?.timelineTransactions ?? [];
-  const sharedUserTransactions = [] as any
-  //  useGetDashboardQueryData?.sharedUser?.transactions ?? [];
-  const sharedUserTimelineTransactions = [] as any
-  //  useGetDashboardQueryData?.sharedUser?.timelineTransactions ?? [];
-  const sharedUserTransactionCategories = [] as any
-   // useGetDashboardQueryData?.sharedUser?.transactionCategories ?? [];
-  const sharedUserTransactionLabels =[] as any
-   // useGetDashboardQueryData?.sharedUser?.transactionLabels ?? [];
-  const totalTransactions =[] as any
-  // useGetDashboardQueryData?.total?.transactions ?? [];
-  const totalTransactionCategories =[] as any
-   // useGetDashboardQueryData?.total?.transactionCategories ?? [];
-  const totalTransactionLabels =[] as any
-   // useGetDashboardQueryData?.total?.transactionLabels ?? [];
-  const totalTimelineTransactions = [] as any
-    //useGetDashboardQueryData?.total?.timelineTransactions ?? [];
-  const isListToShowTransactions = useMemo(() => {
-    if (selectedUserId) {
-      if (selectedUserId == authStore.user?._id) {
-        return userTransactions;
-      } else {
-        return sharedUserTransactions;
-      }
-    } else {
-      return totalTransactions;
-    }
-  }, [
-    selectedUserId,
-    sharedUserTransactions,
-    totalTransactions,
-    authStore.user?._id,
-    userTransactions,
-  ]);
-  const isListToShowTransactionCategories = useMemo(() => {
-    if (selectedUserId) {
-      if (selectedUserId == authStore.user?._id) {
-        return userTransactionCategories;
-      } else {
-        return sharedUserTransactionCategories;
-      }
-    } else {
-      return totalTransactionCategories;
-    }
-  }, [
-    selectedUserId,
-    sharedUserTransactionCategories,
-    totalTransactionCategories,
-    authStore.user?._id,
-    userTransactionCategories,
-  ]);
-  const isListToShowTransactionLabels = useMemo(() => {
-    if (selectedUserId) {
-      if (selectedUserId == authStore.user?._id) {
-        return userTransactionLabels;
-      } else {
-        return sharedUserTransactionLabels;
-      }
-    } else {
-      return totalTransactionLabels;
-    }
-  }, [
-    selectedUserId,
-    sharedUserTransactionLabels,
-    totalTransactionLabels,
-    authStore.user?._id,
-    userTransactionLabels,
-  ]);
-  const isListToShowTimelineTransactions = useMemo(() => {
-    if (selectedUserId) {
-      if (selectedUserId == authStore.user?._id) {
-        return userTimelineTransactions;
-      } else {
-        return sharedUserTimelineTransactions;
-      }
-    } else {
-      return totalTimelineTransactions;
-    }
-  }, [
-    selectedUserId,
-    sharedUserTimelineTransactions,
-    totalTimelineTransactions,
-    authStore.user?._id,
-    userTimelineTransactions,
-  ]);
-  const getDisplayName = () => {
-    if (
-      authStore.user?.sharedUserInfo &&
-      selectedUserId == authStore.user.sharedUserInfo._id
-    ) {
-      return authStore.user.sharedUserInfo.displayName;
-    } else if (authStore.user?._id == selectedUserId) {
-      return authStore.user?.displayName;
-    } else if (selectedUserId == undefined) {
-      return (
-        authStore.user?.displayName +
-        " & " +
-        authStore.user?.sharedUserInfo?.displayName
-      );
-    } else {
-      return "";
-    }
-  };
+  const transactions: TTransaction[] =
+    useGetTransactionInfiniteQuery.data?.pages.flatMap((page) => {
+      return page.data;
+    }) ?? [];
+
+  const config = useMemo(() => {
+    return [
+      {
+        id: "category",
+        components: (
+          <ModalTransactionCategoryPicker
+            listComponents={
+              <>
+                {transactionCategoryId ? (
+                  <TransactionCategoryContainer
+                    textStyle={{ color: "#D6FFBC" }}
+                    containerStyle={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    id={transactionCategoryId}
+                  />
+                ) : (
+                  <CustomText
+                    label={`Category`}
+                    size="small"
+                    textStyle={{ color: Colors.primary }}
+                  />
+                )}
+              </>
+            }
+            buttonStyle={{
+              flexDirection: "row",
+              borderWidth: 1,
+              borderColor: Colors.suvaGrey,
+              backgroundColor: transactionCategoryId
+                ? Colors.primary
+                : "transparent",
+              borderRadius: sw(30),
+              padding: sw(5),
+              paddingHorizontal: sw(20),
+            }}
+            id={transactionCategoryId}
+            onChange={(id) => {
+              if (id == transactionCategoryId) {
+                setTransactionCategoryId(undefined);
+              } else {
+                setTransactionCategoryId(id);
+              }
+            }}
+          />
+        ),
+      },
+      {
+        id: "Label",
+        components: (
+          <ModalTransationLabelsPicker
+            buttonStyle={{
+              flexDirection: "row",
+              borderWidth: 1,
+              borderColor: Colors.suvaGrey,
+              backgroundColor:
+                transactionLabelIds.length > 0 ? Colors.primary : "transparent",
+              borderRadius: sw(30),
+              padding: sw(5),
+              paddingHorizontal: sw(20),
+            }}
+            listComponent={
+              <>
+                {transactionLabelIds.length > 0 ? (
+                  <TransactionLabelsContainer
+                    textStyle={{ color: "#D6FFBC" }}
+                    ids={transactionLabelIds}
+                  />
+                ) : (
+                  <CustomText
+                    label={`Label`}
+                    size="small"
+                    textStyle={{ color: Colors.primary }}
+                  />
+                )}
+              </>
+            }
+            ids={transactionLabelIds}
+            onChange={(ids) => {
+              setTransactionLabelIds(ids);
+            }}
+          />
+        ),
+      },
+    ];
+  }, [transactionCategoryId, transactionLabelIds]);
+
   return (
     <ContainerLayout>
-      <Header onBack={() => navigation.goBack()} />
-      <ScrollView
+      <Header
+        containerStyle={{ padding: sw(15) }}
+        onBack={() => navigation.goBack()}
+      />
+      <View style={{ padding: sw(15), paddingTop: 0 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {config.map((data) => (
+            <View style={{ marginRight: sw(8) }} key={data.id}>
+              {data.components}
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+      <FlashList
+        ListHeaderComponent={
+          <>
+            <CustomText
+              size="extra-big"
+              label="Transactions"
+              textStyle={{
+                paddingHorizontal: sw(15),
+              }}
+            />
+          </>
+        }
         refreshControl={
           <RefreshControl
             tintColor={Colors.black}
             refreshing={false}
-            onRefresh={() => {}}
+            onRefresh={() => {
+              useGetTransactionInfiniteQuery.refetch();
+            }}
           />
         }
-      >
-        <Pressable
-          onPress={() => {
-            navigation.navigate("TransactionAccountSwitchScreen", {
-              userId: selectedUserId,
-              onSelect: (userId) => {
-                setSelectedUserId(userId);
-              },
-            });
-          }}
-        >
-          <CustomItemPicker
-            title={t("account")}
-            pickedText={getDisplayName() ?? ""}
-          />
-        </Pressable>
-        <SizedBox height={sh(20)} />
-        <DateSwitch
-          startTransactedAt={startTransactedAt}
-          endTransactedAt={endTransactedAt}
-          onDateChange={(start, end) => {
-            if (!useGetDashboardQuery.isLoading) {
-              setStartTransactedAt(start);
-              setEndTransactedAt(end);
-            }
-          }}
-        />
-        <SizedBox height={sh(20)} />
-        <ModalOverviewTransctionsReportPicker
-          report={selectedReport}
-          buttonStyle={{}}
-          onChange={(data) => {
-            setSelectedReport(data);
-          }}
-          listComponents={
-            <>
-              <CustomItemPicker pickedText={selectedReport} title={`Report`} />
-            </>
-          }
-        />
-
-        <SizedBox height={sh(10)} />
-        {!useGetDashboardQuery.isLoading ? (
-          <TransactionListings
-            selectedReport={selectedReport}
-            transactions={isListToShowTransactions}
-            timelineTransactions={isListToShowTimelineTransactions}
-          />
-        ) : (
-          <></>
+        data={transactions}
+        ItemSeparatorComponent={() => (
+          <>
+            <SizedBox height={sh(20)} />
+          </>
         )}
-      </ScrollView>
+        renderItem={({ item, index }) => (
+          <>
+            {index == 0 ||
+            dayjs(item.transactedAt).format(`YYYY-MM-DD`) !=
+              dayjs(transactions[index - 1].transactedAt).format(
+                "YYYY-MM-DD"
+              ) ? (
+              <View
+                style={{
+                  borderBottomWidth: 1,
+                  borderColor: Colors.gainsboro,
+                  marginVertical: sw(20),
+                  marginHorizontal: sw(15),
+                }}
+              >
+                <CustomText
+                  size="medium"
+                  label={`${
+                    dayjs().format("DD-MM-YYYY") ==
+                    dayjs(item.transactedAt).format("DD-MM-YYYY")
+                      ? `Today\n`
+                      : ``
+                  }${dayjs(item.transactedAt).format("DD MMMM YYYY")}`}
+                  textStyle={{ color: "#767676" }}
+                />
+                <SizedBox height={sh(5)} />
+              </View>
+            ) : (
+              <></>
+            )}
+            <TransactionCard
+              data={item}
+              containerStyle={{ marginHorizontal: sw(15) }}
+              onPress={() => {
+                navigation.navigate("TransactionDetailScreen", {
+                  id: item._id,
+                });
+              }}
+            />
+          </>
+        )}
+        estimatedItemSize={30}
+        keyExtractor={(item) => item._id}
+        ListFooterComponent={
+          <>
+            <LoadingCircle
+              visible={useGetTransactionInfiniteQuery.isFetching}
+              containerStyle={{ margin: sw(20) }}
+            />
+          </>
+        }
+        onEndReached={() => {
+          if (useGetTransactionInfiniteQuery.hasNextPage) {
+            useGetTransactionInfiniteQuery.fetchNextPage();
+          }
+        }}
+      />
     </ContainerLayout>
   );
 };

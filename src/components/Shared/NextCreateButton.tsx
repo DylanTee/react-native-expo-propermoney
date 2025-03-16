@@ -23,32 +23,22 @@ export default function NextCreateButton({
   const isMaximum = currentLength >= maximumLength;
   return (
     <>
-      <View style={{ padding: sw(15), alignItems: "center" }}>
+      <View
+        style={{
+          padding: sw(15),
+          alignItems: "center",
+        }}
+      >
         <CustomText size={"small"} label={`Tap Next to create`} />
         <CustomText size={"big"} label={searchText} />
         <SizedBox height={sh(10)} />
         <CustomButton
+          buttonStyle={{ paddingHorizontal: sw(20) }}
           title={t("next")}
           type={"primary"}
           size={"small"}
           onPress={() => {
-            if (isMaximum) {
-              Alert.alert(
-                "Upgrade",
-                `Upgrade in order to create ${searchText}`,
-                [
-                  {
-                    text: t("ok"),
-                    onPress: () => {
-                      `https://pr0per.vercel.app/topup?projectId=propermone`;
-                    },
-                  },
-                ],
-                { cancelable: false }
-              );
-            } else {
-              onNext();
-            }
+            onNext();
           }}
         />
       </View>

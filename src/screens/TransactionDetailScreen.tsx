@@ -94,11 +94,7 @@ const TransactionDetailScreen: AppNavigationScreen<
             >
               <Avatar
                 size="extra-big"
-                profileImage={
-                  detail.userId == authStore.user?._id
-                    ? authStore.user.profileImage
-                    : authStore.user?.sharedUserInfo?.profileImage ?? ""
-                }
+                profileImage={detail.user.profileImage}
               />
               <SizedBox height={sh(10)} />
               <CustomText
@@ -166,6 +162,7 @@ const TransactionDetailScreen: AppNavigationScreen<
                     }}
                   >
                     <TransactionLabelsContainer
+                      textStyle={{ color: Colors.matterhorn }}
                       ids={detail.transactionLabelIds}
                     />
                   </View>

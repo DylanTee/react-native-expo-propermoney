@@ -97,11 +97,11 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
     const init = async () => {
       const tokens = await AsyncStorageLib.getJWTtoken();
       if (tokens) {
+        await authStore.getDetail();
         navigation.reset({
           index: 0,
           routes: [{ name: "HomeScreen" }],
         });
-        await authStore.getDetail();
       }
     };
     init();

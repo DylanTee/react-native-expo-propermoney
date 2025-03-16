@@ -226,7 +226,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
 
   const [form, setForm] = useState<{
     _id: string | undefined;
-    transactionCategoryId: string | null;
+    transactionCategoryId: string | undefined;
     transactionLabelIds: string[];
     currency: string;
     amount: string;
@@ -235,7 +235,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
     transactedAt: Date;
   }>({
     _id: undefined,
-    transactionCategoryId: null,
+    transactionCategoryId: undefined,
     transactionLabelIds: [],
     currency: authStore.user?.currency ?? currencyList[0].iso,
     amount: "",
@@ -449,6 +449,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                       }}
                     >
                       <TransactionLabelsContainer
+                        textStyle={{ color: Colors.matterhorn }}
                         ids={form.transactionLabelIds}
                       />
                     </View>

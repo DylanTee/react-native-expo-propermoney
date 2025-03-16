@@ -19,9 +19,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import React, {
-  Alert,
   Image,
-  Linking,
   Modal,
   Platform,
   TextInput,
@@ -44,7 +42,7 @@ export type TTransactionCategoryForm = {
 interface ModalTransactionCategoryPickerProps {
   listComponents: ReactNode;
   buttonStyle?: ViewStyle;
-  id: string | null;
+  id: string | undefined;
   onChange(id: string): void;
 }
 
@@ -98,14 +96,6 @@ export default function ModalTransactionCategoryPicker(
       return page.data;
     }) ?? [];
 
-  const handleIsLabelNotExceededMaximum = (item: TTransactionCategory) => {
-    const index = categories.findIndex((x) => x._id == item._id);
-    if (authStore.user) {
-      return authStore.user.feature.maximumCategories > index;
-    } else {
-      return false;
-    }
-  };
   const categoriesLength =
     useGetTransactionCategoryInfiniteQuery?.data?.pages[0].pagination
       .total_items ?? 0;
@@ -216,27 +206,8 @@ export default function ModalTransactionCategoryPicker(
                       alignItems: "center",
                     }}
                     onPress={() => {
-                      if (handleIsLabelNotExceededMaximum(item)) {
-                        props.onChange(item._id);
-                        setIsVisible(false);
-                      } else {
-                        Alert.alert(
-                          "Upgrade",
-                          `In order to choose ${item.name}`,
-                          [
-                            {
-                              text: t("ok"),
-                              onPress: () => {
-                                Linking.openURL(
-                                  `https://pr0per.vercel.app/topup?projectId=propermoney`
-                                );
-                              },
-                              style: "cancel",
-                            },
-                          ],
-                          { cancelable: false }
-                        );
-                      }
+                      props.onChange(item._id);
+                      setIsVisible(false);
                     }}
                   >
                     <View
