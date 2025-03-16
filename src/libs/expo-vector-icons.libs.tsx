@@ -30,6 +30,7 @@ interface ExpoVectorIconProps {
     | "edit"
     | "upload"
     | "delete"
+    | "closecircle"
   size: number;
   color: ColorValue;
   style?: StyleProp<TextStyle>;

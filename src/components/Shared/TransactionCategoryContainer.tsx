@@ -10,6 +10,7 @@ import { Colors } from "@styles/Colors";
 
 interface TransactionCategoryContainerProps {
   id: string | undefined;
+  isDisplayIcon?: boolean;
   containerStyle?: ViewStyle;
   textStyle?: TextStyle;
 }
@@ -37,28 +38,34 @@ export default function TransactionCategoryContainer(
 
   return (
     <View style={props.containerStyle}>
-      <View
-        style={{
-          width: sw(25),
-          height: sw(25),
-          borderRadius: sw(25) / 2,
-          padding: sw(5),
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: detail?.backgroundColor ?? Colors.gainsboro,
-        }}
-      >
-        <Image
-          style={{
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            zIndex: 1,
-          }}
-          source={{ uri: detail?.imagePath ?? `` }}
-        />
-      </View>
-      <SizedBox width={sw(5)} />
+      {props.isDisplayIcon && props.isDisplayIcon ? (
+        <>
+          <View
+            style={{
+              width: sw(25),
+              height: sw(25),
+              borderRadius: sw(25) / 2,
+              padding: sw(5),
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: detail?.backgroundColor ?? Colors.gainsboro,
+            }}
+          >
+            <Image
+              style={{
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                zIndex: 1,
+              }}
+              source={{ uri: detail?.imagePath ?? `` }}
+            />
+          </View>
+          <SizedBox width={sw(5)} />
+        </>
+      ) : (
+        <></>
+      )}
       <CustomText
         size="medium"
         textStyle={props.textStyle}

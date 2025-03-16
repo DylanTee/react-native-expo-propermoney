@@ -3,7 +3,7 @@ import SizedBox from "@components/Shared/SizedBox";
 import { sfont, sh, sw } from "@libs/responsive.lib";
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "@styles/Colors";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   Alert,
   Modal,
@@ -83,6 +83,10 @@ export default function ModalTransationLabelsPicker(
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isVisibleForm, setIsVisibleForm] = useState<boolean>(false);
   const [form, setForm] = useState<TTransactionLabelForm>(initialFormState);
+
+  useEffect(() => {
+    setTransactionLabelIds(props.ids);
+  }, [props.ids]);
 
   const handleIds = (id: string) => {
     const exitPicker = (ids: string[]) => {

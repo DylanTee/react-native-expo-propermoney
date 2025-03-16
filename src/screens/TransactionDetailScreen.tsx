@@ -119,6 +119,7 @@ const TransactionDetailScreen: AppNavigationScreen<
               />
               <SizedBox height={sh(20)} />
               <TransactionCategoryContainer
+                isDisplayIcon
                 containerStyle={{ flexDirection: "row" }}
                 id={detail.transactionCategory._id}
               />

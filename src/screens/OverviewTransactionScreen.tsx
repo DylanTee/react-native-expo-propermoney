@@ -5,7 +5,12 @@ import dayjs from "dayjs";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
 import Header from "@components/Shared/Header";
-import { RefreshControl, ScrollView, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   TGetTransactionQuery,
   TTransaction,
@@ -21,6 +26,7 @@ import ModalTransactionCategoryPicker from "@components/Shared/CustomModal/Modal
 import TransactionCategoryContainer from "@components/Shared/TransactionCategoryContainer";
 import ModalTransationLabelsPicker from "@components/Shared/CustomModal/ModalTransationLabelsPicker";
 import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
+import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 
 export enum EOverviewTransactionsReport {
   Categories = "Categories",
@@ -71,19 +77,34 @@ const OverviewTransactionScreen: AppNavigationScreen<
             listComponents={
               <>
                 {transactionCategoryId ? (
-                  <TransactionCategoryContainer
-                    textStyle={{ color: "#D6FFBC" }}
-                    containerStyle={{
+                  <TouchableOpacity
+                    onPress={() => setTransactionCategoryId(undefined)}
+                    style={{
                       flexDirection: "row",
                       justifyContent: "center",
                       alignItems: "center",
                     }}
-                    id={transactionCategoryId}
-                  />
+                  >
+                    <TransactionCategoryContainer
+                      textStyle={{ color: "#D6FFBC" }}
+                      containerStyle={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      id={transactionCategoryId}
+                    />
+                    <SizedBox width={sw(10)} />
+                    <ExpoVectorIcon
+                      name="closecircle"
+                      size={sw(15)}
+                      color={"#D6FFBC"}
+                    />
+                  </TouchableOpacity>
                 ) : (
                   <CustomText
                     label={`Category`}
-                    size="small"
+                    size="medium"
                     textStyle={{ color: Colors.primary }}
                   />
                 )}
@@ -128,14 +149,29 @@ const OverviewTransactionScreen: AppNavigationScreen<
             listComponent={
               <>
                 {transactionLabelIds.length > 0 ? (
-                  <TransactionLabelsContainer
-                    textStyle={{ color: "#D6FFBC" }}
-                    ids={transactionLabelIds}
-                  />
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onPress={() => setTransactionLabelIds([])}
+                  >
+                    <TransactionLabelsContainer
+                      textStyle={{ color: "#D6FFBC" }}
+                      ids={transactionLabelIds}
+                    />
+                    <SizedBox width={sw(10)} />
+                    <ExpoVectorIcon
+                      name="closecircle"
+                      size={sw(15)}
+                      color={"#D6FFBC"}
+                    />
+                  </TouchableOpacity>
                 ) : (
                   <CustomText
                     label={`Label`}
-                    size="small"
+                    size="medium"
                     textStyle={{ color: Colors.primary }}
                   />
                 )}

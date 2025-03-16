@@ -361,6 +361,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
               listComponents={
                 <>
                   <TransactionCategoryContainer
+                    isDisplayIcon
                     containerStyle={{
                       flexDirection: "row",
                       justifyContent: "center",
