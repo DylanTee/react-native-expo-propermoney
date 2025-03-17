@@ -3,7 +3,7 @@ import { TouchableOpacity, ViewStyle } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface ModalDateTimePickerProps {
-  buttonStyle: ViewStyle;
+  buttonStyle?: ViewStyle;
   listComponents: ReactNode;
   value: Date;
   onChange(date: Date): void;

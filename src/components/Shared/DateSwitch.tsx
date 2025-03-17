@@ -2,7 +2,7 @@ import React from "react";
 import dayjs from "dayjs";
 import { useTranslation } from "@libs/i18n/index";
 import CustomItemPicker from "@components/Shared/CustomItemPicker";
-import ModalDateTimePicker from "@components/Shared/CustomModal/ModalDateTimePicker";
+import ModalDateTimePicker from "@components/Shared/CustomModal/ModalDateTimePicker/ModalDateTimePicker";
 
 interface DateSwitchProps {
   startTransactedAt: any;

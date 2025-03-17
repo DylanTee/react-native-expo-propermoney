@@ -11,6 +11,8 @@ import { useAuthStore } from "@libs/zustand/authStore";
 import { Colors } from "@styles/Colors";
 import CustomText from "@components/Shared/CustomText";
 import SizedBox from "@components/Shared/SizedBox";
+import ModalDateRangePicker from "@components/Shared/CustomModal/ModalDateTimePicker/ModalDateRangePicker";
+import dayjs from "dayjs";
 
 const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
   navigation,
@@ -24,8 +26,8 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
     startTransactedAt: Date;
     endTransactedAt: Date;
   }>({
-    startTransactedAt: new Date(),
-    endTransactedAt: new Date(),
+    startTransactedAt: dayjs().startOf("month").toDate(),
+    endTransactedAt: dayjs().endOf("month").toDate(),
   });
   const useGetTransactionDashboardQuery = useQuery({
     queryKey: ["dashboard", transactedAtRange],
@@ -95,7 +97,9 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
               padding: sw(5),
               paddingHorizontal: sw(20),
             }}
-            onPress={() => setTargetUserId(authStore.user?.sharedUserId as string)}
+            onPress={() =>
+              setTargetUserId(authStore.user?.sharedUserId as string)
+            }
           >
             <CustomText
               label={`${authStore.user?.sharedUserInfo?.displayName}`}
@@ -111,6 +115,50 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
         ),
         isVisible: authStore.user?.sharedUserId != null,
       },
+      {
+        id: "transaction-date",
+        components: (
+          <ModalDateRangePicker
+            onChange={(data) => {
+              setTransactedAtRange((prevState) => ({
+                ...prevState,
+                startTransactedAt: data.startAt,
+                endTransactedAt: data.endAt,
+              }));
+            }}
+            listComponents={
+              <View
+                style={{
+                  flexDirection: "row",
+                  borderWidth: 1,
+                  borderColor: Colors.suvaGrey,
+                  backgroundColor: Colors.primary,
+                  borderRadius: sw(30),
+                  padding: sw(5),
+                  paddingHorizontal: sw(20),
+                }}
+              >
+                <CustomText
+                  label={`${dayjs(transactedAtRange.startTransactedAt).format(
+                    "DD MMM YYYY"
+                  )} - ${dayjs(transactedAtRange.endTransactedAt).format(
+                    "DD MMM YYYY"
+                  )}`}
+                  size="medium"
+                  textStyle={{
+                    color: `#D6FFBC`,
+                  }}
+                />
+              </View>
+            }
+            data={{
+              startAt: transactedAtRange.startTransactedAt,
+              endAt: transactedAtRange.endTransactedAt,
+            }}
+          />
+        ),
+        isVisible: true,
+      },
     ];
   }, [transactedAtRange, targetUserId]);
   return (
@@ -120,7 +168,7 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
           containerStyle={{ paddingHorizontal: sw(15) }}
           onBack={() => navigation.goBack()}
         />
-        <SizedBox height={sh(10)}/>
+        <SizedBox height={sh(10)} />
         <View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {config

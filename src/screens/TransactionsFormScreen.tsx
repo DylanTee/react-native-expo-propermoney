@@ -26,7 +26,7 @@ import { currencyList } from "@mcdylanproperenterprise/nodejs-proper-money-types
 import dayjs from "dayjs";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
-import ModalDateTimePicker from "@components/Shared/CustomModal/ModalDateTimePicker";
+import ModalDateTimePicker from "@components/Shared/CustomModal/ModalDateTimePicker/ModalDateTimePicker";
 import ModalTransactionCategoryPicker from "@components/Shared/CustomModal/ModalTransactionCategoryPicker";
 import ModalTransationLabelsPicker from "@components/Shared/CustomModal/ModalTransationLabelsPicker";
 import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
