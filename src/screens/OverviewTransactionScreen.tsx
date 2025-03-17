@@ -380,19 +380,35 @@ const OverviewTransactionScreen: AppNavigationScreen<
       <Header
         containerStyle={{ padding: sw(15) }}
         onBack={() => navigation.goBack()}
+        itemRight={
+          <>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("DashboardScreen")}
+            >
+              <ExpoVectorIcon
+                name="linechart"
+                size={sw(20)}
+                color={Colors.black}
+              />
+            </TouchableOpacity>
+          </>
+        }
       />
-      <View style={{ padding: sw(15), paddingTop: 0 }}>
+      <View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {config.map((data) => (
-            <View style={{ marginRight: sw(8) }} key={data.id}>
-              {data.components}
-            </View>
-          ))}
+          {config
+            .filter((z) => z.isVisible)
+            .map((data) => (
+              <View style={{ marginHorizontal: sw(4) }} key={data.id}>
+                {data.components}
+              </View>
+            ))}
         </ScrollView>
       </View>
       <FlashList
         ListHeaderComponent={
           <>
+            <SizedBox height={sh(20)} />
             <CustomText
               size="extra-big"
               label="Transactions"

@@ -9,10 +9,7 @@ import {
   StackScreenProps,
 } from "@react-navigation/stack";
 import { Colors } from "../styles/Colors";
-import {
-  EGetTransactionsByType,
-  EVerificationOneTimePasswordType,
-} from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
+import { EVerificationOneTimePasswordType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import MoreScreen from "@screens/MoreScreen";
 import LoginScreen from "@screens/LoginScreen";
 import VerifyOneTimePasswordScreen from "@screens/VerifyOneTimePasswordScreen";
@@ -29,6 +26,7 @@ import TransactionSettingsScreen from "@screens/TransactionSettingsScreen";
 import TransactionAccountSwitchScreen from "@screens/TransactionAccountSwitchScreen";
 import { TReward } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import TransactionDetailScreen from "@screens/TransactionDetailScreen";
+import DashboardScreen from "@screens/DashboardScreen";
 
 export type OverviewTransactionScreenParams = {
   selectedUserId: TSelectedUserId;
@@ -46,6 +44,7 @@ export type AppStackNavigationProp = StackNavigationProp<AppStackParamList>;
 export type AppStackParamList = {
   LoginScreen?: undefined;
   MoreScreen?: undefined;
+  DashboardScreen?: undefined;
   VerifyOneTimePasswordScreen: {
     oneTimePasswordType: EVerificationOneTimePasswordType;
     phoneNumber: string;
@@ -105,6 +104,11 @@ export default function Router() {
         <AppStack.Screen
           name="LoginScreen"
           component={LoginScreen}
+          options={options}
+        />
+        <AppStack.Screen
+          name="DashboardScreen"
+          component={DashboardScreen}
           options={options}
         />
         <AppStack.Screen

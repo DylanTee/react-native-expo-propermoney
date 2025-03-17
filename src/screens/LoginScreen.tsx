@@ -42,7 +42,6 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
       return AxiosLibs.defaultClient.post("/user/request-otp", data);
     },
   });
-  const [isFetching, setIsFetching] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<{
     selectedCountry: TCountry;
     text: string;
@@ -98,9 +97,7 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
     const init = async () => {
       const tokens = await AsyncStorageLib.getJWTtoken();
       if (tokens) {
-        setIsFetching(true);
-        await authStore.getDetail();
-        setIsFetching(false);
+        authStore.getDetail();
         navigation.reset({
           index: 0,
           routes: [{ name: "HomeScreen" }],
@@ -110,7 +107,7 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
     init();
   }, []);
 
-  const isLoading = userRequestOTPMutation.isPending || isFetching;
+  const isLoading = userRequestOTPMutation.isPending;
 
   return (
     <>

@@ -31,6 +31,7 @@ interface ExpoVectorIconProps {
     | "upload"
     | "delete"
     | "closecircle"
+    | "linechart"
   size: number;
   color: ColorValue;
   style?: StyleProp<TextStyle>;
