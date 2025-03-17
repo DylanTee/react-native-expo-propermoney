@@ -432,6 +432,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
             />
             <SizedBox height={sh(20)} />
             <ModalTransationLabelsPicker
+              userId={authStore.user?._id as string}
               listComponent={
                 <View style={styles.bodyContainer}>
                   <CustomText
