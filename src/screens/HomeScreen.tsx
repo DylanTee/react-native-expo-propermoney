@@ -125,7 +125,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
         limit: 10,
         page: pageParam,
         transactionCategoryId: undefined,
-        transactionLabelId: undefined,
+        transactionLabelIds: undefined,
       };
       const { data } = await AxiosLibs.defaultClient.get(`/transaction`, {
         params: query,

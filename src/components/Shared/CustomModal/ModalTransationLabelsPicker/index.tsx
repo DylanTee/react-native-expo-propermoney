@@ -34,6 +34,7 @@ export type TTransactionLabelForm = {
 };
 
 interface ModalTransationLabelsPickerProps {
+  userId: string;
   buttonStyle?: ViewStyle;
   ids: string[];
   listComponent: ReactNode;
@@ -57,12 +58,13 @@ export default function ModalTransationLabelsPicker(
   const debounceSearchText = useDebounce(searchText, 500);
   const useGetTransactionLabelInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: ["/transaction-label", debounceSearchText],
+    queryKey: ["/transaction-label", debounceSearchText, props.userId],
     queryFn: async ({ pageParam = 1 }) => {
       const query: TGetTransactionLabelQuery = {
         limit: 10,
         page: pageParam,
         q: debounceSearchText,
+        userId: props.userId,
       };
       const { data } = await AxiosLibs.defaultClient.get(`/transaction-label`, {
         params: query,
@@ -209,18 +211,20 @@ export default function ModalTransationLabelsPicker(
                       label={item.name}
                       size="medium"
                     />
-                    <TouchableOpacity
-                      onPress={() => {
-                        setForm(item);
-                        setIsVisibleForm(true);
-                      }}
-                    >
-                      <ExpoVectorIcon
-                        name="edit"
-                        size={sw(20)}
-                        color={Colors.suvaGrey}
-                      />
-                    </TouchableOpacity>
+                    {item.userId == authStore.user?._id && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setForm(item);
+                          setIsVisibleForm(true);
+                        }}
+                      >
+                        <ExpoVectorIcon
+                          name="edit"
+                          size={sw(20)}
+                          color={Colors.suvaGrey}
+                        />
+                      </TouchableOpacity>
+                    )}
                     <SizedBox width={sw(20)} />
                     <View
                       style={{

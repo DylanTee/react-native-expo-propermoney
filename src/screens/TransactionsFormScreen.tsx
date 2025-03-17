@@ -358,6 +358,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
             />
             <SizedBox height={sh(10)} />
             <ModalTransactionCategoryPicker
+              userId={authStore.user?._id as string}
               listComponents={
                 <>
                   <TransactionCategoryContainer

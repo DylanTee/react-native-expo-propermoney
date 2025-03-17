@@ -27,6 +27,7 @@ import TransactionCategoryContainer from "@components/Shared/TransactionCategory
 import ModalTransationLabelsPicker from "@components/Shared/CustomModal/ModalTransationLabelsPicker";
 import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
+import { useAuthStore } from "@libs/zustand/authStore";
 
 export enum EOverviewTransactionsReport {
   Categories = "Categories",
@@ -37,20 +38,32 @@ export enum EOverviewTransactionsReport {
 const OverviewTransactionScreen: AppNavigationScreen<
   "OverviewTransactionScreen"
 > = ({ navigation, route }) => {
-  const [transactionCategoryId, setTransactionCategoryId] = useState<
-    undefined | string
-  >(undefined);
-  const [transactionLabelIds, setTransactionLabelIds] = useState<string[]>([]);
-
+  const authStore = useAuthStore();
+  const [transactionCategoryConfig, setTransactionCategoryConfig] = useState<{
+    userCategoryId: string | undefined;
+    sharedUserCategoryId: string | undefined;
+  }>({ userCategoryId: undefined, sharedUserCategoryId: undefined });
+  const [transactionLabelConfig, setTransactionLabelConfig] = useState<{
+    userTransactionLabelIds: string[];
+    sharedUserTransactionLabelIds: string[];
+  }>({
+    userTransactionLabelIds: [],
+    sharedUserTransactionLabelIds: [],
+  });
   const useGetTransactionInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: ["see-all", transactionCategoryId, transactionLabelIds],
+    queryKey: ["see-all", transactionCategoryConfig, transactionLabelConfig],
     queryFn: async ({ pageParam = 1 }) => {
       const query: TGetTransactionQuery = {
         limit: 10,
         page: pageParam,
-        transactionCategoryId: transactionCategoryId,
-        transactionLabelIds: transactionLabelIds,
+        transactionCategoryId: transactionCategoryConfig.sharedUserCategoryId
+          ? transactionCategoryConfig.sharedUserCategoryId
+          : transactionCategoryConfig.userCategoryId,
+        transactionLabelIds:
+          transactionLabelConfig.sharedUserTransactionLabelIds.length > 0
+            ? transactionLabelConfig.sharedUserTransactionLabelIds
+            : transactionLabelConfig.userTransactionLabelIds,
       };
       const { data } = await AxiosLibs.defaultClient.get(`/transaction`, {
         params: query,
@@ -74,11 +87,18 @@ const OverviewTransactionScreen: AppNavigationScreen<
         id: "category",
         components: (
           <ModalTransactionCategoryPicker
+            userId={authStore.user?._id as string}
             listComponents={
               <>
-                {transactionCategoryId ? (
+                {transactionCategoryConfig.userCategoryId ? (
                   <TouchableOpacity
-                    onPress={() => setTransactionCategoryId(undefined)}
+                    onPress={() =>
+                      setTransactionCategoryConfig((prevState) => ({
+                        ...prevState,
+                        userId: undefined,
+                        sharedUserCategoryId: undefined,
+                      }))
+                    }
                     style={{
                       flexDirection: "row",
                       justifyContent: "center",
@@ -92,7 +112,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
                         justifyContent: "center",
                         alignItems: "center",
                       }}
-                      id={transactionCategoryId}
+                      id={transactionCategoryConfig.userCategoryId}
                     />
                     <SizedBox width={sw(10)} />
                     <ExpoVectorIcon
@@ -114,52 +134,148 @@ const OverviewTransactionScreen: AppNavigationScreen<
               flexDirection: "row",
               borderWidth: 1,
               borderColor: Colors.suvaGrey,
-              backgroundColor: transactionCategoryId
+              backgroundColor: transactionCategoryConfig.userCategoryId
                 ? Colors.primary
                 : "transparent",
               borderRadius: sw(30),
               padding: sw(5),
               paddingHorizontal: sw(20),
             }}
-            id={transactionCategoryId}
+            id={transactionCategoryConfig.userCategoryId}
             onChange={(id) => {
-              if (id == transactionCategoryId) {
-                setTransactionCategoryId(undefined);
+              if (id == transactionCategoryConfig.userCategoryId) {
+                setTransactionCategoryConfig((prevState) => ({
+                  ...prevState,
+                  userCategoryId: undefined,
+                  sharedUserCategoryId: undefined,
+                }));
               } else {
-                setTransactionCategoryId(id);
+                setTransactionCategoryConfig((prevState) => ({
+                  ...prevState,
+                  userCategoryId: id,
+                  sharedUserCategoryId: undefined,
+                }));
               }
             }}
           />
         ),
+        isVisible: true,
+      },
+      {
+        id: "shared-user-category",
+        components: (
+          <ModalTransactionCategoryPicker
+            userId={authStore.user?.sharedUserInfo?.id as string}
+            listComponents={
+              <>
+                {transactionCategoryConfig.sharedUserCategoryId ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setTransactionCategoryConfig((prevState) => ({
+                        ...prevState,
+                        sharedUserCategoryId: undefined,
+                        userCategoryId: undefined,
+                      }));
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <TransactionCategoryContainer
+                      textStyle={{ color: "#D6FFBC" }}
+                      containerStyle={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      id={transactionCategoryConfig.sharedUserCategoryId}
+                    />
+                    <SizedBox width={sw(10)} />
+                    <ExpoVectorIcon
+                      name="closecircle"
+                      size={sw(15)}
+                      color={"#D6FFBC"}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <CustomText
+                    label={`${authStore.user?.sharedUserInfo?.displayName}'s Category`}
+                    size="medium"
+                    textStyle={{ color: Colors.primary }}
+                  />
+                )}
+              </>
+            }
+            buttonStyle={{
+              flexDirection: "row",
+              borderWidth: 1,
+              borderColor: Colors.suvaGrey,
+              backgroundColor: transactionCategoryConfig.sharedUserCategoryId
+                ? Colors.primary
+                : "transparent",
+              borderRadius: sw(30),
+              padding: sw(5),
+              paddingHorizontal: sw(20),
+            }}
+            id={transactionCategoryConfig.sharedUserCategoryId}
+            onChange={(id) => {
+              if (id == transactionCategoryConfig.sharedUserCategoryId) {
+                setTransactionCategoryConfig((prevState) => ({
+                  ...prevState,
+                  sharedUserCategoryId: undefined,
+                  userCategoryId: undefined,
+                }));
+              } else {
+                setTransactionCategoryConfig((prevState) => ({
+                  ...prevState,
+                  sharedUserCategoryId: id,
+                  userCategoryId: undefined,
+                }));
+              }
+            }}
+          />
+        ),
+        isVisible: authStore.user?.sharedUserId != null,
       },
       {
         id: "Label",
         components: (
           <ModalTransationLabelsPicker
+            userId={authStore.user?._id as string}
             buttonStyle={{
               flexDirection: "row",
               borderWidth: 1,
               borderColor: Colors.suvaGrey,
               backgroundColor:
-                transactionLabelIds.length > 0 ? Colors.primary : "transparent",
+                transactionLabelConfig.userTransactionLabelIds.length > 0
+                  ? Colors.primary
+                  : "transparent",
               borderRadius: sw(30),
               padding: sw(5),
               paddingHorizontal: sw(20),
             }}
             listComponent={
               <>
-                {transactionLabelIds.length > 0 ? (
+                {transactionLabelConfig.userTransactionLabelIds.length > 0 ? (
                   <TouchableOpacity
                     style={{
                       flexDirection: "row",
                       justifyContent: "center",
                       alignItems: "center",
                     }}
-                    onPress={() => setTransactionLabelIds([])}
+                    onPress={() =>
+                      setTransactionLabelConfig((prevState) => ({
+                        ...prevState,
+                        userTransactionLabelIds: [],
+                        sharedUserTransactionLabelIds: [],
+                      }))
+                    }
                   >
                     <TransactionLabelsContainer
                       textStyle={{ color: "#D6FFBC" }}
-                      ids={transactionLabelIds}
+                      ids={transactionLabelConfig.userTransactionLabelIds}
                     />
                     <SizedBox width={sw(10)} />
                     <ExpoVectorIcon
@@ -177,15 +293,87 @@ const OverviewTransactionScreen: AppNavigationScreen<
                 )}
               </>
             }
-            ids={transactionLabelIds}
+            ids={transactionLabelConfig.userTransactionLabelIds}
             onChange={(ids) => {
-              setTransactionLabelIds(ids);
+              setTransactionLabelConfig((prevState) => ({
+                ...prevState,
+                userTransactionLabelIds: ids,
+                sharedUserTransactionLabelIds: [],
+              }));
             }}
           />
         ),
+        isVisible: true,
+      },
+      {
+        id: "shared-user-label",
+        components: (
+          <ModalTransationLabelsPicker
+            userId={authStore.user?.sharedUserId as string}
+            buttonStyle={{
+              flexDirection: "row",
+              borderWidth: 1,
+              borderColor: Colors.suvaGrey,
+              backgroundColor:
+                transactionLabelConfig.sharedUserTransactionLabelIds.length > 0
+                  ? Colors.primary
+                  : "transparent",
+              borderRadius: sw(30),
+              padding: sw(5),
+              paddingHorizontal: sw(20),
+            }}
+            listComponent={
+              <>
+                {transactionLabelConfig.sharedUserTransactionLabelIds.length >
+                0 ? (
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      setTransactionLabelConfig((prevState) => ({
+                        ...prevState,
+                        userTransactionLabelIds: [],
+                        sharedUserTransactionLabelIds: [],
+                      }));
+                    }}
+                  >
+                    <TransactionLabelsContainer
+                      textStyle={{ color: "#D6FFBC" }}
+                      ids={transactionLabelConfig.sharedUserTransactionLabelIds}
+                    />
+                    <SizedBox width={sw(10)} />
+                    <ExpoVectorIcon
+                      name="closecircle"
+                      size={sw(15)}
+                      color={"#D6FFBC"}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <CustomText
+                    label={`${authStore.user?.sharedUserInfo?.displayName}'s Label`}
+                    size="medium"
+                    textStyle={{ color: Colors.primary }}
+                  />
+                )}
+              </>
+            }
+            ids={transactionLabelConfig.sharedUserTransactionLabelIds}
+            onChange={(ids) => {
+              setTransactionLabelConfig((prevState) => ({
+                ...prevState,
+                userTransactionLabelIds: [],
+                sharedUserTransactionLabelIds: ids,
+              }));
+            }}
+          />
+        ),
+        isVisible: true,
       },
     ];
-  }, [transactionCategoryId, transactionLabelIds]);
+  }, [transactionCategoryConfig, transactionLabelConfig]);
 
   return (
     <ContainerLayout>

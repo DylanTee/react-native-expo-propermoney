@@ -82,13 +82,7 @@ export default function Form(props: TransactionCategoryFormProps) {
     createMutation.isPending ||
     editMutation.isPending ||
     deleteMutation.isPending;
-  const getHeaderTitle = () => {
-    if (isEdit) {
-      return t("edit");
-    } else {
-      return t("new");
-    }
-  };
+
   const btnConfirm = () => {
     if (form.name.trim().length == 0) {
       Alert.alert("Missing Category Name");

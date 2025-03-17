@@ -47,13 +47,7 @@ export default function Form(props: TransactionLabelFormProps) {
   });
   const isEdit = props.form._id != undefined;
   const [form, setForm] = useState<TTransactionLabelForm>(props.form);
-  const getHeaderTitle = () => {
-    if (isEdit) {
-      return t("edit");
-    } else {
-      return t("new");
-    }
-  };
+
   const btnConfirm = () => {
     if (form.name.trim().length == 0) {
       Alert.alert(t("missingLabel"));

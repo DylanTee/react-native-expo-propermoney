@@ -40,6 +40,7 @@ export type TTransactionCategoryForm = {
 };
 
 interface ModalTransactionCategoryPickerProps {
+  userId: string;
   listComponents: ReactNode;
   buttonStyle?: ViewStyle;
   id: string | undefined;
@@ -69,9 +70,15 @@ export default function ModalTransactionCategoryPicker(
   );
   const useGetTransactionCategoryInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: ["/transaction-category", categoryType, debounceSearchText],
+    queryKey: [
+      "/transaction-category",
+      categoryType,
+      debounceSearchText,
+      props.userId,
+    ],
     queryFn: async ({ pageParam = 1 }) => {
       const query: TGetTransactionCategoryQuery = {
+        userId: props.userId,
         limit: 10,
         page: pageParam,
         q: debounceSearchText,
@@ -163,7 +170,6 @@ export default function ModalTransactionCategoryPicker(
                 }
                 onBack={() => setIsVisible(false)}
               />
-
               <SizedBox height={sh(10)} />
               <View
                 style={{
@@ -237,18 +243,20 @@ export default function ModalTransactionCategoryPicker(
                       label={item.name}
                       size="medium"
                     />
-                    <TouchableOpacity
-                      onPress={() => {
-                        setForm(item);
-                        setIsVisibleForm(true);
-                      }}
-                    >
-                      <ExpoVectorIcon
-                        name="edit"
-                        size={sw(20)}
-                        color={Colors.suvaGrey}
-                      />
-                    </TouchableOpacity>
+                    {item.userId == authStore.user?._id && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setForm(item);
+                          setIsVisibleForm(true);
+                        }}
+                      >
+                        <ExpoVectorIcon
+                          name="edit"
+                          size={sw(20)}
+                          color={Colors.suvaGrey}
+                        />
+                      </TouchableOpacity>
+                    )}
                     <SizedBox width={sw(20)} />
                     <View
                       style={{

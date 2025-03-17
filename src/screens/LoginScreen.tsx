@@ -22,7 +22,7 @@ import {
   countryList,
   TCountry,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/lists/country";
-import { Alert, Image, Linking, TouchableOpacity } from "react-native";
+import { Alert, Image, Linking, TouchableOpacity, View } from "react-native";
 import CustomText from "@components/Shared/CustomText";
 import { AsyncStorageLib } from "@libs/async.storage.lib";
 import ModalCountryPicker from "@components/Shared/CustomModal/ModalCountryPicker";
@@ -42,6 +42,7 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
       return AxiosLibs.defaultClient.post("/user/request-otp", data);
     },
   });
+  const [isFetching, setIsFetching] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<{
     selectedCountry: TCountry;
     text: string;
@@ -97,7 +98,9 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
     const init = async () => {
       const tokens = await AsyncStorageLib.getJWTtoken();
       if (tokens) {
+        setIsFetching(true);
         await authStore.getDetail();
+        setIsFetching(false);
         navigation.reset({
           index: 0,
           routes: [{ name: "HomeScreen" }],
@@ -107,92 +110,94 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
     init();
   }, []);
 
-  const isLoading = userRequestOTPMutation.isPending;
+  const isLoading = userRequestOTPMutation.isPending || isFetching;
 
   return (
     <>
       <ContainerLayout>
         <KeyboardLayout>
-          <SizedBox height={sh(40)} />
-          <Image
-            source={require("@assets/logo.png")}
-            style={{
-              height: sw(50),
-              width: sw(50),
-              borderRadius: sw(50 / 2),
-              alignSelf: "center",
-            }}
-            resizeMode={"contain"}
-          />
-          <SizedBox height={sh(40)} />
-          <CustomTextInput
-            itemLeft={
-              <ModalCountryPicker
-                listComponents={
-                  <>
-                    <CustomText
-                      size={"medium"}
-                      label={phoneNumber.selectedCountry.countryCode}
-                    />
-                    <SizedBox width={sw(5)} />
-                    <ExpoVectorIcon
-                      name="down"
-                      size={sw(10)}
-                      color={Colors.black}
-                    />
-                    <SizedBox width={sw(5)} />
-                  </>
-                }
-                buttonStyle={{
-                  flexDirection: "row",
-                  borderRightWidth: 1.5,
-                  borderColor: Colors.gainsboro,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                countryCode={phoneNumber.selectedCountry.countryCode}
-                onChange={(data) => {
-                  setPhoneNumber({ ...phoneNumber, selectedCountry: data });
-                }}
-              />
-            }
-            label={t("phoneNumber")}
-            keyboardType={"phone-pad"}
-            autoCapitalize="none"
-            onChangeText={(text) =>
-              setPhoneNumber({
-                ...phoneNumber,
-                text: removeSpecialCharacters(text.trim()),
-              })
-            }
-            value={phoneNumber.text}
-          />
-          <SizedBox height={sh(5)} />
-          <TouchableOpacity
-            onPress={() => {
-              Linking.openURL("https://pr0per.vercel.app/privacy-policy");
-            }}
-          >
-            <CustomText
-              label="By submitting your phone number, you confirm you've read the Privacy Policy"
-              size="small"
+          <View style={{ padding: sw(15) }}>
+            <SizedBox height={sh(40)} />
+            <Image
+              source={require("@assets/logo.png")}
+              style={{
+                height: sw(50),
+                width: sw(50),
+                borderRadius: sw(50 / 2),
+                alignSelf: "center",
+              }}
+              resizeMode={"contain"}
             />
-          </TouchableOpacity>
-          <SizedBox height={sh(40)} />
-          <CustomButton
-            isTimer={true}
-            disabled={
-              phoneNumber.text.trim().length == 0 ||
-              userRequestOTPMutation.isPending ||
-              isLoading
-            }
-            type={"primary"}
-            size={"medium"}
-            title={"Log In"}
-            onPress={() => handleLogin()}
-          />
-          <SizedBox height={sh(20)} />
-          <VersionText />
+            <SizedBox height={sh(40)} />
+            <CustomTextInput
+              itemLeft={
+                <ModalCountryPicker
+                  listComponents={
+                    <>
+                      <CustomText
+                        size={"medium"}
+                        label={phoneNumber.selectedCountry.countryCode}
+                      />
+                      <SizedBox width={sw(5)} />
+                      <ExpoVectorIcon
+                        name="down"
+                        size={sw(10)}
+                        color={Colors.black}
+                      />
+                      <SizedBox width={sw(5)} />
+                    </>
+                  }
+                  buttonStyle={{
+                    flexDirection: "row",
+                    borderRightWidth: 1.5,
+                    borderColor: Colors.gainsboro,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  countryCode={phoneNumber.selectedCountry.countryCode}
+                  onChange={(data) => {
+                    setPhoneNumber({ ...phoneNumber, selectedCountry: data });
+                  }}
+                />
+              }
+              label={t("phoneNumber")}
+              keyboardType={"phone-pad"}
+              autoCapitalize="none"
+              onChangeText={(text) =>
+                setPhoneNumber({
+                  ...phoneNumber,
+                  text: removeSpecialCharacters(text.trim()),
+                })
+              }
+              value={phoneNumber.text}
+            />
+            <SizedBox height={sh(5)} />
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL("https://pr0per.vercel.app/privacy-policy");
+              }}
+            >
+              <CustomText
+                label="By submitting your phone number, you confirm you've read the Privacy Policy"
+                size="small"
+              />
+            </TouchableOpacity>
+            <SizedBox height={sh(40)} />
+            <CustomButton
+              isTimer={true}
+              disabled={
+                phoneNumber.text.trim().length == 0 ||
+                userRequestOTPMutation.isPending ||
+                isLoading
+              }
+              type={"primary"}
+              size={"medium"}
+              title={"Log In"}
+              onPress={() => handleLogin()}
+            />
+            <SizedBox height={sh(20)} />
+            <VersionText />
+          </View>
         </KeyboardLayout>
       </ContainerLayout>
     </>
