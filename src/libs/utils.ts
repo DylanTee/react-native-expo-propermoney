@@ -1,6 +1,5 @@
 import { AsyncStorageLib } from "@libs/async.storage.lib";
 import { Colors } from "@styles/Colors";
-import Axios from "axios";
 import {
   EMissionType,
   ETransactionCategoryType,
@@ -12,6 +11,7 @@ import {
 import { Alert } from "react-native";
 import { navigationRef } from "./react.navigation.lib";
 import { ReactQueryLibs } from "./react.query.client.lib";
+import dayjs from "dayjs";
 
 function removeSpecialCharacters(text: string) {
   return text.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, "");
@@ -153,6 +153,41 @@ const getRandomNumber = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+const displayDateRangeText = ({
+  startAt,
+  endAt,
+}: {
+  startAt: Date;
+  endAt: Date;
+}) => {
+  if (
+    dayjs().startOf("month").format("DD-MM-YYYY") ==
+      dayjs(startAt).startOf("month").format("DD-MM-YYYY") &&
+    dayjs().endOf("month").format("DD-MM-YYYY") ==
+      dayjs(endAt).endOf("month").format("DD-MM-YYYY")
+  ) {
+    return "This month";
+  } else if (
+    dayjs().startOf("month").subtract(1, "month").format("DD-MM-YYYY") ==
+      dayjs(startAt).startOf("month").format("DD-MM-YYYY") &&
+    dayjs().endOf("month").subtract(1, "month").format("DD-MM-YYYY") ==
+      dayjs(endAt).endOf("month").format("DD-MM-YYYY")
+  ) {
+    return "Last month";
+  } else if (
+    dayjs().startOf("year").subtract(1, "year").format("DD-MM-YYYY") ==
+      dayjs(startAt).startOf("year").format("DD-MM-YYYY") &&
+    dayjs().endOf("year").subtract(1, "year").format("DD-MM-YYYY") ==
+      dayjs(endAt).endOf("year").format("DD-MM-YYYY")
+  ) {
+    return "Last year";
+  } else {
+    return `${dayjs(startAt).format("DD MMM YYYY")} - ${dayjs(endAt).format(
+      "DD MMM YYYY"
+    )}`;
+  }
+};
+
 export {
   removeLeadingZero,
   isValidDate,
@@ -169,4 +204,5 @@ export {
   displayCurrency,
   handleLogOut,
   getAmountTextColor,
+  displayDateRangeText,
 };

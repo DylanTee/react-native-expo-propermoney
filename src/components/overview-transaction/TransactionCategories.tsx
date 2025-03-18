@@ -129,7 +129,7 @@ export default function TransactionCategories({
                 }}
               />
               <SizedBox height={sh(10)} />
-              {list
+              {/* {list
                 .filter((z) => z.type == categoryType)
                 .map((data) => (
                   <TransactionCategoryCard
@@ -150,7 +150,7 @@ export default function TransactionCategories({
                       })
                     }
                   />
-                ))}
+                ))} */}
             </>
           )}
         </>

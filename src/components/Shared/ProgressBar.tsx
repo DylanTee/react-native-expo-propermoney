@@ -26,8 +26,9 @@ export default function ProgressBar({ color, width }: ProgressBarProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: "70%",
     backgroundColor: "#D4DEEF",
+    height: sh(5),
     borderRadius: 1000,
   },
   line: {

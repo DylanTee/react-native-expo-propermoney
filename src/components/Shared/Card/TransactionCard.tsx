@@ -67,6 +67,18 @@ const TransactionCard = ({
               }}
             />
           </View>
+          {data.transactionLabelIds.length > 0 && (
+            <>
+              <SizedBox height={sh(5)} />
+              <CustomText
+                size={"small"}
+                textStyle={{ color: "#767676" }}
+                label={`${data.transactionLabels
+                  ?.map((label) => label.name)
+                  .join(",")}`}
+              />
+            </>
+          )}
           {data.note ? (
             <>
               <SizedBox height={sh(5)} />

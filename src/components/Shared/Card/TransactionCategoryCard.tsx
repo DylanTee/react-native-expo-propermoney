@@ -1,51 +1,38 @@
 import { sh, sw } from "@libs/responsive.lib";
-import { Colors } from "@styles/Colors";
 import React from "react";
 import { Image, TouchableOpacity, View } from "react-native";
 import SizedBox from "../SizedBox";
-import { Global } from "@styles/Global";
 import { displayCurrency } from "@libs/utils";
 import CustomText from "../CustomText";
-import { useAuthStore } from "@libs/zustand/authStore";
-import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
+import ProgressBar from "../ProgressBar";
 
 interface TransactionCategoryCardProps {
-  categoryType: ETransactionCategoryType;
-  userId: string;
+  currency: string;
+  percentage: number;
+  categoryName: string;
   imagePath: string;
   name: string;
+  amount: number;
+  totalSpending: number;
   iconNackgroundColor: string;
-  totalCurrenciesIncomeAndExpenses: {
-    currency: string;
-    totalIncomes: number;
-    totalExpenses: number;
-  }[];
-  transactionCount: number;
   onPress(): void;
 }
 
 const TransactionCategoryCard = ({
-  categoryType,
-  userId,
+  currency,
+  percentage,
+  categoryName,
   imagePath,
-  name,
+  amount,
+  totalSpending,
   iconNackgroundColor,
-  totalCurrenciesIncomeAndExpenses,
-  transactionCount,
   onPress,
 }: TransactionCategoryCardProps) => {
-  const authStore = useAuthStore();
   return (
     <TouchableOpacity
-      style={[
-        {
-          paddingHorizontal: sw(10),
-          paddingVertical: sw(10),
-          borderRadius: 5,
-          backgroundColor: Colors.white,
-        },
-        Global.shadowLine,
-      ]}
+      style={{
+        padding: sw(15),
+      }}
       onPress={() => {
         onPress();
       }}
@@ -57,10 +44,10 @@ const TransactionCategoryCard = ({
       >
         <View
           style={{
-            width: sw(25),
-            height: sw(25),
-            borderRadius: sw(25) / 2,
-            padding: sw(5),
+            width: sw(45),
+            height: sw(45),
+            borderRadius: sw(45) / 2,
+            padding: sw(10),
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: iconNackgroundColor,
@@ -76,44 +63,38 @@ const TransactionCategoryCard = ({
             source={{ uri: imagePath }}
           />
         </View>
-        <SizedBox width={sw(10)} />
+        <SizedBox width={sw(15)} />
         <View style={{ flex: 1 }}>
-          <CustomText label={name} size={"small"} />
-          <SizedBox height={sh(5)} />
-          <CustomText
-            label={`${transactionCount} transactions`}
-            size={"small"}
-          />
-          <SizedBox height={sh(5)} />
-          <CustomText
-            label={`by ${
-              userId == authStore.user?._id
-                ? authStore.user?.displayName + " (you)"
-                : authStore.user?.sharedUserInfo?.displayName
-            }`}
-            size={"small"}
-          />
-        </View>
-        <View style={{}}>
-          {totalCurrenciesIncomeAndExpenses.map((data) => (
+          <View style={{ flexDirection: "row", flex: 1 }}>
+            <CustomText size={"medium"} label={categoryName.length>18?categoryName.substring(0,18)+"...":categoryName} />
             <CustomText
               size={"medium"}
               label={displayCurrency({
-                currency: data.currency,
-                amount:
-                  categoryType == ETransactionCategoryType.expense
-                    ? data.totalExpenses
-                    : data.totalIncomes,
+                currency: currency,
+                amount: amount,
               })}
-              textStyle={{
+              containerStyle={{
                 marginLeft: "auto",
-                color:
-                  categoryType == ETransactionCategoryType.expense
-                    ? Colors.red
-                    : Colors.green,
               }}
             />
-          ))}
+          </View>
+          <SizedBox height={sh(3)}/>
+          <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
+            <ProgressBar
+              color={iconNackgroundColor}
+              width={(amount / totalSpending) * 100}
+            />
+            <CustomText
+              size={"small"}
+              label={`${percentage.toFixed(2)} %`}
+              containerStyle={{
+                width: "20%",
+                marginLeft: "auto",
+                justifyContent: "flex-end",
+              }}
+              textStyle={{ textAlign: "right" }}
+            />
+          </View>
         </View>
       </View>
     </TouchableOpacity>

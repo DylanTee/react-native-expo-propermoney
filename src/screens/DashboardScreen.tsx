@@ -6,13 +6,19 @@ import Header from "@components/Shared/Header";
 import { sh, sw } from "@libs/responsive.lib";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
-import { TGetTransactionsDashboardQuery } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
+import {
+  TGetTransactionDashboardResponse,
+  TGetTransactionsDashboardQuery,
+} from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { useAuthStore } from "@libs/zustand/authStore";
 import { Colors } from "@styles/Colors";
 import CustomText from "@components/Shared/CustomText";
 import SizedBox from "@components/Shared/SizedBox";
 import ModalDateRangePicker from "@components/Shared/CustomModal/ModalDateTimePicker/ModalDateRangePicker";
 import dayjs from "dayjs";
+import TransactionCategoryCard from "@components/Shared/Card/TransactionCategoryCard";
+import LoadingCircle from "@components/Shared/LoadingCircle";
+import { displayDateRangeText } from "@libs/utils";
 
 const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
   navigation,
@@ -30,7 +36,7 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
     endTransactedAt: dayjs().endOf("month").toDate(),
   });
   const useGetTransactionDashboardQuery = useQuery({
-    queryKey: ["dashboard", transactedAtRange],
+    queryKey: ["dashboard", transactedAtRange, targetUserId],
     queryFn: async () => {
       const query: TGetTransactionsDashboardQuery = {
         startTransactedAt: transactedAtRange.startTransactedAt,
@@ -46,7 +52,9 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
       return data;
     },
   });
-  const dashboard = useGetTransactionDashboardQuery.data;
+  const dashboard: TGetTransactionDashboardResponse =
+    useGetTransactionDashboardQuery.data ?? undefined;
+
   const config = useMemo(() => {
     return [
       {
@@ -139,11 +147,10 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
                 }}
               >
                 <CustomText
-                  label={`${dayjs(transactedAtRange.startTransactedAt).format(
-                    "DD MMM YYYY"
-                  )} - ${dayjs(transactedAtRange.endTransactedAt).format(
-                    "DD MMM YYYY"
-                  )}`}
+                  label={displayDateRangeText({
+                    startAt: transactedAtRange.startTransactedAt,
+                    endAt: transactedAtRange.endTransactedAt,
+                  })}
                   size="medium"
                   textStyle={{
                     color: `#D6FFBC`,
@@ -180,7 +187,61 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
               ))}
           </ScrollView>
         </View>
-        <ScrollView></ScrollView>
+        <LoadingCircle
+          containerStyle={{ margin: sw(20) }}
+          visible={useGetTransactionDashboardQuery.isFetching}
+        />
+        <ScrollView>
+          <SizedBox height={sh(20)} />
+          <CustomText
+            size="extra-big"
+            label="Spending"
+            textStyle={{
+              paddingHorizontal: sw(15),
+            }}
+          />
+          {dashboard?.expense.map((data, index) => (
+            <View key={index} style={{ paddingVertical: sw(15) }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  paddingHorizontal: sw(15),
+                  alignItems: "center",
+                }}
+              >
+                <CustomText
+                  size="medium"
+                  label={`Spent in\n${displayDateRangeText({
+                    startAt: transactedAtRange.startTransactedAt,
+                    endAt: transactedAtRange.endTransactedAt,
+                  })}`}
+                />
+                <CustomText
+                  size="big"
+                  label={`${data.totalAmount.toFixed(2)} ${data.currency}`}
+                  containerStyle={{
+                    marginLeft: "auto",
+                  }}
+                />
+              </View>
+              <SizedBox height={sh(20)} />
+              {data.categories.map((category) => (
+                <TransactionCategoryCard
+                  categoryName={category.name}
+                  key={category._id}
+                  imagePath={category.imagePath}
+                  name={category.name}
+                  iconNackgroundColor={category.backgroundColor}
+                  currency={data.currency}
+                  amount={category.totalAmount}
+                  totalSpending={data.totalAmount}
+                  percentage={category.percentage}
+                  onPress={() => {}}
+                />
+              ))}
+            </View>
+          ))}
+        </ScrollView>
       </ContainerLayout>
     </>
   );
