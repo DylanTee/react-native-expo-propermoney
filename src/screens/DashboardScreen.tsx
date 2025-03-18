@@ -236,7 +236,14 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
                   amount={category.totalAmount}
                   totalSpending={data.totalAmount}
                   percentage={category.percentage}
-                  onPress={() => {}}
+                  onPress={() => {
+                    navigation.navigate("OverviewTransactionScreen", {
+                      startTransactedAt: transactedAtRange.startTransactedAt,
+                      endTransactedAt: transactedAtRange.endTransactedAt,
+                      transactionCategoryId: category._id,
+                      targetUserId: authStore.user?._id as string,
+                    });
+                  }}
                 />
               ))}
             </View>

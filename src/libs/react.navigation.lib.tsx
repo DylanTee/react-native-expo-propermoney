@@ -29,15 +29,15 @@ import TransactionDetailScreen from "@screens/TransactionDetailScreen";
 import DashboardScreen from "@screens/DashboardScreen";
 
 export type OverviewTransactionScreenParams = {
-  selectedUserId: TSelectedUserId;
-  startTransactedAt: Date;
+  targetUserId: string | undefined;
+  startTransactedAt: undefined | Date;
+  endTransactedAt: undefined | Date;
+  transactionCategoryId: string | undefined;
 };
 
 export type TransactionDetailScreenParams = {
   id: string;
 };
-
-export type TSelectedUserId = string | undefined;
 
 export const navigationRef = createNavigationContainerRef<AppStackParamList>();
 export type AppStackNavigationProp = StackNavigationProp<AppStackParamList>;

@@ -4,7 +4,6 @@ import { useTranslation } from "@libs/i18n/index";
 import { sh } from "@libs/responsive.lib";
 import SizedBox from "@components/Shared/SizedBox";
 import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
-import TransactionCategoryCard from "@components/Shared/Card/TransactionCategoryCard";
 import CustomText from "@components/Shared/CustomText";
 import CustomTab from "@components/Shared/CustomTab";
 import { EOverviewTransactionsReport } from "@screens/OverviewTransactionScreen";

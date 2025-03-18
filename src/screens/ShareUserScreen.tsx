@@ -325,8 +325,10 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                   title={t("overviewSpending")}
                   onPress={() => {
                     navigation.navigate("OverviewTransactionScreen", {
-                      selectedUserId: authStore.user?._id,
-                      startTransactedAt: new Date(),
+                      targetUserId: authStore.user?._id,
+                      startTransactedAt: undefined,
+                      endTransactedAt: undefined,
+                      transactionCategoryId: undefined,
                     });
                   }}
                 />
@@ -355,8 +357,11 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                     onPress={() => {
                       if (authStore.user?.sharedUserInfo) {
                         navigation.navigate("OverviewTransactionScreen", {
-                          selectedUserId: authStore.user.sharedUserInfo._id,
-                          startTransactedAt: new Date(),
+                          targetUserId: authStore.user.sharedUserInfo
+                            ._id as unknown as string,
+                          startTransactedAt: undefined,
+                          endTransactedAt: undefined,
+                          transactionCategoryId: undefined,
                         });
                       }
                     }}
@@ -383,8 +388,10 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
               onPress={() => {
                 if (authStore.user?.sharedUserInfo) {
                   navigation.navigate("OverviewTransactionScreen", {
-                    selectedUserId: undefined,
-                    startTransactedAt: new Date(),
+                    targetUserId: authStore.user._id as unknown as string,
+                    startTransactedAt: undefined,
+                    endTransactedAt: undefined,
+                    transactionCategoryId: undefined,
                   });
                 }
               }}

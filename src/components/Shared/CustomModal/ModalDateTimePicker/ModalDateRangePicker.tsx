@@ -60,7 +60,9 @@ export default function ModalDateRangePicker(props: ModalDateRangePickerProps) {
     endAt: undefined | Date;
   }>({ startAt: props.data.startAt, endAt: props.data.endAt });
 
-  useEffect(() => {}, [props.data]);
+  useEffect(() => {
+    setDateRange(props.data);
+  }, [props.data]);
   return (
     <>
       <TouchableOpacity
@@ -150,9 +152,13 @@ export default function ModalDateRangePicker(props: ModalDateRangePickerProps) {
                             size="big"
                           />
                           <CustomText
-                            label={dayjs(dateRange.startAt).format(
-                              "DD MMMM YYYY"
-                            )}
+                            label={
+                              dateRange.startAt
+                                ? dayjs(dateRange.startAt).format(
+                                    "DD MMMM YYYY"
+                                  )
+                                : `Choose`
+                            }
                             textStyle={{ color: Colors.matterhorn }}
                             size="medium"
                           />
@@ -191,9 +197,11 @@ export default function ModalDateRangePicker(props: ModalDateRangePickerProps) {
                             size="big"
                           />
                           <CustomText
-                            label={dayjs(dateRange.endAt).format(
-                              "DD MMMM YYYY"
-                            )}
+                            label={
+                              dateRange.endAt
+                                ? dayjs(dateRange.endAt).format("DD MMMM YYYY")
+                                : `Choose`
+                            }
                             textStyle={{ color: Colors.matterhorn }}
                             size="medium"
                           />
