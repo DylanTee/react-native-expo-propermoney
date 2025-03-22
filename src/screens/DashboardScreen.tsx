@@ -191,64 +191,66 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
           containerStyle={{ margin: sw(20) }}
           visible={useGetTransactionDashboardQuery.isFetching}
         />
-        <ScrollView>
-          <SizedBox height={sh(20)} />
-          <CustomText
-            size="extra-big"
-            label="Spending"
-            textStyle={{
-              paddingHorizontal: sw(15),
-            }}
-          />
-          {dashboard?.expense.map((data, index) => (
-            <View key={index} style={{ paddingVertical: sw(15) }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  paddingHorizontal: sw(15),
-                  alignItems: "center",
-                }}
-              >
-                <CustomText
-                  size="medium"
-                  label={`Spent in\n${displayDateRangeText({
-                    startAt: transactedAtRange.startTransactedAt,
-                    endAt: transactedAtRange.endTransactedAt,
-                  })}`}
-                />
-                <CustomText
-                  size="big"
-                  label={`${data.totalAmount.toFixed(2)} ${data.currency}`}
-                  containerStyle={{
-                    marginLeft: "auto",
+        {dashboard && !useGetTransactionDashboardQuery.isFetching? (
+          <ScrollView>
+            <SizedBox height={sh(20)} />
+            <CustomText
+              size="extra-big"
+              label="Spending"
+              textStyle={{
+                paddingHorizontal: sw(15),
+              }}
+            />
+            {dashboard?.expense?.map((data, index) => (
+              <View key={index} style={{ paddingVertical: sw(15) }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    paddingHorizontal: sw(15),
+                    alignItems: "center",
                   }}
-                />
+                >
+                  <CustomText
+                    size="medium"
+                    label={`Spent in\n${displayDateRangeText({
+                      startAt: transactedAtRange.startTransactedAt,
+                      endAt: transactedAtRange.endTransactedAt,
+                    })}`}
+                  />
+                  <CustomText
+                    size="big"
+                    label={`${data.totalAmount.toFixed(2)} ${data.currency}`}
+                    containerStyle={{
+                      marginLeft: "auto",
+                    }}
+                  />
+                </View>
+                <SizedBox height={sh(20)} />
+                {data.categories.map((category) => (
+                  <TransactionCategoryCard
+                    categoryName={category.name}
+                    key={category._id}
+                    imagePath={category.imagePath}
+                    name={category.name}
+                    iconNackgroundColor={category.backgroundColor}
+                    currency={data.currency}
+                    amount={category.totalAmount}
+                    totalSpending={data.totalAmount}
+                    percentage={category.percentage}
+                    onPress={() => {
+                      navigation.navigate("OverviewTransactionScreen", {
+                        startTransactedAt: transactedAtRange.startTransactedAt,
+                        endTransactedAt: transactedAtRange.endTransactedAt,
+                        transactionCategoryId: category._id,
+                        targetUserId: authStore.user?._id as string,
+                      });
+                    }}
+                  />
+                ))}
               </View>
-              <SizedBox height={sh(20)} />
-              {data.categories.map((category) => (
-                <TransactionCategoryCard
-                  categoryName={category.name}
-                  key={category._id}
-                  imagePath={category.imagePath}
-                  name={category.name}
-                  iconNackgroundColor={category.backgroundColor}
-                  currency={data.currency}
-                  amount={category.totalAmount}
-                  totalSpending={data.totalAmount}
-                  percentage={category.percentage}
-                  onPress={() => {
-                    navigation.navigate("OverviewTransactionScreen", {
-                      startTransactedAt: transactedAtRange.startTransactedAt,
-                      endTransactedAt: transactedAtRange.endTransactedAt,
-                      transactionCategoryId: category._id,
-                      targetUserId: authStore.user?._id as string,
-                    });
-                  }}
-                />
-              ))}
-            </View>
-          ))}
-        </ScrollView>
+            ))}
+          </ScrollView>
+        ):<></>}
       </ContainerLayout>
     </>
   );

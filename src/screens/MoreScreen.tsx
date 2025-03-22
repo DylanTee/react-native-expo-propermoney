@@ -9,7 +9,6 @@ import { sh } from "@libs/responsive.lib";
 import { useTranslation } from "@libs/i18n/index";
 import CustomItemPicker from "@components/Shared/CustomItemPicker";
 import { View } from "react-native";
-import MemberCard from "@components/Shared/Card/MemberCard";
 import ModalTextInput from "@components/Shared/CustomModal/ModalTextInput";
 import { useMutation } from "@tanstack/react-query";
 import { TPostUserUpdateBody } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
@@ -21,6 +20,7 @@ import ModalCurrencyPicker from "@components/Shared/CustomModal/ModalCurrencyPic
 import { useAuthStore } from "@libs/zustand/authStore";
 import VersionText from "@components/Shared/VersionText";
 import CustomText from "@components/Shared/CustomText";
+import Avatar from "@components/Shared/Avatar";
 
 const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
   navigation,
@@ -46,16 +46,41 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
         },
         onError: (e) => {
           Alert.alert(e.message);
-        }
+        },
       }
     );
   };
   return (
     <>
       <ContainerLayout>
-        <Header onBack={() => navigation.goBack()} />
+        <Header
+          containerStyle={{ padding: sw(15) }}
+          onBack={() => navigation.goBack()}
+        />
         <ScrollView bounces={false}>
-          <MemberCard currentRouteName="MoreScreen" />
+          <View
+            style={{
+              paddingHorizontal: sw(15),
+              paddingBottom: sh(5),
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Avatar
+                size="big"
+                profileImage={authStore.user?.profileImage ?? ``}
+              />
+              <SizedBox width={sw(5)} />
+              <CustomText
+                label={authStore.user?.displayName ?? ``}
+                size={"medium"}
+              />
+            </View>
+          </View>
           <View style={{ padding: sw(15) }}>
             <ModalTextInput
               headerText="Change Display Name"

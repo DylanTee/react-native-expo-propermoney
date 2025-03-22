@@ -151,114 +151,119 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
 
   return (
     <ContainerLayout>
-      <Header onBack={() => navigation.goBack()} />
+      <Header
+        containerStyle={{ padding: sw(15) }}
+        onBack={() => navigation.goBack()}
+      />
       <KeyboardLayout>
-        <SizedBox height={sh(20)} />
-        <CustomText
-          size={"medium"}
-          label={`${t("weHadSendOneTimePasswordMobile") + " " + phoneNumber}`}
-        />
-        <SizedBox height={sh(40)} />
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "center",
-          }}
-        >
-          <TextInput
-            ref={boxInput1}
-            style={styles.boxInput}
-            keyboardType={"decimal-pad"}
-            maxLength={1}
-            onChangeText={(text) =>
-              setOneTimePassword({ ...oneTimePassword, one: text })
-            }
-            onKeyPress={(event) => onKeyPress({ event, index: 1 })}
-            value={oneTimePassword.one}
+        <View style={{ padding: sw(15) }}>
+          <SizedBox height={sh(20)} />
+          <CustomText
+            size={"medium"}
+            label={`${t("weHadSendOneTimePasswordMobile") + " " + phoneNumber}`}
           />
-          <SizedBox width={sw(5)} />
-          <TextInput
-            ref={boxInput2}
-            style={styles.boxInput}
-            keyboardType={"decimal-pad"}
-            maxLength={1}
-            onChangeText={(text) =>
-              setOneTimePassword({ ...oneTimePassword, two: text })
+          <SizedBox height={sh(40)} />
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+            <TextInput
+              ref={boxInput1}
+              style={styles.boxInput}
+              keyboardType={"decimal-pad"}
+              maxLength={1}
+              onChangeText={(text) =>
+                setOneTimePassword({ ...oneTimePassword, one: text })
+              }
+              onKeyPress={(event) => onKeyPress({ event, index: 1 })}
+              value={oneTimePassword.one}
+            />
+            <SizedBox width={sw(5)} />
+            <TextInput
+              ref={boxInput2}
+              style={styles.boxInput}
+              keyboardType={"decimal-pad"}
+              maxLength={1}
+              onChangeText={(text) =>
+                setOneTimePassword({ ...oneTimePassword, two: text })
+              }
+              onKeyPress={(event) => onKeyPress({ event, index: 2 })}
+              value={oneTimePassword.two}
+            />
+            <SizedBox width={sw(5)} />
+            <TextInput
+              ref={boxInput3}
+              style={styles.boxInput}
+              keyboardType={"decimal-pad"}
+              maxLength={1}
+              onChangeText={(text) =>
+                setOneTimePassword({ ...oneTimePassword, three: text })
+              }
+              onKeyPress={(event) => onKeyPress({ event, index: 3 })}
+              value={oneTimePassword.three}
+            />
+            <SizedBox width={sw(5)} />
+            <TextInput
+              ref={boxInput4}
+              style={styles.boxInput}
+              keyboardType={"decimal-pad"}
+              maxLength={1}
+              onChangeText={(text) =>
+                setOneTimePassword({ ...oneTimePassword, four: text })
+              }
+              onKeyPress={(event) => onKeyPress({ event, index: 4 })}
+              value={oneTimePassword.four}
+            />
+            <SizedBox width={sw(5)} />
+            <TextInput
+              ref={boxInput5}
+              style={styles.boxInput}
+              keyboardType={"decimal-pad"}
+              maxLength={1}
+              onChangeText={(text) =>
+                setOneTimePassword({ ...oneTimePassword, five: text })
+              }
+              onKeyPress={(event) => onKeyPress({ event, index: 5 })}
+              value={oneTimePassword.five}
+            />
+            <SizedBox width={sw(5)} />
+            <TextInput
+              ref={boxInput6}
+              style={styles.boxInput}
+              keyboardType={"decimal-pad"}
+              maxLength={1}
+              onChangeText={(text) =>
+                setOneTimePassword({ ...oneTimePassword, six: text })
+              }
+              onKeyPress={(event) => onKeyPress({ event, index: 6 })}
+              value={oneTimePassword.six}
+            />
+          </View>
+          <SizedBox height={sh(20)} />
+          <View style={{ flex: 1, alignItems: "flex-end" }}>
+            <CustomButton
+              isTimer={true}
+              disabled={
+                usePostVerifyMutation.isPending ||
+                usePostRequestOTPMutation.isPending
+              }
+              type="tertiary"
+              size="small"
+              title="Resend Code"
+              onPress={() => handleResendCode()}
+            />
+          </View>
+          <LoadingCircle
+            containerStyle={{ margin: sw(20) }}
+            visible={
+              usePostRequestOTPMutation.isPending ||
+              usePostVerifyMutation.isPending
             }
-            onKeyPress={(event) => onKeyPress({ event, index: 2 })}
-            value={oneTimePassword.two}
-          />
-          <SizedBox width={sw(5)} />
-          <TextInput
-            ref={boxInput3}
-            style={styles.boxInput}
-            keyboardType={"decimal-pad"}
-            maxLength={1}
-            onChangeText={(text) =>
-              setOneTimePassword({ ...oneTimePassword, three: text })
-            }
-            onKeyPress={(event) => onKeyPress({ event, index: 3 })}
-            value={oneTimePassword.three}
-          />
-          <SizedBox width={sw(5)} />
-          <TextInput
-            ref={boxInput4}
-            style={styles.boxInput}
-            keyboardType={"decimal-pad"}
-            maxLength={1}
-            onChangeText={(text) =>
-              setOneTimePassword({ ...oneTimePassword, four: text })
-            }
-            onKeyPress={(event) => onKeyPress({ event, index: 4 })}
-            value={oneTimePassword.four}
-          />
-          <SizedBox width={sw(5)} />
-          <TextInput
-            ref={boxInput5}
-            style={styles.boxInput}
-            keyboardType={"decimal-pad"}
-            maxLength={1}
-            onChangeText={(text) =>
-              setOneTimePassword({ ...oneTimePassword, five: text })
-            }
-            onKeyPress={(event) => onKeyPress({ event, index: 5 })}
-            value={oneTimePassword.five}
-          />
-          <SizedBox width={sw(5)} />
-          <TextInput
-            ref={boxInput6}
-            style={styles.boxInput}
-            keyboardType={"decimal-pad"}
-            maxLength={1}
-            onChangeText={(text) =>
-              setOneTimePassword({ ...oneTimePassword, six: text })
-            }
-            onKeyPress={(event) => onKeyPress({ event, index: 6 })}
-            value={oneTimePassword.six}
           />
         </View>
-        <SizedBox height={sh(20)} />
-        <View style={{ flex: 1, alignItems: "flex-end" }}>
-          <CustomButton
-            isTimer={true}
-            disabled={
-              usePostVerifyMutation.isPending ||
-              usePostRequestOTPMutation.isPending
-            }
-            type="tertiary"
-            size="small"
-            title="Resend Code"
-            onPress={() => handleResendCode()}
-          />
-        </View>
-        <LoadingCircle
-          containerStyle={{ margin: sw(20) }}
-          visible={
-            usePostRequestOTPMutation.isPending ||
-            usePostVerifyMutation.isPending
-          }
-        />
       </KeyboardLayout>
     </ContainerLayout>
   );

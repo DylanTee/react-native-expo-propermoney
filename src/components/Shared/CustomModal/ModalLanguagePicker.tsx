@@ -41,6 +41,9 @@ export default function ModalLanguagePicker(props: ModalLanguagePickerProps) {
             }}
           >
             <Header
+              containerStyle={{
+                padding: sw(15),
+              }}
               onBack={() => {
                 setIsVisible(false);
               }}

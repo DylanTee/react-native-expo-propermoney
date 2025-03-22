@@ -129,9 +129,12 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
 
   return (
     <ContainerLayout>
-      <Header onBack={() => navigation.goBack()} />
+      <Header
+        containerStyle={{ padding: sw(15) }}
+        onBack={() => navigation.goBack()}
+      />
       <ScrollView>
-        <View style={Global.shadowLine}>
+        <View style={{ paddingHorizontal: sw(15) }}>
           <CustomText label={t("youHave")} size={"small"} />
           <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
             <CustomText label={totalPoints.toString()} size={"big"} />
@@ -160,7 +163,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
           </View>
         </View>
         <SizedBox height={sh(20)} />
-        <View>
+        <View style={{ padding: sw(15) }}>
           <CustomText label={`${t("daily")} ${t("missions")}`} size={"big"} />
           <CustomText
             label={`${t(`timeRemaining`)}: ${dailyMissions?.refreshAt}`}
@@ -172,7 +175,6 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
               key={data.type}
               style={[
                 styles.missionContainer,
-                Global.shadowLine,
                 { opacity: data.isClaimed ? 0.4 : 1 },
               ]}
             >
@@ -261,7 +263,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
           ))}
         </View>
         <SizedBox height={sh(20)} />
-        <View>
+        <View style={{ padding: sw(15) }}>
           <CustomText size={"big"} label={`${t("weekly")} ${t("missions")}`} />
           <CustomText
             size={"medium"}
@@ -275,7 +277,6 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
                 key={data.type}
                 style={[
                   styles.missionContainer,
-                  Global.shadowLine,
                   { opacity: data.isClaimed ? 0.4 : 1 },
                 ]}
               >

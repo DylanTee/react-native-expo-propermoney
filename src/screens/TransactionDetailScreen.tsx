@@ -68,7 +68,9 @@ const TransactionDetailScreen: AppNavigationScreen<
                     isEdit: true,
                     isUsePhotoAI: false,
                     onEdit: () => {},
-                    onDelete: () => {},
+                    onDelete: () => {
+                      navigation.goBack();
+                    },
                   });
                 }}
               >

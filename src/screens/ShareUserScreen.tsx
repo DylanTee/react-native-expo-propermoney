@@ -44,12 +44,8 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
   const isShared = authStore.user?.sharedUserInfo ? true : false;
   const [timer, setTimer] = useState<number>(600);
 
-  setInterval(() => {
-    authStore.getDetail();
-  }, 6000);
-
   const getShareIdQuery = useQuery({
-    queryKey: ["/verification/share-"],
+    queryKey: ["get-share-id"],
     queryFn: async () => {
       const { data } = await AxiosLibs.defaultClient.get(
         `/verification/generate-share-id`
@@ -96,38 +92,39 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
     five: "",
     six: "",
   });
-  useEffect(() => {
-    if (getShareIdQuery.isSuccess) {
-      setTimer(dayjs(shareId?.expiryAt).diff(dayjs(), "seconds"));
-    }
-  }, [getShareIdQuery.isSuccess]);
-  useEffect(() => {
-    let interval: string | number | NodeJS.Timeout | undefined;
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
-    } else {
-      if (getShareIdQuery.isSuccess && !isShared) {
-        // Timer reached 0! Call your desired function here
-        Alert.alert(
-          "Ended",
-          ``,
-          [
-            {
-              text: t("back"),
-              onPress: () => {
-                navigation.goBack();
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      }
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [timer]);
+  
+  // useEffect(() => {
+  //   if (getShareIdQuery.isSuccess) {
+  //     setTimer(dayjs(shareId?.expiryAt).diff(dayjs(), "seconds"));
+  //   }
+  // }, [getShareIdQuery.isSuccess]);
+  // useEffect(() => {
+  //   let interval: string | number | NodeJS.Timeout | undefined;
+  //   if (timer > 0) {
+  //     interval = setInterval(() => {
+  //       setTimer((prevTimer) => prevTimer - 1);
+  //     }, 1000);
+  //   } else {
+  //     if (getShareIdQuery.isSuccess && !isShared) {
+  //       // Timer reached 0! Call your desired function here
+  //       Alert.alert(
+  //         "Ended",
+  //         ``,
+  //         [
+  //           {
+  //             text: t("back"),
+  //             onPress: () => {
+  //               navigation.goBack();
+  //             },
+  //           },
+  //         ],
+  //         { cancelable: false }
+  //       );
+  //     }
+  //     clearInterval(interval);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [timer]);
 
   useEffect(() => {
     if (Object.values(oneTimePassword).filter((x) => x === "").length === 0) {
@@ -259,270 +256,224 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
   return (
     <ContainerLayout>
       <Header
+        containerStyle={{ padding: sw(15) }}
         onBack={() => {
           navigation.goBack();
         }}
       />
       <KeyboardLayout>
-        {timer && !isShared ? (
-          <>
-            <CustomText
-              size={"medium"}
-              label={t("pleaseTellYourPartnerTheFollowing")}
-            />
-            <SizedBox height={sh(50)} />
-            {getShareIdQuery.isLoading ? (
-              <ActivityIndicator size={"small"} color={Colors.black} />
-            ) : (
-              <View style={{ alignItems: "center" }}>
-                <CustomText size={"big"} label={`Your SHARE ID`} />
-                <SizedBox height={sh(5)} />
-                <CustomText
-                  size={"big"}
-                  label={shareId?.oneTimePassword ?? ""}
-                />
-                <SizedBox height={sh(5)} />
-                <QRCode value={shareId?.oneTimePassword} />
-                <SizedBox height={sh(5)} />
-                <CustomText
-                  size={"small"}
-                  label={`${t("timeRemaining")}: ${dayjs
-                    .duration(timer, "seconds")
-                    .format("mm [minute(s)] ss [second(s)]")}`}
-                />
-              </View>
-            )}
-          </>
-        ) : (
-          <></>
-        )}
-
-        {isShared && (
-          <>
-            <CustomText
-              size={"medium"}
-              label={`${t(
-                "peopleWithAccess"
-              )} (${getNumberOfAccessPerson()}/2)`}
-            />
-            <SizedBox height={sh(10)} />
-            <View style={[Global.shadowLine, styles.userCardStyle]}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Avatar
-                  size="big"
-                  profileImage={authStore.user?.profileImage ?? ""}
-                />
-                <SizedBox width={sw(10)} />
-                <CustomText
-                  size={"medium"}
-                  label={`${authStore.user?.displayName} (you)`}
-                />
-              </View>
-              <View style={{ flexDirection: "row", marginLeft: "auto" }}>
-                <CustomButton
-                  type="primary"
-                  size="small"
-                  title={t("overviewSpending")}
-                  onPress={() => {
-                    navigation.navigate("OverviewTransactionScreen", {
-                      targetUserId: authStore.user?._id,
-                      startTransactedAt: undefined,
-                      endTransactedAt: undefined,
-                      transactionCategoryId: undefined,
-                    });
-                  }}
-                />
-              </View>
-            </View>
-            <SizedBox height={sh(10)} />
-            {authStore.user?.sharedUserInfo ? (
+        <View style={{ padding: sw(15) }}>
+          {timer && !isShared ? (
+            <>
+              <CustomText
+                size={"medium"}
+                label={t("pleaseTellYourPartnerTheFollowing")}
+              />
+              <SizedBox height={sh(50)} />
+              {getShareIdQuery.isLoading ? (
+                <ActivityIndicator size={"small"} color={Colors.black} />
+              ) : (
+                <View style={{ alignItems: "center" }}>
+                  <CustomText size={"big"} label={`Your SHARE ID`} />
+                  <SizedBox height={sh(5)} />
+                  <CustomText
+                    size={"big"}
+                    label={shareId?.oneTimePassword ?? ""}
+                  />
+                  <SizedBox height={sh(5)} />
+                  <QRCode value={shareId?.oneTimePassword} />
+                  <SizedBox height={sh(5)} />
+                  <CustomText
+                    size={"small"}
+                    label={`${t("timeRemaining")}: ${dayjs
+                      .duration(timer, "seconds")
+                      .format("mm [minute(s)] ss [second(s)]")}`}
+                  />
+                </View>
+              )}
+            </>
+          ) : (
+            <></>
+          )}
+          {isShared && (
+            <>
+              <CustomText
+                size={"medium"}
+                label={`${t(
+                  "peopleWithAccess"
+                )} (${getNumberOfAccessPerson()}/2)`}
+              />
+              <SizedBox height={sh(10)} />
               <View style={[Global.shadowLine, styles.userCardStyle]}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Avatar
                     size="big"
-                    profileImage={authStore.user.sharedUserInfo?.profileImage}
+                    profileImage={authStore.user?.profileImage ?? ""}
                   />
                   <SizedBox width={sw(10)} />
                   <CustomText
                     size={"medium"}
-                    label={authStore.user.sharedUserInfo.displayName}
-                  />
-                </View>
-                <SizedBox height={sw(10)} />
-                <View style={{ flexDirection: "row", marginLeft: "auto" }}>
-                  <CustomButton
-                    type="primary"
-                    size="small"
-                    title={t("overviewSpending")}
-                    onPress={() => {
-                      if (authStore.user?.sharedUserInfo) {
-                        navigation.navigate("OverviewTransactionScreen", {
-                          targetUserId: authStore.user.sharedUserInfo
-                            ._id as unknown as string,
-                          startTransactedAt: undefined,
-                          endTransactedAt: undefined,
-                          transactionCategoryId: undefined,
-                        });
-                      }
-                    }}
-                  />
-                  <SizedBox width={sw(10)} />
-                  <CustomButton
-                    type="secondary"
-                    size="small"
-                    title={t("remove")}
-                    onPress={() => {
-                      btnRemove();
-                    }}
+                    label={`${authStore.user?.displayName} (you)`}
                   />
                 </View>
               </View>
-            ) : (
-              <></>
-            )}
-            <SizedBox height={sh(40)} />
-            <CustomButton
-              type="primary"
-              size="medium"
-              title={t("overviewSpending")}
-              onPress={() => {
-                if (authStore.user?.sharedUserInfo) {
-                  navigation.navigate("OverviewTransactionScreen", {
-                    targetUserId: authStore.user._id as unknown as string,
-                    startTransactedAt: undefined,
-                    endTransactedAt: undefined,
-                    transactionCategoryId: undefined,
-                  });
-                }
-              }}
-            />
-          </>
-        )}
-        {!isShared && (
-          <>
-            <SizedBox height={sh(50)} />
-            <CustomText size="medium" label="SHARE ID (Partner)" />
-            <SizedBox height={sw(10)} />
-            <View
-              style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "center",
-              }}
-            >
-              <TextInput
-                ref={boxInput1}
-                style={styles.boxInput}
-                keyboardType={"decimal-pad"}
-                maxLength={1}
-                onChangeText={(text) =>
-                  setOneTimePassword({ ...oneTimePassword, one: text })
-                }
-                onKeyPress={(event) => onKeyPress({ event, index: 1 })}
-                value={oneTimePassword.one}
-              />
-              <SizedBox width={sw(5)} />
-              <TextInput
-                ref={boxInput2}
-                style={styles.boxInput}
-                keyboardType={"decimal-pad"}
-                maxLength={1}
-                onChangeText={(text) =>
-                  setOneTimePassword({ ...oneTimePassword, two: text })
-                }
-                onKeyPress={(event) => onKeyPress({ event, index: 2 })}
-                value={oneTimePassword.two}
-              />
-              <SizedBox width={sw(5)} />
-              <TextInput
-                ref={boxInput3}
-                style={styles.boxInput}
-                keyboardType={"decimal-pad"}
-                maxLength={1}
-                onChangeText={(text) =>
-                  setOneTimePassword({ ...oneTimePassword, three: text })
-                }
-                onKeyPress={(event) => onKeyPress({ event, index: 3 })}
-                value={oneTimePassword.three}
-              />
-              <SizedBox width={sw(5)} />
-              <TextInput
-                ref={boxInput4}
-                style={styles.boxInput}
-                keyboardType={"decimal-pad"}
-                maxLength={1}
-                onChangeText={(text) =>
-                  setOneTimePassword({ ...oneTimePassword, four: text })
-                }
-                onKeyPress={(event) => onKeyPress({ event, index: 4 })}
-                value={oneTimePassword.four}
-              />
-              <SizedBox width={sw(5)} />
-              <TextInput
-                ref={boxInput5}
-                style={styles.boxInput}
-                keyboardType={"decimal-pad"}
-                maxLength={1}
-                onChangeText={(text) =>
-                  setOneTimePassword({ ...oneTimePassword, five: text })
-                }
-                onKeyPress={(event) => onKeyPress({ event, index: 5 })}
-                value={oneTimePassword.five}
-              />
-              <SizedBox width={sw(5)} />
-              <TextInput
-                ref={boxInput6}
-                style={styles.boxInput}
-                keyboardType={"decimal-pad"}
-                maxLength={1}
-                onChangeText={(text) =>
-                  setOneTimePassword({ ...oneTimePassword, six: text })
-                }
-                onKeyPress={(event) => onKeyPress({ event, index: 6 })}
-                value={oneTimePassword.six}
-              />
-            </View>
-            <SizedBox height={sh(10)} />
-            <ModalScanQrCode
-              buttonStyle={{}}
-              listComponents={
-                <View
-                  style={{
-                    flexDirection: "row",
-                    borderRadius: sw(5 / 2),
-                    padding: sw(10),
-                    borderWidth: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    alignSelf: "flex-end",
-                  }}
-                >
-                  <CustomText label="Scan QR" size="small" />
-                  <SizedBox width={sw(10)} />
-                  <ExpoVectorIcon
-                    name="scan1"
-                    size={sw(15)}
-                    color={Colors.black}
-                  />
+              <SizedBox height={sh(10)} />
+              {authStore.user?.sharedUserInfo ? (
+                <View style={[Global.shadowLine, styles.userCardStyle]}>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Avatar
+                      size="big"
+                      profileImage={authStore.user.sharedUserInfo?.profileImage}
+                    />
+                    <SizedBox width={sw(10)} />
+                    <CustomText
+                      size={"medium"}
+                      label={authStore.user.sharedUserInfo.displayName}
+                    />
+                  </View>
+                  <SizedBox height={sw(10)} />
+                  <View style={{ flexDirection: "row", marginLeft: "auto" }}>
+                    <CustomButton
+                      type="secondary"
+                      size="small"
+                      title={t("remove")}
+                      onPress={() => {
+                        btnRemove();
+                      }}
+                    />
+                  </View>
                 </View>
-              }
-              onChange={(data) => {
-                if (data.length == 6) {
-                  setOneTimePassword({
-                    one: data.substring(0, 1),
-                    two: data.substring(1, 2),
-                    three: data.substring(2, 3),
-                    four: data.substring(3, 4),
-                    five: data.substring(4, 5),
-                    six: data.substring(5, 6),
-                  });
-                } else {
-                  Alert.alert("Invalid QR");
+              ) : (
+                <></>
+              )}
+            </>
+          )}
+          {!isShared && (
+            <>
+              <SizedBox height={sh(50)} />
+              <CustomText size="medium" label="SHARE ID (Partner)" />
+              <SizedBox height={sw(10)} />
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                }}
+              >
+                <TextInput
+                  ref={boxInput1}
+                  style={styles.boxInput}
+                  keyboardType={"decimal-pad"}
+                  maxLength={1}
+                  onChangeText={(text) =>
+                    setOneTimePassword({ ...oneTimePassword, one: text })
+                  }
+                  onKeyPress={(event) => onKeyPress({ event, index: 1 })}
+                  value={oneTimePassword.one}
+                />
+                <SizedBox width={sw(5)} />
+                <TextInput
+                  ref={boxInput2}
+                  style={styles.boxInput}
+                  keyboardType={"decimal-pad"}
+                  maxLength={1}
+                  onChangeText={(text) =>
+                    setOneTimePassword({ ...oneTimePassword, two: text })
+                  }
+                  onKeyPress={(event) => onKeyPress({ event, index: 2 })}
+                  value={oneTimePassword.two}
+                />
+                <SizedBox width={sw(5)} />
+                <TextInput
+                  ref={boxInput3}
+                  style={styles.boxInput}
+                  keyboardType={"decimal-pad"}
+                  maxLength={1}
+                  onChangeText={(text) =>
+                    setOneTimePassword({ ...oneTimePassword, three: text })
+                  }
+                  onKeyPress={(event) => onKeyPress({ event, index: 3 })}
+                  value={oneTimePassword.three}
+                />
+                <SizedBox width={sw(5)} />
+                <TextInput
+                  ref={boxInput4}
+                  style={styles.boxInput}
+                  keyboardType={"decimal-pad"}
+                  maxLength={1}
+                  onChangeText={(text) =>
+                    setOneTimePassword({ ...oneTimePassword, four: text })
+                  }
+                  onKeyPress={(event) => onKeyPress({ event, index: 4 })}
+                  value={oneTimePassword.four}
+                />
+                <SizedBox width={sw(5)} />
+                <TextInput
+                  ref={boxInput5}
+                  style={styles.boxInput}
+                  keyboardType={"decimal-pad"}
+                  maxLength={1}
+                  onChangeText={(text) =>
+                    setOneTimePassword({ ...oneTimePassword, five: text })
+                  }
+                  onKeyPress={(event) => onKeyPress({ event, index: 5 })}
+                  value={oneTimePassword.five}
+                />
+                <SizedBox width={sw(5)} />
+                <TextInput
+                  ref={boxInput6}
+                  style={styles.boxInput}
+                  keyboardType={"decimal-pad"}
+                  maxLength={1}
+                  onChangeText={(text) =>
+                    setOneTimePassword({ ...oneTimePassword, six: text })
+                  }
+                  onKeyPress={(event) => onKeyPress({ event, index: 6 })}
+                  value={oneTimePassword.six}
+                />
+              </View>
+              <SizedBox height={sh(10)} />
+              <ModalScanQrCode
+                buttonStyle={{}}
+                listComponents={
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      borderRadius: sw(5 / 2),
+                      padding: sw(10),
+                      borderWidth: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      alignSelf: "flex-end",
+                    }}
+                  >
+                    <CustomText label="Scan QR" size="small" />
+                    <SizedBox width={sw(10)} />
+                    <ExpoVectorIcon
+                      name="scan1"
+                      size={sw(15)}
+                      color={Colors.black}
+                    />
+                  </View>
                 }
-              }}
-            />
-          </>
-        )}
+                onChange={(data) => {
+                  if (data.length == 6) {
+                    setOneTimePassword({
+                      one: data.substring(0, 1),
+                      two: data.substring(1, 2),
+                      three: data.substring(2, 3),
+                      four: data.substring(3, 4),
+                      five: data.substring(4, 5),
+                      six: data.substring(5, 6),
+                    });
+                  } else {
+                    Alert.alert("Invalid QR");
+                  }
+                }}
+              />
+            </>
+          )}
+        </View>
       </KeyboardLayout>
     </ContainerLayout>
   );

@@ -147,7 +147,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
                   borderRadius: sw(30),
                   padding: sw(5),
                   paddingHorizontal: sw(20),
-                  alignItems:"center"
+                  alignItems: "center",
                 }}
                 onPress={() =>
                   setTransactedAtRange({
@@ -496,7 +496,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
         isOrder: transactionLabelConfig.sharedUserTransactionLabelIds
           ? true
           : false,
-        isVisible: true,
+        isVisible: authStore.user?.sharedUserId != null,
       },
     ];
   }, [transactionCategoryConfig, transactionLabelConfig, transactedAtRange]);

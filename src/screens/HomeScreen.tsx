@@ -3,6 +3,7 @@ import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import React from "react";
 import { sh, sw } from "@libs/responsive.lib";
 import {
+  Image,
   Linking,
   RefreshControl,
   ScrollView,
@@ -11,7 +12,6 @@ import {
 } from "react-native";
 import { Colors } from "@styles/Colors";
 import { useTranslation } from "@libs/i18n/index";
-import MemberCard from "../components/Shared/Card/MemberCard";
 import HomeCard, { HomeCardProps } from "../components/Shared/Card/HomeCard";
 import { FlashList } from "@shopify/flash-list";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
@@ -94,15 +94,15 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
         Linking.openURL("https://fb.watch/pk_8n0fyFQ/");
       },
     },
-    {
-      index: 3,
-      label: `${t("missions")}/${t("rewards")}`,
-      description: "Earn reward points (RP) on every mission completed",
-      icon: <ExpoVectorIcon name="flag" size={sw(25)} color={Colors.black} />,
-      onPress: () => {
-        navigation.navigate("MissionScreen");
-      },
-    },
+    // {
+    //   index: 3,
+    //   label: `${t("missions")}/${t("rewards")}`,
+    //   description: "Earn reward points (RP) on every mission completed",
+    //   icon: <ExpoVectorIcon name="flag" size={sw(25)} color={Colors.black} />,
+    //   onPress: () => {
+    //     navigation.navigate("MissionScreen");
+    //   },
+    // },
     {
       index: 4,
       label: `${t("contactSupport")}`,
@@ -161,15 +161,15 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
     enabled: authStore.user != null,
   });
 
-  const dashboardThisMonth: TGetTransactionDashboardResponse =
+  const dashboardThisMonth: TGetTransactionDashboardResponse | undefined =
     useGetTransactionDashboardThisMonthQuery.data ?? undefined;
 
-  const dashboardLastMonth: TGetTransactionDashboardResponse =
+  const dashboardLastMonth: TGetTransactionDashboardResponse | undefined =
     useGetTransactionDashboardLastMonthQuery.data ?? undefined;
 
   const useGetTransactionInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: ["transaction-listings",authStore.user],
+    queryKey: ["transaction-listings",authStore.user?._id],
     queryFn: async ({ pageParam = 1 }) => {
       const query: TGetTransactionQuery = {
         limit: 3,
@@ -199,7 +199,31 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
   return (
     <>
       <ContainerLayout>
-        <MemberCard currentRouteName="HomeScreen" />
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            padding: sw(15),
+          }}
+          onPress={() => {
+            navigation.navigate("MoreScreen");
+          }}
+        >
+          <Image
+            style={{
+              width: sw(40),
+              height: sw(40),
+              objectFit: "cover",
+              borderRadius: sw(1000),
+            }}
+            source={{ uri: authStore.user?.profileImage ?? `` }}
+          />
+          <SizedBox width={sw(10)} />
+          <CustomText
+            label={authStore.user?.displayName ?? ``}
+            size={"medium"}
+          />
+        </TouchableOpacity>
         <FlashList
           ListHeaderComponent={
             <>
@@ -240,7 +264,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                 style={{
                   borderWidth: 1,
                   borderColor: Colors.suvaGrey,
-                  padding: sw(20),
+                  padding: sw(15),
                   marginHorizontal: sw(15),
                   borderRadius: sw(10),
                 }}
@@ -276,13 +300,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                       alignItems: "center",
                     }}
                   >
-                    <CustomText
-                      label="$"
-                      size="extra-big"
-                      textStyle={{
-                        textDecorationLine: "underline",
-                      }}
-                    />
+                    <CustomText label="$" size="extra-big" textStyle={{}} />
                   </View>
                   <SizedBox width={sw(10)} />
                   <View>
@@ -300,7 +318,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                         size="medium"
                         label={
                           dashboardThisMonth?.expense
-                            .map((data) =>
+                            ?.map((data) =>
                               displayCurrency({
                                 currency: data.currency,
                                 amount: data.totalAmount,
@@ -325,13 +343,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                       alignItems: "center",
                     }}
                   >
-                    <CustomText
-                      label="$"
-                      size="extra-big"
-                      textStyle={{
-                        textDecorationLine: "underline",
-                      }}
-                    />
+                    <CustomText label="$" size="extra-big" />
                   </View>
                   <SizedBox width={sw(10)} />
                   <View>
@@ -349,7 +361,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                         size="medium"
                         label={
                           dashboardLastMonth?.expense
-                            .map((data) =>
+                            ?.map((data) =>
                               displayCurrency({
                                 currency: data.currency,
                                 amount: data.totalAmount,

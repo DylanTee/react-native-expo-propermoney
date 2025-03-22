@@ -12,8 +12,9 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
-import { sw } from "@libs/responsive.lib";
+import { sh, sw } from "@libs/responsive.lib";
 import ContainerLayout from "@components/Layout/ContainerLayout";
+import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 
 interface ModalZoomableImageProps {
   listComponents: ReactNode;
@@ -42,12 +43,22 @@ export default function ModalZoomableImage(props: ModalZoomableImageProps) {
               paddingTop: Platform.OS === "android" ? 0 : sw(50),
             }}
           >
-            <Header
-              onBack={() => {
-                setIsVisible(false);
-              }}
-            />
             <View style={{ flex: 1, backgroundColor: Colors.black }}>
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  zIndex: 1,
+                  padding: sw(15),
+                  paddingTop: sh(20),
+                }}
+                onPress={() => setIsVisible(false)}
+              >
+                <ExpoVectorIcon
+                  name={"close"}
+                  size={sw(30)}
+                  color={Colors.white}
+                />
+              </TouchableOpacity>
               <ReactNativeZoomableView
                 maxZoom={10}
                 minZoom={1}

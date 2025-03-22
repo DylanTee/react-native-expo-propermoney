@@ -44,6 +44,9 @@ export default function ModalCurrencyPicker(props: ModalCurrencyPickerProps) {
               onBack={() => {
                 setIsVisible(false);
               }}
+              containerStyle={{
+                padding: sw(15),
+              }}
             />
             <ScrollView>
               {currencyList.map((option, index) => (

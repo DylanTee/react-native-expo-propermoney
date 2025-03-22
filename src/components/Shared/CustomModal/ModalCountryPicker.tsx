@@ -44,24 +44,25 @@ export default function ModalCountryPicker(props: ModalCountryPickerProps) {
             }}
           >
             <Header
+              containerStyle={{
+                padding: sw(15),
+              }}
               onBack={() => {
                 setIsVisible(false);
               }}
             />
             <ScrollView>
-              
-                {countryList.map((option, index) => (
-                  <CustomButtonItemPicker
-                    key={index}
-                    text={`${option.name} (${option.countryCode})`}
-                    isSelect={props.countryCode == option.countryCode}
-                    onPress={() => {
-                      props.onChange(option);
-                      setIsVisible(false);
-                    }}
-                  />
-                ))}
-              
+              {countryList.map((option, index) => (
+                <CustomButtonItemPicker
+                  key={index}
+                  text={`${option.name} (${option.countryCode})`}
+                  isSelect={props.countryCode == option.countryCode}
+                  onPress={() => {
+                    props.onChange(option);
+                    setIsVisible(false);
+                  }}
+                />
+              ))}
             </ScrollView>
           </View>
         </ContainerLayout>

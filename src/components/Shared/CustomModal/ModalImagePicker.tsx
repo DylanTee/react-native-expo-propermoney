@@ -125,6 +125,7 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
             }}
           >
             <Header
+            containerStyle={{padding:sw(15)}}
               onBack={() => {
                 setIsVisible(false);
               }}

@@ -119,51 +119,55 @@ const MyRewardStoreScreen: AppNavigationScreen<"MyRewardStoreScreen"> = ({
   };
   return (
     <ContainerLayout>
-      <Header onBack={() => navigation.goBack()} />
-      <ScrollView
-        style={{
-          paddingHorizontal: sw(10),
-        }}
-      >
-        <View style={[styles.cardContainer, Global.shadowLine]}>
-          <CustomText label={t("youHave")} size={"small"} />
-          <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-            <CustomText size={"big"} label={totalPoints.toString()} />
-            <SizedBox width={sw(5)} />
-            <CustomText size={"small"} label={"Rewards Points (RP)"} />
-          </View>
-        </View>
-        <SizedBox height={sh(20)} />
-        {rewardStoreItems.map((data) => (
-          <TouchableOpacity
-            key={data.type}
-            style={[styles.itemButton, Global.shadowLine]}
-            onPress={() => btnRedeem(data)}
-          >
-            <Image
-              style={{
-                width: sw(35),
-                height: sw(35),
-              }}
-              source={require("@assets/Touch-n-Go-Logo-eGHL.png")}
-            />
-            <SizedBox width={sw(10)} />
-            <View style={{ flex: 1 }}>
-              <CustomText size={"medium"} label={data.name} />
-              <SizedBox height={sh(5)} />
-              <CustomText size={"small"} label={data.description} />
-              <SizedBox height={sh(5)} />
-              <CustomText size={"small"} label={data.inventoryLeft + " Left"} />
-              <SizedBox height={sh(5)} />
-              <CustomText size={"small"} label={data.price + " RP"} />
-              <SizedBox height={sh(10)} />
-              <CustomText
-                size={"small"}
-                label={`${t(`timeRemaining`)}: ${data.refreshAt}`}
-              />
+      <Header
+        containerStyle={{ padding: sw(15) }}
+        onBack={() => navigation.goBack()}
+      />
+      <ScrollView>
+        <View style={{ padding: sw(15) }}>
+          <View style={styles.cardContainer}>
+            <CustomText label={t("youHave")} size={"small"} />
+            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+              <CustomText size={"big"} label={totalPoints.toString()} />
+              <SizedBox width={sw(5)} />
+              <CustomText size={"small"} label={"Rewards Points (RP)"} />
             </View>
-          </TouchableOpacity>
-        ))}
+          </View>
+          <SizedBox height={sh(20)} />
+          {rewardStoreItems.map((data) => (
+            <TouchableOpacity
+              key={data.type}
+              style={styles.itemButton}
+              onPress={() => btnRedeem(data)}
+            >
+              <Image
+                style={{
+                  width: sw(35),
+                  height: sw(35),
+                }}
+                source={require("@assets/Touch-n-Go-Logo-eGHL.png")}
+              />
+              <SizedBox width={sw(10)} />
+              <View style={{ flex: 1 }}>
+                <CustomText size={"medium"} label={data.name} />
+                <SizedBox height={sh(5)} />
+                <CustomText size={"small"} label={data.description} />
+                <SizedBox height={sh(5)} />
+                <CustomText
+                  size={"small"}
+                  label={data.inventoryLeft + " Left"}
+                />
+                <SizedBox height={sh(5)} />
+                <CustomText size={"small"} label={data.price + " RP"} />
+                <SizedBox height={sh(10)} />
+                <CustomText
+                  size={"small"}
+                  label={`${t(`timeRemaining`)}: ${data.refreshAt}`}
+                />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
     </ContainerLayout>
   );
