@@ -3,7 +3,7 @@ import ContainerLayout from "@components/Layout/ContainerLayout";
 import Header from "@components/Shared/Header";
 import { useTranslation } from "@libs/i18n/index";
 import { AppNavigationScreen } from "@libs/react.navigation.lib";
-import { displayCurrency, isNumber } from "@libs/utils";
+import { displayCurrency } from "@libs/utils";
 import {
   TGetTransactionDetailQuery,
   TPostTransactionCreateBody,
@@ -16,12 +16,6 @@ import { resetQueries } from "@libs/react.query.client.lib";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { useAuthStore } from "@libs/zustand/authStore";
-import {
-  TAIImageDetectBody,
-  TAIImageDetectResponse,
-} from "@mcdylanproperenterprise/nodejs-proper-types/ai";
-import { ENV } from "../../environment";
-import axios from "axios";
 import { currencyList } from "@mcdylanproperenterprise/nodejs-proper-money-types/lists/currency";
 import dayjs from "dayjs";
 import SizedBox from "@components/Shared/SizedBox";
@@ -30,7 +24,6 @@ import ModalDateTimePicker from "@components/Shared/CustomModal/ModalDateTimePic
 import ModalTransactionCategoryPicker from "@components/Shared/CustomModal/ModalTransactionCategoryPicker";
 import ModalTransationLabelsPicker from "@components/Shared/CustomModal/ModalTransationLabelsPicker";
 import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
-import findAmountAndNameOfCategory from "@libs/findAmountAndNameOfCategory";
 import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
 import { Colors } from "@styles/Colors";
 import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -48,7 +41,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
 }) => {
   const { t } = useTranslation();
   const authStore = useAuthStore();
-  const { id, isEdit, isUsePhotoAI } = route.params;
+  const { id, isEdit, dataFromPhotoAIScreen } = route.params;
   const useGetTransactionDetailQuery = useQuery({
     queryKey: ["detail", id],
     queryFn: async () => {
@@ -237,24 +230,24 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
     _id: undefined,
     transactionCategoryId: undefined,
     transactionLabelIds: [],
-    currency: authStore.user?.currency ?? currencyList[0].iso,
+    currency: authStore.user?.currency as string,
     amount: "",
     imagePath: null,
     note: "",
     transactedAt: new Date(),
   });
 
-  const imageDetectMutation = useMutation({
-    mutationFn: async (data: TAIImageDetectBody) => {
-      return axios.post(`${ENV.PROPER_API_URL}/ai/imageDetect`, data);
-    },
-  });
-  const questionAmount = `1) Amount:`;
-  const questionContext = `2) Context:`;
-  const questionCurrency = `3) Currency: (pick from ${currencyList.map(
-    (z) => z.iso
-  )})`;
-  const totalQuestionsOnText = `\n\nBased on above example above, construct this format ${questionAmount} ${questionContext} ${questionCurrency}`;
+  useEffect(() => {
+    if (dataFromPhotoAIScreen) {
+      setForm((prevState) => ({
+        ...prevState,
+        currency: dataFromPhotoAIScreen.currency ?? prevState.currency,
+        amount: dataFromPhotoAIScreen.amount ?? prevState.amount,
+        note: dataFromPhotoAIScreen.note ?? prevState.note,
+        imagePath: dataFromPhotoAIScreen.imagePath,
+      }));
+    }
+  }, [route.params.dataFromPhotoAIScreen]);
 
   const getTransactionAtIsTodayOrYesterday = () => {
     if (
@@ -276,7 +269,6 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
     createMutation.isPending ||
     editMutation.isPending ||
     deleteMutation.isPending ||
-    imageDetectMutation.isPending ||
     useGetTransactionDetailQuery.isFetching;
 
   const isDisabledAddButton =
@@ -530,42 +522,6 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
                   ...prevState,
                   imagePath: data,
                 }));
-                if (isUsePhotoAI) {
-                  imageDetectMutation.mutate(
-                    {
-                      text: totalQuestionsOnText,
-                      imageUrl: data,
-                    },
-                    {
-                      onSuccess: (response) => {
-                        const result = response.data as TAIImageDetectResponse;
-                        if (result.messageContent != "") {
-                          const detectedText = findAmountAndNameOfCategory({
-                            message: result.messageContent,
-                          });
-                          setForm((prevState) => ({
-                            ...prevState,
-                            currency: detectedText.currency
-                              ? detectedText.currency
-                              : form.currency,
-                            amount: detectedText.amount
-                              ? isNumber(detectedText.amount)
-                                ? detectedText.amount
-                                : form.amount
-                              : form.amount,
-                            note: detectedText.note
-                              ? detectedText.note
-                              : form.note,
-                            imagePath: data,
-                          }));
-                        }
-                      },
-                      onError: (e) => {
-                        Alert.alert(e.message);
-                      },
-                    }
-                  );
-                }
               }}
               listComponents={
                 <>

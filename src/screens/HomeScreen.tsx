@@ -48,7 +48,6 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
           navigation.navigate("TransactionsFormScreen", {
             id: undefined,
             isEdit: false,
-            isUsePhotoAI: false,
             onEdit: () => {},
             onDelete: () => {},
           });
@@ -63,13 +62,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       icon: <ExpoVectorIcon name="camera" size={sw(25)} color={Colors.black} />,
       onPress: () => {
         if (authStore.user) {
-          navigation.navigate("TransactionsFormScreen", {
-            id: undefined,
-            isEdit: false,
-            isUsePhotoAI: true,
-            onEdit: () => {},
-            onDelete: () => {},
-          });
+          navigation.navigate("PhotoAIScreen");
         }
       },
       linkToVideo: () => {

@@ -27,6 +27,7 @@ import TransactionAccountSwitchScreen from "@screens/TransactionAccountSwitchScr
 import { TReward } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import TransactionDetailScreen from "@screens/TransactionDetailScreen";
 import DashboardScreen from "@screens/DashboardScreen";
+import PhotoAIScreen from "@screens/PhotoAIScreen";
 
 export type OverviewTransactionScreenParams = {
   targetUserId: string | undefined;
@@ -45,6 +46,7 @@ export type AppStackParamList = {
   LoginScreen?: undefined;
   MoreScreen?: undefined;
   DashboardScreen?: undefined;
+  PhotoAIScreen?: undefined;
   VerifyOneTimePasswordScreen: {
     oneTimePasswordType: EVerificationOneTimePasswordType;
     phoneNumber: string;
@@ -63,7 +65,14 @@ export type AppStackParamList = {
   TransactionsFormScreen: {
     id: string | undefined;
     isEdit: boolean;
-    isUsePhotoAI: boolean;
+    dataFromPhotoAIScreen?:
+      | {
+          amount: string | undefined;
+          currency: string | undefined;
+          note: string | undefined;
+          imagePath: string;
+        }
+      | undefined;
     onEdit(_id: string): void;
     onDelete(_id: string): void;
   };
@@ -111,6 +120,12 @@ export default function Router() {
           component={DashboardScreen}
           options={options}
         />
+        <AppStack.Screen
+          name="PhotoAIScreen"
+          component={PhotoAIScreen}
+          options={options}
+        />
+
         <AppStack.Screen
           name="MoreScreen"
           component={MoreScreen}

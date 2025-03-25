@@ -66,7 +66,6 @@ const TransactionDetailScreen: AppNavigationScreen<
                   navigation.navigate("TransactionsFormScreen", {
                     id: detail._id,
                     isEdit: true,
-                    isUsePhotoAI: false,
                     onEdit: () => {},
                     onDelete: () => {
                       navigation.goBack();

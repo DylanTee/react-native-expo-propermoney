@@ -113,7 +113,6 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
         navigation.navigate("TransactionsFormScreen", {
           id: undefined,
           isEdit: false,
-          isUsePhotoAI: false,
           onEdit: () => {},
           onDelete: () => {},
         });
