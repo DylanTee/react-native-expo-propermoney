@@ -20,6 +20,7 @@ import { useAuthStore } from "@libs/zustand/authStore";
 import VersionText from "@components/Shared/VersionText";
 import CustomText from "@components/Shared/CustomText";
 import Avatar from "@components/Shared/Avatar";
+import { Colors } from "@styles/Colors";
 
 const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
   navigation,
@@ -147,8 +148,19 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
               }
             />
             <SizedBox height={sh(20)} />
-            <TouchableOpacity onPress={() => authStore.logOut()}>
-              <CustomText label="Log Out" size="medium" />
+            <TouchableOpacity
+              style={{
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
+                paddingHorizontal: sw(10),
+              }}
+              onPress={() => authStore.logOut()}
+            >
+              <CustomText
+                label="Log Out"
+                size="medium"
+                textStyle={{ color: Colors.red }}
+              />
             </TouchableOpacity>
             <SizedBox height={sh(20)} />
             <VersionText />

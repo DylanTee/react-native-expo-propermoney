@@ -58,7 +58,7 @@ export default function ModalTextInput(props: ModalTextInputProps) {
                 }}
               />
               <SizedBox height={sh(20)} />
-              <CustomText label="Note" size="extra-big" />
+              <CustomText label={props.headerText} size="extra-big" />
               <SizedBox height={sh(40)} />
               <CustomTextInput
                 label={props.textInputLabel}

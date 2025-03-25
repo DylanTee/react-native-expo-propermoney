@@ -311,6 +311,13 @@ export default function ModalTransactionCategoryPicker(
                     <SizedBox height={sh(20)} />
                   </>
                 }
+                ListEmptyComponent={
+                  <CustomText
+                    label="No Result"
+                    size="medium"
+                    containerStyle={{ margin: sw(20) }}
+                  />
+                }
                 onEndReached={() => {
                   if (useGetTransactionCategoryInfiniteQuery.hasNextPage) {
                     useGetTransactionCategoryInfiniteQuery.fetchNextPage();

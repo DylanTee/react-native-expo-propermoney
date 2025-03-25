@@ -191,7 +191,7 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
           containerStyle={{ margin: sw(20) }}
           visible={useGetTransactionDashboardQuery.isFetching}
         />
-        {dashboard && !useGetTransactionDashboardQuery.isFetching? (
+        {dashboard ? (
           <ScrollView>
             <SizedBox height={sh(20)} />
             <CustomText
@@ -201,6 +201,7 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
                 paddingHorizontal: sw(15),
               }}
             />
+
             {dashboard?.expense?.map((data, index) => (
               <View key={index} style={{ paddingVertical: sw(15) }}>
                 <View
@@ -250,7 +251,15 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
               </View>
             ))}
           </ScrollView>
-        ):<></>}
+        ) : (
+          <>
+            <CustomText
+              label="No Result"
+              size="medium"
+              containerStyle={{ margin: sw(20) }}
+            />
+          </>
+        )}
       </ContainerLayout>
     </>
   );

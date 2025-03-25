@@ -136,7 +136,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       );
       return data;
     },
-    enabled: !authStore.user,
+    enabled: authStore.user != undefined,
   });
 
   const useGetTransactionDashboardLastMonthQuery = useQuery({
@@ -158,7 +158,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       );
       return data;
     },
-    enabled: !authStore.user,
+    enabled: authStore.user != undefined,
   });
 
   const dashboardThisMonth: TGetTransactionDashboardResponse | undefined =
@@ -471,6 +471,13 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                 containerStyle={{ margin: sw(20) }}
               />
             </>
+          }
+          ListEmptyComponent={
+            <CustomText
+              label="No Result"
+              size="medium"
+              containerStyle={{ margin: sw(20) }}
+            />
           }
         />
       </ContainerLayout>

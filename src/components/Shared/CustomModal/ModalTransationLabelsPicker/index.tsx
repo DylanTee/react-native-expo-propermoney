@@ -280,6 +280,13 @@ export default function ModalTransationLabelsPicker(
                     <SizedBox height={sh(20)} />
                   </>
                 }
+                ListEmptyComponent={
+                  <CustomText
+                    label="No Result"
+                    size="medium"
+                    containerStyle={{ margin: sw(20) }}
+                  />
+                }
                 onEndReached={() => {
                   if (useGetTransactionLabelInfiniteQuery.hasNextPage) {
                     useGetTransactionLabelInfiniteQuery.fetchNextPage();

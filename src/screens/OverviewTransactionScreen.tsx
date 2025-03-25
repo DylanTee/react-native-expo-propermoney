@@ -524,8 +524,11 @@ const OverviewTransactionScreen: AppNavigationScreen<
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {config
             .filter((z) => z.isVisible)
-            .map((data) => (
-              <View style={{ marginHorizontal: sw(4) }} key={data.id}>
+            .map((data, index) => (
+              <View
+                style={{ marginLeft: index == 0 ? sw(15) : sw(5) }}
+                key={data.id}
+              >
                 {data.components}
               </View>
             ))}
@@ -609,6 +612,13 @@ const OverviewTransactionScreen: AppNavigationScreen<
               containerStyle={{ margin: sw(20) }}
             />
           </>
+        }
+        ListEmptyComponent={
+          <CustomText
+            label="No Result"
+            size="medium"
+            containerStyle={{ margin: sw(20) }}
+          />
         }
         onEndReached={() => {
           if (useGetTransactionInfiniteQuery.hasNextPage) {
