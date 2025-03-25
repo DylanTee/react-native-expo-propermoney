@@ -2,58 +2,30 @@ import { create } from "zustand";
 import { AsyncStorageLib } from "../async.storage.lib";
 import {
   TJwtToken,
-  TMemberFeature,
-  TGetUserDetailResponse,
-  memberFeatureFree,
-  memberFeaturePlus,
-  memberFeaturePremium,
+  TUser,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { AxiosLibs } from "../axios.lib";
-import { ESubscriptionEntitlement } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import { navigationRef } from "@libs/react.navigation.lib";
+import { Alert } from "react-native";
 
 type AuthStore = {
-  user:
-    | (TGetUserDetailResponse & {
-        feature: TMemberFeature;
-      })
-    | null;
+  user: TUser | undefined;
   getDetail: () => void;
   logOut: () => void;
   logIn: (data: TJwtToken) => void;
 };
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
-  user: null,
+  user: undefined,
   getDetail: async () => {
     const tokens =
       (await AsyncStorageLib.getJWTtoken()) as unknown as TJwtToken;
     if (tokens) {
       try {
         const { data } = await AxiosLibs.defaultClient.get("/user/detail");
-        let premiumMemberTrialEndAt: Date | null = null;
-        let topUpMemberEndAt = null;
-        let feature: TMemberFeature = memberFeatureFree;
-        if (data.premiumMemberTrialEndAt) {
-          premiumMemberTrialEndAt = data.premiumMemberTrialEndAt;
-          feature = memberFeaturePremium;
-        }
-        if (data.topUpMemberRole) {
-          premiumMemberTrialEndAt = null;
-          topUpMemberEndAt = data.topUpMemberEndAt;
-          if (data.topUpMemberRole == ESubscriptionEntitlement.plus) {
-            feature = memberFeaturePlus;
-          } else if (data.topUpMemberRole == ESubscriptionEntitlement.premium) {
-            feature = memberFeaturePremium;
-          }
-        }
         set((state) => ({
           ...state,
-          user: {
-            ...data,
-            premiumMemberTrialEndAt: premiumMemberTrialEndAt,
-            feature: feature,
-          },
+          user: data,
         }));
       } catch (e) {
         throw e;
@@ -61,11 +33,32 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
   },
   logOut: () => {
-    AsyncStorageLib.clear();
-    set((state) => ({
-      ...state,
-      user: null,
-    }));
+    Alert.alert(
+      "Log Out?",
+      "",
+      [
+        {
+          text: "No",
+          onPress: () => {},
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            navigationRef.reset({
+              index: 0,
+              routes: [{ name: "LoginScreen" }],
+            });
+            set((state) => ({
+              ...state,
+              user: undefined,
+            }));
+            AsyncStorageLib.clear();
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   },
   logIn: async (data) => {
     await AsyncStorageLib.setJWTtoken(data);

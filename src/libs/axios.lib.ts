@@ -1,11 +1,12 @@
 import { ENV } from "../../environment";
-import Axios from "axios";
+import Axios, { AxiosError } from "axios";
 import { AsyncStorageLib } from "./async.storage.lib";
 import { TJwtToken } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import axios from "axios";
+import { ExpoUpdatesLibs } from "./expo-updates.libs";
 
 const defaultClient = Axios.create({
-  baseURL: ENV.API_URL
+  baseURL: ENV.API_URL,
 });
 
 defaultClient.interceptors.request.use(
@@ -19,11 +20,10 @@ defaultClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
+  (e) => {
+    return Promise.reject(e);
   }
 );
-
 
 defaultClient.interceptors.response.use(
   (response) => {
@@ -54,6 +54,7 @@ defaultClient.interceptors.response.use(
           return true;
         } catch (e) {
           AsyncStorageLib.clear();
+          ExpoUpdatesLibs.handleAppRestart();
         }
       };
       //accessToken expired, call api to get new token
@@ -68,8 +69,6 @@ defaultClient.interceptors.response.use(
   }
 );
 
-
-
 export const AxiosLibs = {
-  defaultClient
+  defaultClient,
 };

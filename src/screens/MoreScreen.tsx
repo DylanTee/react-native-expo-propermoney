@@ -13,7 +13,6 @@ import ModalTextInput from "@components/Shared/CustomModal/ModalTextInput";
 import { useMutation } from "@tanstack/react-query";
 import { TPostUserUpdateBody } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { AxiosLibs } from "@libs/axios.lib";
-import { handleLogOut } from "@libs/utils";
 import ModalLanguagePicker from "@components/Shared/CustomModal/ModalLanguagePicker";
 import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
 import ModalCurrencyPicker from "@components/Shared/CustomModal/ModalCurrencyPicker";
@@ -148,7 +147,7 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
               }
             />
             <SizedBox height={sh(20)} />
-            <TouchableOpacity onPress={() => handleLogOut()}>
+            <TouchableOpacity onPress={() => authStore.logOut()}>
               <CustomText label="Log Out" size="medium" />
             </TouchableOpacity>
             <SizedBox height={sh(20)} />

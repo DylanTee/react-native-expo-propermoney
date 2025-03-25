@@ -6,7 +6,6 @@ import SizedBox from "../SizedBox";
 import { TTransaction } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import CustomText from "../CustomText";
 import { displayCurrency, getAmountTextColor } from "@libs/utils";
-import { useAuthStore } from "@libs/zustand/authStore";
 import Avatar from "../Avatar";
 
 interface TransactionCardProps {
@@ -20,7 +19,6 @@ const TransactionCard = ({
   data,
   onPress,
 }: TransactionCardProps) => {
-  const authStore = useAuthStore();
   return (
     <TouchableOpacity style={containerStyle} onPress={onPress}>
       <View

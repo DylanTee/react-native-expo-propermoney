@@ -295,9 +295,6 @@ export default function ModalTransactionCategoryPicker(
                         <NextCreateButton
                           searchText={searchText}
                           currentLength={categoriesLength}
-                          maximumLength={
-                            authStore.user?.feature.maximumCategories ?? 0
-                          }
                           onNext={() => {
                             setForm((prevState) => ({
                               ...prevState,

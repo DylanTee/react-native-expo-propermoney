@@ -11,7 +11,6 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Linking, ScrollView, View } from "react-native";
 import CustomButton from "@components/Shared/CustomButton";
-import { Global } from "@styles/Global";
 import CustomText from "@components/Shared/CustomText";
 import {
   TMission,
@@ -52,11 +51,10 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
   }, [getTotalPointsQuery.isSuccess]);
 
   const getMissionsQuery = useQuery({
-    queryKey: [authStore.user?.feature.name],
+    queryKey: ["mission"],
     queryFn: async () => {
       const query: TGetMissionQuery = {
-        entitlement:
-          authStore.user?.feature.name ?? ESubscriptionEntitlement.starter,
+        entitlement: ESubscriptionEntitlement.starter,
       };
       const { data } = await AxiosLibs.defaultClient.get(
         `/mission?entitlement`,
@@ -92,10 +90,10 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
   });
 
   const btnAction = (data: TMission) => {
-    if (authStore.user && authStore.user.feature.name && isAbleClaim(data)) {
+    if (authStore.user && isAbleClaim(data)) {
       claimMutation.mutate(
         {
-          entitlement: authStore.user.feature.name,
+          entitlement: ESubscriptionEntitlement.starter,
           missionType: data.type,
         },
         {

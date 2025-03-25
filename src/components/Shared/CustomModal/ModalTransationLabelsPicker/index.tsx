@@ -261,9 +261,6 @@ export default function ModalTransationLabelsPicker(
                         <NextCreateButton
                           searchText={searchText}
                           currentLength={labels.length}
-                          maximumLength={
-                            authStore.user?.feature.maximumLabels ?? 0
-                          }
                           onNext={() => {
                             setForm((prevState) => ({
                               ...prevState,

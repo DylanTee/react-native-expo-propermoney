@@ -93,38 +93,38 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
     six: "",
   });
   
-  // useEffect(() => {
-  //   if (getShareIdQuery.isSuccess) {
-  //     setTimer(dayjs(shareId?.expiryAt).diff(dayjs(), "seconds"));
-  //   }
-  // }, [getShareIdQuery.isSuccess]);
-  // useEffect(() => {
-  //   let interval: string | number | NodeJS.Timeout | undefined;
-  //   if (timer > 0) {
-  //     interval = setInterval(() => {
-  //       setTimer((prevTimer) => prevTimer - 1);
-  //     }, 1000);
-  //   } else {
-  //     if (getShareIdQuery.isSuccess && !isShared) {
-  //       // Timer reached 0! Call your desired function here
-  //       Alert.alert(
-  //         "Ended",
-  //         ``,
-  //         [
-  //           {
-  //             text: t("back"),
-  //             onPress: () => {
-  //               navigation.goBack();
-  //             },
-  //           },
-  //         ],
-  //         { cancelable: false }
-  //       );
-  //     }
-  //     clearInterval(interval);
-  //   }
-  //   return () => clearInterval(interval);
-  // }, [timer]);
+  useEffect(() => {
+    if (getShareIdQuery.isSuccess) {
+      setTimer(dayjs(shareId?.expiryAt).diff(dayjs(), "seconds"));
+    }
+  }, [getShareIdQuery.isSuccess]);
+  useEffect(() => {
+    let interval: string | number | NodeJS.Timeout | undefined;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      if (getShareIdQuery.isSuccess && !isShared) {
+        // Timer reached 0! Call your desired function here
+        Alert.alert(
+          "Ended",
+          ``,
+          [
+            {
+              text: t("back"),
+              onPress: () => {
+                navigation.goBack();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   useEffect(() => {
     if (Object.values(oneTimePassword).filter((x) => x === "").length === 0) {

@@ -1,4 +1,3 @@
-import { AsyncStorageLib } from "@libs/async.storage.lib";
 import { Colors } from "@styles/Colors";
 import {
   EMissionType,
@@ -8,9 +7,6 @@ import {
   TMission,
   TReward,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import { Alert } from "react-native";
-import { navigationRef } from "./react.navigation.lib";
-import { ReactQueryLibs } from "./react.query.client.lib";
 import dayjs from "dayjs";
 
 function removeSpecialCharacters(text: string) {
@@ -99,32 +95,6 @@ function displayCurrency({
     : amount;
 }
 
-function handleLogOut() {
-  Alert.alert(
-    "Log Out?",
-    "",
-    [
-      {
-        text: "No",
-        onPress: () => {},
-        style: "cancel",
-      },
-      {
-        text: "Yes",
-        onPress: () => {
-          AsyncStorageLib.clear();
-          ReactQueryLibs.resetQueries();
-          navigationRef.reset({
-            index: 0,
-            routes: [{ name: "LoginScreen" }],
-          });
-        },
-      },
-    ],
-    { cancelable: false }
-  );
-}
-
 const getAmountTextColor = (type: ETransactionCategoryType) => {
   if (type === ETransactionCategoryType.income) {
     return Colors.green;
@@ -202,7 +172,6 @@ export {
   getRemainingTime,
   isInvalidReward,
   displayCurrency,
-  handleLogOut,
   getAmountTextColor,
   displayDateRangeText,
 };

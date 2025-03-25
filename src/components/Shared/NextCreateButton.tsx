@@ -9,18 +9,15 @@ import { useTranslation } from "react-i18next";
 interface NextCreateButtonProps {
   searchText: string;
   currentLength: number;
-  maximumLength: number;
   onNext(): void;
 }
 
 export default function NextCreateButton({
   searchText,
   currentLength,
-  maximumLength,
   onNext,
 }: NextCreateButtonProps) {
   const { t } = useTranslation();
-  const isMaximum = currentLength >= maximumLength;
   return (
     <>
       <View

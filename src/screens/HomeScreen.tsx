@@ -121,7 +121,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
   ];
 
   const useGetTransactionDashboardThisMonthQuery = useQuery({
-    queryKey: ["this-month-dashboard"],
+    queryKey: ["this-month-dashboard", authStore.user?._id],
     queryFn: async () => {
       const query: TGetTransactionsDashboardQuery = {
         startTransactedAt: dayjs().startOf("month").toDate(),
@@ -136,11 +136,11 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       );
       return data;
     },
-    enabled: authStore.user != null,
+    enabled: !authStore.user,
   });
 
   const useGetTransactionDashboardLastMonthQuery = useQuery({
-    queryKey: ["last-month-dashboard"],
+    queryKey: ["last-month-dashboard", authStore.user?._id],
     queryFn: async () => {
       const query: TGetTransactionsDashboardQuery = {
         startTransactedAt: dayjs()
@@ -158,7 +158,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       );
       return data;
     },
-    enabled: authStore.user != null,
+    enabled: !authStore.user,
   });
 
   const dashboardThisMonth: TGetTransactionDashboardResponse | undefined =
@@ -169,7 +169,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
 
   const useGetTransactionInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: ["transaction-listings",authStore.user?._id],
+    queryKey: ["transaction-listings", authStore.user?._id],
     queryFn: async ({ pageParam = 1 }) => {
       const query: TGetTransactionQuery = {
         limit: 3,
@@ -199,31 +199,30 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
   return (
     <>
       <ContainerLayout>
-        <TouchableOpacity
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            padding: sw(15),
-          }}
-          onPress={() => {
-            navigation.navigate("MoreScreen");
-          }}
-        >
-          <Image
+        {authStore.user && (
+          <TouchableOpacity
             style={{
-              width: sw(40),
-              height: sw(40),
-              objectFit: "cover",
-              borderRadius: sw(1000),
+              flexDirection: "row",
+              alignItems: "center",
+              padding: sw(15),
             }}
-            source={{ uri: authStore.user?.profileImage ?? `` }}
-          />
-          <SizedBox width={sw(10)} />
-          <CustomText
-            label={authStore.user?.displayName ?? ``}
-            size={"medium"}
-          />
-        </TouchableOpacity>
+            onPress={() => {
+              navigation.navigate("MoreScreen");
+            }}
+          >
+            <Image
+              style={{
+                width: sw(40),
+                height: sw(40),
+                objectFit: "cover",
+                borderRadius: sw(1000),
+              }}
+              source={{ uri: authStore.user.profileImage }}
+            />
+            <SizedBox width={sw(10)} />
+            <CustomText label={authStore.user.displayName} size={"medium"} />
+          </TouchableOpacity>
+        )}
         <FlashList
           ListHeaderComponent={
             <>
