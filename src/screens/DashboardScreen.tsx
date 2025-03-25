@@ -87,7 +87,7 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
             />
           </TouchableOpacity>
         ),
-        isVisible: true,
+        isVisible: authStore.user?.sharedUserId != null,
       },
       {
         id: "shared-user",
@@ -180,8 +180,11 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {config
               .filter((z) => z.isVisible)
-              .map((data) => (
-                <View style={{ marginHorizontal: sw(4) }} key={data.id}>
+              .map((data, index) => (
+                <View
+                  style={{ marginLeft: index == 0 ? sw(15) : sw(5) }}
+                  key={data.id}
+                >
                   {data.components}
                 </View>
               ))}
