@@ -250,6 +250,7 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
                 usePostVerifyMutation.isPending ||
                 usePostRequestOTPMutation.isPending
               }
+              isLoading={usePostRequestOTPMutation.isPending}
               type="tertiary"
               size="small"
               title="Resend Code"
@@ -258,10 +259,7 @@ const VerifyOneTimePasswordScreen: AppNavigationScreen<
           </View>
           <LoadingCircle
             containerStyle={{ margin: sw(20) }}
-            visible={
-              usePostRequestOTPMutation.isPending ||
-              usePostVerifyMutation.isPending
-            }
+            visible={usePostVerifyMutation.isPending}
           />
         </View>
       </KeyboardLayout>

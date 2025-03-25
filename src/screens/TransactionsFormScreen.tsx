@@ -279,6 +279,11 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
     imageDetectMutation.isPending ||
     useGetTransactionDetailQuery.isFetching;
 
+  const isDisabledAddButton =
+    form.amount.trim().length == 0 ||
+    form.amount == "0" ||
+    form.transactionCategoryId == undefined;
+
   return (
     <>
       <ContainerLayout>
@@ -638,7 +643,8 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
         </KeyboardLayout>
         <CustomButton
           buttonStyle={{ marginHorizontal: sw(15), marginBottom: sw(15) }}
-          disabled={isLoading}
+          disabled={isLoading || isDisabledAddButton}
+          isLoading={isLoading}
           type={"primary"}
           size={"medium"}
           title={isEdit ? t("edit") : t("add")}

@@ -5,14 +5,19 @@ import { ActivityIndicator, ViewStyle } from "react-native";
 type LoadingCircleProps = {
   containerStyle?: ViewStyle;
   visible: boolean;
+  size?: "small" | "large";
 };
 
-const LoadingCircle = ({ visible, containerStyle }: LoadingCircleProps) => {
+const LoadingCircle = ({
+  visible,
+  containerStyle,
+  size,
+}: LoadingCircleProps) => {
   return (
     <>
       {visible && (
         <ActivityIndicator
-          size={"large"}
+          size={size ? size : "large"}
           color={Colors.black}
           style={containerStyle}
         />

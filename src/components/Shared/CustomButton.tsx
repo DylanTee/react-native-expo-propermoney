@@ -5,6 +5,7 @@ import { TextStyle, TouchableOpacity, ViewStyle } from "react-native";
 import CustomText from "./CustomText";
 import SizedBox from "./SizedBox";
 import { AsyncStorageLib } from "@libs/async.storage.lib";
+import LoadingCircle from "./LoadingCircle";
 
 interface ButtonProps {
   type: "primary" | "secondary" | "tertiary";
@@ -14,6 +15,7 @@ interface ButtonProps {
   disabled?: boolean;
   isTimer?: boolean;
   buttonStyle?: ViewStyle;
+  isLoading?: boolean;
   onPress(): void;
 }
 
@@ -24,6 +26,7 @@ const CustomButton = ({
   icon = undefined,
   disabled = false,
   isTimer = false,
+  isLoading = false,
   buttonStyle,
   onPress,
 }: ButtonProps) => {
@@ -127,7 +130,7 @@ const CustomButton = ({
           justifyContent: "center",
           alignItems: "center",
           borderRadius: sw(5),
-          opacity: isDisabled ? 0.6 : 1,
+          opacity: isDisabled ? 0.4 : 1,
         },
         styles,
       ]}
@@ -139,11 +142,15 @@ const CustomButton = ({
           <SizedBox width={sw(10)} />
         </>
       )}
-      <CustomText
-        size={size}
-        label={title + `${isTimer && seconds ? ` (${seconds})` : ``}`}
-        textStyle={textStyle}
-      />
+      {isLoading ? (
+        <LoadingCircle visible={true} size="small" />
+      ) : (
+        <CustomText
+          size={size}
+          label={title + `${isTimer && seconds ? ` (${seconds})` : ``}`}
+          textStyle={textStyle}
+        />
+      )}
     </TouchableOpacity>
   );
 };

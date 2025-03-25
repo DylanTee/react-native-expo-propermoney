@@ -187,6 +187,7 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
                 userRequestOTPMutation.isPending ||
                 isLoading
               }
+              isLoading={isLoading}
               type={"primary"}
               size={"medium"}
               title={"Log In"}

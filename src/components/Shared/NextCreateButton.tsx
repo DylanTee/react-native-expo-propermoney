@@ -1,6 +1,6 @@
 import { sh, sw } from "@libs/responsive.lib";
 import React from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import CustomText from "./CustomText";
 import SizedBox from "./SizedBox";
 import CustomButton from "./CustomButton";
