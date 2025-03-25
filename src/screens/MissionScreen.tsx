@@ -195,8 +195,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
                   size={"medium"}
                 />
                 <SizedBox width={sw(5)} />
-                {authStore.user?.topUpMemberRole ==
-                  ESubscriptionEntitlement.starter && (
+                {ESubscriptionEntitlement.starter && (
                   <CustomButton
                     type={"secondary"}
                     size={"small"}
@@ -298,8 +297,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
                     size={"medium"}
                   />
                   <SizedBox width={sw(5)} />
-                  {authStore.user?.topUpMemberRole ==
-                    ESubscriptionEntitlement.starter && (
+                  {ESubscriptionEntitlement.starter && (
                     <CustomButton
                       type={"secondary"}
                       size={"small"}

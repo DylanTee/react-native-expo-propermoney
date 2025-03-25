@@ -20,7 +20,7 @@ const ContactSupportScreen: AppNavigationScreen<"ContactSupportScreen"> = ({
   const authStore = useAuthStore();
   const contactNumber = "+60174449716";
   const emailAddress = "aksoonz@gmail.com";
-  const text = `Hi, i would like to ask some questions regarding the app.\n\n\nID:${authStore.user?._id}\nMEMBER:${authStore.user?.feature.name}`;
+  const text = `Hi, i would like to ask some questions regarding the app.\n\n\nID:${authStore.user?._id}`;
   return (
     <ContainerLayout>
       <Header
