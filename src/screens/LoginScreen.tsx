@@ -100,12 +100,12 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
       const tokens = await AsyncStorageLib.getJWTtoken();
       if (tokens) {
         setIsFetchinApi(true);
-        await authStore.getDetail();
-        setIsFetchinApi(false);
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "HomeScreen" }],
-        });
+        // await authStore.getDetail();
+        // setIsFetchinApi(false);
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{ name: "HomeScreen" }],
+        // });
       }
     };
     init();
