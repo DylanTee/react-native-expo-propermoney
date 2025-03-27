@@ -23,7 +23,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (tokens) {
       try {
         const { data } = await AxiosLibs.defaultClient.get("/user/detail");
-        AsyncStorageLib.setUserId(data._id);
         set((state) => ({
           ...state,
           user: data,
