@@ -25,6 +25,7 @@ export default function ModalGame(props: ModalGameProps) {
 
   useEffect(() => {
     if (props.visible) {
+      setIsVisible(props.visible);
       setScore(0);
       setCircles([]);
       setLives(3);
