@@ -33,12 +33,12 @@ defaultClient.interceptors.response.use(
     try {
       const refreshUserAccessToken = async () => {
         try {
-          const tokens = await AsyncStorageLib.getJWTtoken();
+          const cache = await AsyncStorageLib.getJWTtoken();
           const response = await axios({
-            url: ENV.API_URL + "/user/refreshUserAccessToken",
+            url: ENV.API_URL + "/user/refresh-access-token",
             method: "POST",
             headers: {
-              Authorization: `Bearer ${tokens?.refreshToken}`,
+              Authorization: `Bearer ${cache?.refreshToken}`,
             },
           });
           const data = response.data as TJwtToken;
@@ -47,14 +47,19 @@ defaultClient.interceptors.response.use(
             const newRequestConfig = { ...e.config };
             newRequestConfig.headers = {
               ...e.config.headers,
-              Authorization: `Bearer ${tokens?.accessToken}`,
+              Authorization: `Bearer ${data?.accessToken}`,
             } as any;
             return await defaultClient(newRequestConfig);
           }
           return true;
         } catch (e) {
-          AsyncStorageLib.clear();
-          ExpoUpdatesLibs.handleAppRestart();
+          if (Axios.isAxiosError(e) && e.response?.status === 401) {
+            AsyncStorageLib.clear();
+            ExpoUpdatesLibs.handleAppRestart();
+          }
+          {
+            return Promise.reject(e);
+          }
         }
       };
       //accessToken expired, call api to get new token

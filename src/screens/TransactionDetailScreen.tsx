@@ -28,6 +28,7 @@ import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImag
 import dayjs from "dayjs";
 import TransactionCategoryContainer from "@components/Shared/TransactionCategoryContainer";
 import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
+import LoadingCircle from "@components/Shared/LoadingCircle";
 
 const TransactionDetailScreen: AppNavigationScreen<
   "TransactionDetailScreen"
@@ -55,7 +56,7 @@ const TransactionDetailScreen: AppNavigationScreen<
       <Header
         containerStyle={{
           paddingHorizontal: sw(15),
-          backgroundColor: "#EDEFEA",
+          backgroundColor: detail ? "#EDEFEA" : "transparent",
         }}
         onBack={() => navigation.goBack()}
         itemRight={
@@ -84,6 +85,7 @@ const TransactionDetailScreen: AppNavigationScreen<
         }
       />
       <ScrollView>
+        <LoadingCircle visible={useGetTransactionDetailQuery.isFetching} />
         {detail && (
           <>
             <View
