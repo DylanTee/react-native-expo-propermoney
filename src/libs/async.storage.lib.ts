@@ -20,22 +20,18 @@ const getJWTtoken = async () => {
 };
 
 const getAppRestartAt = async () => {
+  const now = new Date().getTime();
   const data = await AsyncStorage.getItem(asyncAppRestartAt);
-  if (data) {
-    const now = new Date().getTime();
-    if (data) {
-      if (now >= parseInt(data)) {
-        AsyncStorage.removeItem(asyncAppRestartAt);
-        navigationRef.reset({
-          index: 0,
-          routes: [{ name: "LoginScreen" }],
-        });
-      }
-    }
+  if (data && now >= parseInt(data)) {
+    AsyncStorage.removeItem(asyncAppRestartAt);
+    navigationRef.reset({
+      index: 0,
+      routes: [{ name: "LoginScreen" }],
+    });
   } else {
     AsyncStorage.setItem(
       asyncAppRestartAt,
-      (new Date().getTime() + 10 * 1000).toString()
+      (new Date().getTime() + 120 * 1000).toString()
     );
   }
 };
