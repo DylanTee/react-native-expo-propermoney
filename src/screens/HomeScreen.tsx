@@ -30,6 +30,7 @@ import CustomText from "@components/Shared/CustomText";
 import dayjs from "dayjs";
 import SizedBox from "@components/Shared/SizedBox";
 import { displayCurrency } from "@libs/utils";
+import Avatar from "@components/Shared/Avatar";
 
 const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
   navigation,
@@ -160,6 +161,57 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
   const dashboardLastMonth: TGetTransactionDashboardResponse | undefined =
     useGetTransactionDashboardLastMonthQuery.data ?? undefined;
 
+  const useGetTransactionDashboardThisMonthSharedUserQuery = useQuery({
+    queryKey: ["this-month-dashboard-shared-user", authStore.user?._id],
+    queryFn: async () => {
+      const query: TGetTransactionsDashboardQuery = {
+        startTransactedAt: dayjs().startOf("month").toDate(),
+        endTransactedAt: dayjs().endOf("month").toDate(),
+        userId: authStore.user?.sharedUserId as string,
+      };
+      const { data } = await AxiosLibs.defaultClient.get(
+        `/transaction/dashboard`,
+        {
+          params: query,
+        }
+      );
+      return data;
+    },
+    enabled: authStore.user != undefined && authStore.user.sharedUserId != null,
+  });
+
+  const useGetTransactionDashboardLastMonthSharedUserQuery = useQuery({
+    queryKey: ["last-month-dashboard-shared-user", authStore.user?._id],
+    queryFn: async () => {
+      const query: TGetTransactionsDashboardQuery = {
+        startTransactedAt: dayjs()
+          .startOf("month")
+          .subtract(1, "month")
+          .toDate(),
+        endTransactedAt: dayjs().endOf("month").subtract(1, "month").toDate(),
+        userId: authStore.user?.sharedUserId as string,
+      };
+      const { data } = await AxiosLibs.defaultClient.get(
+        `/transaction/dashboard`,
+        {
+          params: query,
+        }
+      );
+      return data;
+    },
+    enabled: authStore.user != undefined && authStore.user.sharedUserId != null,
+  });
+
+  const dashboardThisMonthSharedUser:
+    | TGetTransactionDashboardResponse
+    | undefined =
+    useGetTransactionDashboardThisMonthSharedUserQuery.data ?? undefined;
+
+  const dashboardLastMonthSharedUser:
+    | TGetTransactionDashboardResponse
+    | undefined =
+    useGetTransactionDashboardLastMonthSharedUserQuery.data ?? undefined;
+
   const useGetTransactionInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
     queryKey: ["transaction-listings", authStore.user?._id],
@@ -262,11 +314,25 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                 }}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <CustomText size="big" label="Spending" textStyle={{}} />
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      gap: sw(5),
+                      alignItems: "center",
+                    }}
+                  >
+                    <Avatar
+                      size="big"
+                      profileImage={authStore.user?.profileImage ?? ``}
+                    />
+                    <CustomText size="medium" label="Spending" />
+                  </View>
                   <TouchableOpacity
                     style={{ marginLeft: "auto" }}
                     onPress={() => {
-                      navigation.navigate("DashboardScreen");
+                      navigation.navigate("DashboardScreen", {
+                        targetUserId: authStore.user?._id as string,
+                      });
                     }}
                   >
                     <CustomText
@@ -279,7 +345,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                     />
                   </TouchableOpacity>
                 </View>
-                <SizedBox height={sh(20)} />
+                <SizedBox height={sh(10)} />
                 <View style={{ flexDirection: "row" }}>
                   <View
                     style={{
@@ -366,6 +432,189 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                   </View>
                 </View>
               </View>
+              {authStore.user?.sharedUserId ? (
+                <>
+                  <SizedBox height={sh(20)} />
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: Colors.suvaGrey,
+                      padding: sw(15),
+                      marginHorizontal: sw(15),
+                      borderRadius: sw(10),
+                    }}
+                  >
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          gap: sw(5),
+                          alignItems: "center",
+                        }}
+                      >
+                        <Avatar
+                          size="big"
+                          profileImage={
+                            authStore.user.sharedUserInfo?.profileImage ?? ``
+                          }
+                        />
+                        <CustomText
+                          size="medium"
+                          label={`${authStore.user.sharedUserInfo?.displayName}'s Spending`}
+                        />
+                      </View>
+                      <TouchableOpacity
+                        style={{ marginLeft: "auto" }}
+                        onPress={() => {
+                          navigation.navigate("DashboardScreen", {
+                            targetUserId: authStore.user
+                              ?.sharedUserId as string,
+                          });
+                        }}
+                      >
+                        <CustomText
+                          label="See all"
+                          size="small"
+                          textStyle={{
+                            textDecorationLine: "underline",
+                            color: `#3E4D31`,
+                          }}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <SizedBox height={sh(20)} />
+                    <View style={{ flexDirection: "row" }}>
+                      <View
+                        style={{
+                          width: sw(45),
+                          height: sw(45),
+                          borderWidth: 1,
+                          borderColor: Colors.suvaGrey,
+                          borderRadius: sw(45 / 2),
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <CustomText label="$" size="extra-big" textStyle={{}} />
+                      </View>
+                      <SizedBox width={sw(10)} />
+                      <View>
+                        <CustomText
+                          size="medium"
+                          label="Spent this month"
+                          textStyle={{
+                            color: Colors.matterhorn,
+                          }}
+                        />
+                        {useGetTransactionDashboardThisMonthSharedUserQuery.isFetching ? (
+                          <CustomText size="medium" label={`Loading...`} />
+                        ) : (
+                          <CustomText
+                            size="medium"
+                            label={
+                              dashboardThisMonthSharedUser?.expense
+                                ?.map((data) =>
+                                  displayCurrency({
+                                    currency: data.currency,
+                                    amount: data.totalAmount,
+                                  })
+                                )
+                                .join(",") ?? "0"
+                            }
+                          />
+                        )}
+                      </View>
+                    </View>
+                    <SizedBox height={sh(10)} />
+                    <View style={{ flexDirection: "row" }}>
+                      <View
+                        style={{
+                          width: sw(45),
+                          height: sw(45),
+                          borderWidth: 1,
+                          borderColor: Colors.suvaGrey,
+                          borderRadius: sw(45 / 2),
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <CustomText label="$" size="extra-big" />
+                      </View>
+                      <SizedBox width={sw(10)} />
+                      <View>
+                        <CustomText
+                          size="medium"
+                          label="Spent last month"
+                          textStyle={{
+                            color: Colors.matterhorn,
+                          }}
+                        />
+                        {useGetTransactionDashboardLastMonthSharedUserQuery.isFetching ? (
+                          <CustomText size="medium" label={`Loading...`} />
+                        ) : (
+                          <CustomText
+                            size="medium"
+                            label={
+                              dashboardLastMonthSharedUser?.expense
+                                ?.map((data) =>
+                                  displayCurrency({
+                                    currency: data.currency,
+                                    amount: data.totalAmount,
+                                  })
+                                )
+                                .join(",") ?? "0"
+                            }
+                          />
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                </>
+              ) : (
+                <>
+                  <SizedBox height={sh(10)} />
+                  <TouchableOpacity
+                    style={{
+                      borderWidth: 1,
+                      borderColor: Colors.suvaGrey,
+                      padding: sw(20),
+                      marginHorizontal: sw(15),
+                      borderRadius: sw(10),
+                      backgroundColor: "#FBFBFB",
+                    }}
+                    onPress={() => {
+                      navigation.navigate("ShareUserScreen");
+                    }}
+                  >
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "#EFEFEF",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        alignSelf: "flex-start",
+                        height: sw(50),
+                        width: sw(50),
+                        borderRadius: sw(100),
+                      }}
+                    >
+                      <ExpoVectorIcon
+                        name="plus"
+                        size={sw(30)}
+                        color={Colors.black}
+                      />
+                    </View>
+                    <SizedBox height={sh(30)} />
+                    <CustomText
+                      textStyle={{ color: Colors.matterhorn }}
+                      size="medium"
+                      label="Add your partner to view spending together"
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
               <SizedBox height={sh(20)} />
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <CustomText
@@ -463,6 +712,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                 visible={useGetTransactionInfiniteQuery.isFetching}
                 containerStyle={{ margin: sw(20) }}
               />
+              <SizedBox height={sh(20)} />
             </>
           }
           ListEmptyComponent={

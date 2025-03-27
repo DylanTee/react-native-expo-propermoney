@@ -37,6 +37,7 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
 }) => {
   const authStore = useAuthStore();
   const { t } = useTranslation();
+  const [isFetchingApi, setIsFetchinApi] = useState<boolean>(false);
   const userRequestOTPMutation = useMutation({
     mutationFn: (data: TPostUserRequestOTPBody) => {
       return AxiosLibs.defaultClient.post("/user/request-otp", data);
@@ -97,7 +98,9 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
     const init = async () => {
       const tokens = await AsyncStorageLib.getJWTtoken();
       if (tokens) {
-        authStore.getDetail();
+        setIsFetchinApi(true);
+        await authStore.getDetail();
+        setIsFetchinApi(false);
         navigation.reset({
           index: 0,
           routes: [{ name: "HomeScreen" }],
@@ -107,7 +110,7 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
     init();
   }, []);
 
-  const isLoading = userRequestOTPMutation.isPending;
+  const isLoading = userRequestOTPMutation.isPending || isFetchingApi;
 
   return (
     <>

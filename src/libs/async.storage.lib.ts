@@ -6,6 +6,7 @@ import {
 
 const asyncJWTtoken = "@asyncJWTtoken";
 const asyncTimerToRequestOTP = "@asyncTimerToRequestOTP";
+const asyncUserId = "@asyncUserId";
 
 const setJWTtoken = (value: TPostVerificationVerifyResponse) => {
   AsyncStorage.setItem(asyncJWTtoken, JSON.stringify(value));
@@ -15,6 +16,19 @@ const getJWTtoken = async () => {
   const data = await AsyncStorage.getItem(asyncJWTtoken);
   if (data) {
     return JSON.parse(data) as unknown as TJwtToken;
+  } else {
+    return null;
+  }
+};
+
+const setUserId = (value: string) => {
+  AsyncStorage.setItem(asyncUserId, value);
+};
+
+const getUserId = async () => {
+  const data = await AsyncStorage.getItem(asyncUserId);
+  if (data) {
+    return data;
   } else {
     return null;
   }
@@ -47,5 +61,7 @@ export const AsyncStorageLib = {
   getTimerToRequestOTP,
   setTimerToRequestOTP,
   removeTimerToRequestOTP,
+  setUserId,
+  getUserId,
   clear,
 };

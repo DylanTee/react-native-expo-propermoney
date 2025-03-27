@@ -6,6 +6,7 @@ import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
 import Header from "@components/Shared/Header";
 import {
+  Alert,
   RefreshControl,
   ScrollView,
   TouchableOpacity,
@@ -509,7 +510,11 @@ const OverviewTransactionScreen: AppNavigationScreen<
         itemRight={
           <>
             <TouchableOpacity
-              onPress={() => navigation.navigate("DashboardScreen")}
+              onPress={() =>
+                navigation.navigate("DashboardScreen", {
+                  targetUserId: authStore.user?._id as string,
+                })
+              }
             >
               <ExpoVectorIcon
                 name="linechart"
@@ -562,6 +567,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
             <SizedBox height={sh(20)} />
           </>
         )}
+        scrollEventThrottle={16}
         renderItem={({ item, index }) => (
           <>
             {index == 0 ||
@@ -611,6 +617,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
               visible={useGetTransactionInfiniteQuery.isFetching}
               containerStyle={{ margin: sw(20) }}
             />
+            <SizedBox height={sh(20)} />
           </>
         }
         ListEmptyComponent={

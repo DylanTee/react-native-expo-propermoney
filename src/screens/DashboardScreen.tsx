@@ -26,7 +26,7 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
 }) => {
   const authStore = useAuthStore();
   const [targetUserId, setTargetUserId] = useState<string>(
-    authStore.user?._id as string
+   route.params.targetUserId as string
   );
   const [transactedAtRange, setTransactedAtRange] = useState<{
     startTransactedAt: Date;

@@ -92,7 +92,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
     five: "",
     six: "",
   });
-  
+
   useEffect(() => {
     if (getShareIdQuery.isSuccess) {
       setTimer(dayjs(shareId?.expiryAt).diff(dayjs(), "seconds"));
@@ -304,7 +304,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                 )} (${getNumberOfAccessPerson()}/2)`}
               />
               <SizedBox height={sh(10)} />
-              <View style={[Global.shadowLine, styles.userCardStyle]}>
+              <View style={styles.userCardStyle}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Avatar
                     size="big"
@@ -319,7 +319,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
               </View>
               <SizedBox height={sh(10)} />
               {authStore.user?.sharedUserInfo ? (
-                <View style={[Global.shadowLine, styles.userCardStyle]}>
+                <View style={[styles.userCardStyle]}>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Avatar
                       size="big"
@@ -330,10 +330,8 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                       size={"medium"}
                       label={authStore.user.sharedUserInfo.displayName}
                     />
-                  </View>
-                  <SizedBox height={sw(10)} />
-                  <View style={{ flexDirection: "row", marginLeft: "auto" }}>
                     <CustomButton
+                      buttonStyle={{ marginLeft: "auto" }}
                       type="secondary"
                       size="small"
                       title={t("remove")}
@@ -491,7 +489,7 @@ const styles = StyleSheet.create({
   },
   userCardStyle: {
     borderRadius: 5,
-    padding: sw(10),
+    paddingVertical: sw(10),
     backgroundColor: Colors.white,
   },
 });

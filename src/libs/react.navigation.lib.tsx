@@ -45,7 +45,9 @@ export type AppStackNavigationProp = StackNavigationProp<AppStackParamList>;
 export type AppStackParamList = {
   LoginScreen?: undefined;
   MoreScreen?: undefined;
-  DashboardScreen?: undefined;
+  DashboardScreen: {
+    targetUserId: string;
+  };
   PhotoAIScreen?: undefined;
   VerifyOneTimePasswordScreen: {
     oneTimePasswordType: EVerificationOneTimePasswordType;
