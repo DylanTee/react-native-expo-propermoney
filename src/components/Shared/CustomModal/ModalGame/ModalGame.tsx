@@ -36,12 +36,12 @@ export default function ModalGame(props: ModalGameProps) {
 
   useEffect(() => {
     if (props.visible) {
-      setIsVisible(true);
       setScore(0);
       setCircles([]);
       setLives(3);
       setGameOver(false);
     }
+    setIsVisible(props.visible);
   }, [props.visible]);
 
   useEffect(() => {
@@ -116,6 +116,7 @@ export default function ModalGame(props: ModalGameProps) {
                   zIndex: 10,
                   right: sw(15),
                   gap: sw(10),
+                  padding: sw(10),
                 }}
               >
                 <CustomText size="medium" label="Please wait...." />
