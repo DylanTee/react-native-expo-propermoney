@@ -1,12 +1,11 @@
-import { ENV } from "../../environment";
-import Axios, { AxiosError } from "axios";
+import Axios from "axios";
 import { AsyncStorageLib } from "./async.storage.lib";
 import { TJwtToken } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import axios from "axios";
 import { ExpoUpdatesLibs } from "./expo-updates.libs";
 
 const defaultClient = Axios.create({
-  baseURL: ENV.API_URL,
+  baseURL: process.env.EXPO_PUBLIC_API_URL,
 });
 
 defaultClient.interceptors.request.use(
@@ -35,7 +34,7 @@ defaultClient.interceptors.response.use(
         try {
           const cache = await AsyncStorageLib.getJWTtoken();
           const response = await axios({
-            url: ENV.API_URL + "/user/refresh-access-token",
+            url: process.env.EXPO_PUBLIC_API_URL + "/user/refresh-access-token",
             method: "POST",
             headers: {
               Authorization: `Bearer ${cache?.refreshToken}`,

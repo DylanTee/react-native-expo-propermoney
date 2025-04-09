@@ -34,4 +34,6 @@ yarn-error.*
 
 key
 .tool-versions
-environment
+
+.env
+.env.example

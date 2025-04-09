@@ -15,7 +15,6 @@ import {
   TAIImageDetectBody,
   TAIImageDetectResponse,
 } from "@mcdylanproperenterprise/nodejs-proper-types/ai";
-import { ENV } from "../../environment";
 import axios from "axios";
 import { currencyList } from "@mcdylanproperenterprise/nodejs-proper-money-types/lists/currency";
 import findAmountAndNameOfCategory from "@libs/findAmountAndNameOfCategory";
@@ -27,7 +26,7 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
 }) => {
   const imageDetectMutation = useMutation({
     mutationFn: async (data: TAIImageDetectBody) => {
-      return axios.post(`${ENV.PROPER_API_URL}/ai/imageDetect`, data);
+      return axios.post(`${process.env.EXPO_PUBLIC_PROPER_API_URL}/ai/imageDetect`, data);
     },
   });
   const authStore = useAuthStore();

@@ -7,7 +7,6 @@ import {
 } from "@mcdylanproperenterprise/nodejs-proper-types/s3";
 import * as ImagePicker from "expo-image-picker";
 import { Buffer } from "buffer";
-import { ENV } from "../../../../environment/index";
 import axios from "axios";
 import {
   Alert,
@@ -33,7 +32,7 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const getS3PresignedUrlMutation = useMutation({
     mutationFn: async (data: TS3GetPresignedUrlBody) => {
-      return axios.post(`${ENV.PROPER_API_URL}/s3/getPreSignedUrl`, data);
+      return axios.post(`${process.env.EXPO_PUBLIC_PROPER_API_URL}/s3/getPreSignedUrl`, data);
     },
   });
 
@@ -48,7 +47,7 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
     const imagePathKey = `propermoney/${props.type}/${fileName}`;
     getS3PresignedUrlMutation.mutate(
       {
-        bucketName: ENV.S3_BUCKET_NAME,
+        bucketName: process.env.EXPO_PUBLIC_S3_BUCKET_NAME as string,
         mime: mimeType as string,
         key: imagePathKey,
       },
@@ -63,7 +62,7 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
               "Content-Type": file.mimeType ?? "image/jpeg",
             },
           });
-          props.onChange(`${ENV.S3_BUCKET_NAME_BASE_URL}/${imagePathKey}`);
+          props.onChange(`${process.env.EXPO_PUBLIC_S3_BUCKET_NAME_BASE_URL}/${imagePathKey}`);
           setIsVisible(false);
         },
         onError: (e) => {
