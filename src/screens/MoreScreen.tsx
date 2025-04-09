@@ -131,7 +131,7 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
                 </>
               }
             />
-            <SizedBox height={sh(20)} />
+            {/* <SizedBox height={sh(20)} />
             <ModalLanguagePicker
               buttonStyle={{}}
               onChange={(data) => {
@@ -146,7 +146,7 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
                   />
                 </>
               }
-            />
+            /> */}
             <SizedBox height={sh(20)} />
             <TouchableOpacity
               style={{
