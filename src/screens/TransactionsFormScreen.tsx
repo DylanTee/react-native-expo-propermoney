@@ -389,7 +389,6 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
           <View style={{ paddingHorizontal: sw(15) }}>
             <ModalDateTimePicker
               value={form.transactedAt}
-              buttonStyle={{}}
               listComponents={
                 <View style={styles.bodyContainer}>
                   <CustomText

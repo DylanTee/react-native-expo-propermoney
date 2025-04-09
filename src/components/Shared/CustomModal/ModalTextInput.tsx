@@ -27,9 +27,10 @@ interface ModalTextInputProps {
 
 export default function ModalTextInput(props: ModalTextInputProps) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [value, setValue] = useState<string>(props.value);
+  const [value, setValue] = useState<string>("");
+
   useEffect(() => {
-    setValue(value);
+    setValue(props.value);
   }, [props.value]);
 
   return (
