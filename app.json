@@ -14,14 +14,17 @@
     "ios": {
       "supportsTablet": true,
       "buildNumber": "1",
-      "bundleIdentifier": "com.twentyfourseven.propermoney"
+      "bundleIdentifier": "com.twentyfourseven.propermoney",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "versionCode": 23,
+      "versionCode": 25,
       "package": "com.propermoney",
       "permissions": [
         "android.permission.RECORD_AUDIO"
