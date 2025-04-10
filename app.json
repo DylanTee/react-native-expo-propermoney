@@ -26,8 +26,10 @@
       },
       "versionCode": 25,
       "package": "com.propermoney",
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
+      "permissions": ["android.permission.RECORD_AUDIO"],
+      "blockedPermissions": [
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO"
       ]
     },
     "web": {
