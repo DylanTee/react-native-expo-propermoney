@@ -30,7 +30,6 @@ import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import { Colors } from "@styles/Colors";
 import { useAuthStore } from "@libs/zustand/authStore";
 import VersionText from "@components/Shared/VersionText";
-import ModalGame from "@components/Shared/CustomModal/ModalGame/ModalGame";
 
 const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
   navigation,
@@ -115,7 +114,6 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
 
   return (
     <>
-      <ModalGame visible={isFetchingApi}/>
       <ContainerLayout>
         <KeyboardLayout>
           <View style={{ padding: sw(15) }}>
