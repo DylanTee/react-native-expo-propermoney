@@ -20,6 +20,7 @@ import {
 import Header from "../Header";
 import { sw } from "@libs/responsive.lib";
 import ContainerLayout from "@components/Layout/ContainerLayout";
+import LoadingCircle from "../LoadingCircle";
 interface ModalImagePickerProps {
   userId: string;
   buttonStyle?: ViewStyle;
@@ -32,7 +33,10 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const getS3PresignedUrlMutation = useMutation({
     mutationFn: async (data: TS3GetPresignedUrlBody) => {
-      return axios.post(`${process.env.EXPO_PUBLIC_PROPER_API_URL}/s3/getPreSignedUrl`, data);
+      return axios.post(
+        `${process.env.EXPO_PUBLIC_PROPER_API_URL}/s3/getPreSignedUrl`,
+        data
+      );
     },
   });
 
@@ -62,7 +66,9 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
               "Content-Type": file.mimeType ?? "image/jpeg",
             },
           });
-          props.onChange(`${process.env.EXPO_PUBLIC_S3_BUCKET_NAME_BASE_URL}/${imagePathKey}`);
+          props.onChange(
+            `${process.env.EXPO_PUBLIC_S3_BUCKET_NAME_BASE_URL}/${imagePathKey}`
+          );
           setIsVisible(false);
         },
         onError: (e) => {
@@ -84,9 +90,8 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
     if (option == EMethods.camera) {
       let assets = await ImagePicker.launchCameraAsync({
         base64: true,
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        // aspect: [4, 3],
         quality: 1,
       });
 
@@ -94,9 +99,8 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
     } else if (option == EMethods.gallery) {
       let assets = await ImagePicker.launchImageLibraryAsync({
         base64: true,
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        // aspect: [4, 3],
         quality: 1,
       });
 
@@ -113,7 +117,11 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
           setIsVisible(true);
         }}
       >
-        {props.listComponents}
+        {getS3PresignedUrlMutation.isPending ? (
+          <LoadingCircle visible={true} />
+        ) : (
+          <>{props.listComponents}</>
+        )}
       </TouchableOpacity>
       <Modal animationType="slide" visible={isVisible}>
         <ContainerLayout>
@@ -124,7 +132,7 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
             }}
           >
             <Header
-            containerStyle={{padding:sw(15)}}
+              containerStyle={{ padding: sw(15) }}
               onBack={() => {
                 setIsVisible(false);
               }}
