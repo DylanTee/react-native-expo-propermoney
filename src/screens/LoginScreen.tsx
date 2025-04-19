@@ -30,6 +30,7 @@ import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import { Colors } from "@styles/Colors";
 import { useAuthStore } from "@libs/zustand/authStore";
 import VersionText from "@components/Shared/VersionText";
+import LoadingCircle from "@components/Shared/LoadingCircle";
 
 const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
   navigation,
@@ -99,12 +100,7 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
       const tokens = await AsyncStorageLib.getJWTtoken();
       if (tokens) {
         setIsFetchinApi(true);
-        await authStore.getDetail();
-        setIsFetchinApi(false);
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "HomeScreen" }],
-        });
+        authStore.logIn(tokens);
       }
     };
     init();
@@ -129,73 +125,82 @@ const LoginScreen: AppNavigationScreen<"LoginScreen"> = ({
               resizeMode={"contain"}
             />
             <SizedBox height={sh(40)} />
-            <CustomTextInput
-              itemLeft={
-                <ModalCountryPicker
-                  listComponents={
-                    <>
-                      <CustomText
-                        size={"medium"}
-                        label={phoneNumber.selectedCountry.countryCode}
-                      />
-                      <SizedBox width={sw(5)} />
-                      <ExpoVectorIcon
-                        name="down"
-                        size={sw(10)}
-                        color={Colors.black}
-                      />
-                      <SizedBox width={sw(5)} />
-                    </>
+            {isFetchingApi ? (
+              <LoadingCircle visible={true} />
+            ) : (
+              <>
+                <CustomTextInput
+                  itemLeft={
+                    <ModalCountryPicker
+                      listComponents={
+                        <>
+                          <CustomText
+                            size={"medium"}
+                            label={phoneNumber.selectedCountry.countryCode}
+                          />
+                          <SizedBox width={sw(5)} />
+                          <ExpoVectorIcon
+                            name="down"
+                            size={sw(10)}
+                            color={Colors.black}
+                          />
+                          <SizedBox width={sw(5)} />
+                        </>
+                      }
+                      buttonStyle={{
+                        flexDirection: "row",
+                        borderRightWidth: 1.5,
+                        borderColor: Colors.gainsboro,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      countryCode={phoneNumber.selectedCountry.countryCode}
+                      onChange={(data) => {
+                        setPhoneNumber({
+                          ...phoneNumber,
+                          selectedCountry: data,
+                        });
+                      }}
+                    />
                   }
-                  buttonStyle={{
-                    flexDirection: "row",
-                    borderRightWidth: 1.5,
-                    borderColor: Colors.gainsboro,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  countryCode={phoneNumber.selectedCountry.countryCode}
-                  onChange={(data) => {
-                    setPhoneNumber({ ...phoneNumber, selectedCountry: data });
-                  }}
+                  label={t("phoneNumber")}
+                  keyboardType={"phone-pad"}
+                  autoCapitalize="none"
+                  onChangeText={(text) =>
+                    setPhoneNumber({
+                      ...phoneNumber,
+                      text: removeSpecialCharacters(text.trim()),
+                    })
+                  }
+                  value={phoneNumber.text}
                 />
-              }
-              label={t("phoneNumber")}
-              keyboardType={"phone-pad"}
-              autoCapitalize="none"
-              onChangeText={(text) =>
-                setPhoneNumber({
-                  ...phoneNumber,
-                  text: removeSpecialCharacters(text.trim()),
-                })
-              }
-              value={phoneNumber.text}
-            />
-            <SizedBox height={sh(5)} />
-            <TouchableOpacity
-              onPress={() => {
-                Linking.openURL("https://pr0per.vercel.app/privacy-policy");
-              }}
-            >
-              <CustomText
-                label="By submitting your phone number, you confirm you've read the Privacy Policy"
-                size="small"
-              />
-            </TouchableOpacity>
-            <SizedBox height={sh(40)} />
-            <CustomButton
-              isTimer={true}
-              disabled={
-                phoneNumber.text.trim().length == 0 ||
-                userRequestOTPMutation.isPending ||
-                isLoading
-              }
-              isLoading={isLoading}
-              type={"primary"}
-              size={"medium"}
-              title={"Log In"}
-              onPress={() => handleLogin()}
-            />
+                <SizedBox height={sh(5)} />
+                <TouchableOpacity
+                  onPress={() => {
+                    Linking.openURL("https://pr0per.vercel.app/privacy-policy");
+                  }}
+                >
+                  <CustomText
+                    label="By submitting your phone number, you confirm you've read the Privacy Policy"
+                    size="small"
+                  />
+                </TouchableOpacity>
+                <SizedBox height={sh(40)} />
+                <CustomButton
+                  isTimer={true}
+                  disabled={
+                    phoneNumber.text.trim().length == 0 ||
+                    userRequestOTPMutation.isPending ||
+                    isLoading
+                  }
+                  isLoading={isLoading}
+                  type={"primary"}
+                  size={"medium"}
+                  title={"Log In"}
+                  onPress={() => handleLogin()}
+                />
+              </>
+            )}
             <SizedBox height={sh(20)} />
             <VersionText />
           </View>
