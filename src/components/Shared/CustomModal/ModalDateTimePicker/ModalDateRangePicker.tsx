@@ -91,8 +91,9 @@ export default function ModalDateRangePicker(props: ModalDateRangePickerProps) {
 
               <View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {dates.map((date) => (
+                  {dates.map((date, index) => (
                     <TouchableOpacity
+                      key={index}
                       style={{
                         flexDirection: "row",
                         borderWidth: 1,
