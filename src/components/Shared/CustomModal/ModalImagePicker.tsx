@@ -21,6 +21,7 @@ import Header from "../Header";
 import { sw } from "@libs/responsive.lib";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import LoadingCircle from "../LoadingCircle";
+import CustomText from "../CustomText";
 interface ModalImagePickerProps {
   userId: string;
   buttonStyle?: ViewStyle;
@@ -31,6 +32,7 @@ interface ModalImagePickerProps {
 
 export default function ModalImagePicker(props: ModalImagePickerProps) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [progressText, seProgressText] = useState<number>(0);
   const getS3PresignedUrlMutation = useMutation({
     mutationFn: async (data: TS3GetPresignedUrlBody) => {
       return axios.post(
@@ -43,6 +45,47 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
   enum EMethods {
     camera = "Camera",
     gallery = "Gallery",
+  }
+
+  function uploadWithProgress({
+    presignedUrl,
+    fileBuffer,
+    mimeType,
+    onProgress,
+  }: {
+    presignedUrl: string;
+    fileBuffer: any; // or ArrayBuffer
+    mimeType: string;
+    onProgress: (percent: number) => void;
+  }) {
+    console.log('oiii')
+    return new Promise<void>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.onprogress = (event) => {
+        console.log(event)
+        if (event.lengthComputable) {
+          const percentComplete = (event.loaded / event.total) * 100;
+          onProgress(Math.round(percentComplete));
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve();
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new Error("Upload failed due to a network error."));
+      };
+
+      xhr.open("PUT", presignedUrl);
+      xhr.setRequestHeader("Content-Type", mimeType ?? "image/jpeg");
+      xhr.send(fileBuffer);
+    });
   }
 
   const handleImageUpload = (file: ImagePicker.ImagePickerAsset) => {
@@ -59,13 +102,24 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
         onSuccess: async (response) => {
           const data: TS3GetPresignedUrlResponse = response.data;
           const buffer = Buffer.from(file.base64 ?? "", "base64");
-          await fetch(data.presignedUrl, {
-            method: "PUT",
-            body: buffer,
-            headers: {
-              "Content-Type": file.mimeType ?? "image/jpeg",
+          // await fetch(data.presignedUrl, {
+          //   method: "PUT",
+          //   body: buffer,
+          //   headers: {
+          //     "Content-Type": file.mimeType ?? "image/jpeg",
+          //   },
+          // });
+
+          await uploadWithProgress({
+            presignedUrl: data.presignedUrl,
+            fileBuffer: buffer,
+            mimeType: file.mimeType ?? "image/jpeg",
+            onProgress: (percent) => {
+              console.log(`Upload Progress: ${percent}%`);
+              seProgressText(percent);
             },
           });
+
           props.onChange(
             `${process.env.EXPO_PUBLIC_S3_BUCKET_NAME_BASE_URL}/${imagePathKey}`
           );
@@ -118,7 +172,10 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
         }}
       >
         {getS3PresignedUrlMutation.isPending ? (
-          <LoadingCircle visible={true} />
+          <View style={{ flexDirection: "row" }}>
+            <CustomText size="medium" label={`${progressText}%`} />
+            <LoadingCircle visible={true} />
+          </View>
         ) : (
           <>{props.listComponents}</>
         )}
