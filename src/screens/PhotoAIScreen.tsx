@@ -26,7 +26,10 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
 }) => {
   const imageDetectMutation = useMutation({
     mutationFn: async (data: TAIImageDetectBody) => {
-      return axios.post(`${process.env.EXPO_PUBLIC_PROPER_API_URL}/ai/imageDetect`, data);
+      return axios.post(
+        `${process.env.EXPO_PUBLIC_PROPER_API_URL}/ai/imageDetect`,
+        data
+      );
     },
   });
   const authStore = useAuthStore();
@@ -56,6 +59,10 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
           />
         ) : (
           <ModalImagePicker
+            loadingStyle={{
+              alignItems: "center",
+              justifyContent: "center",
+            }}
             type={"transaction_image"}
             userId={`${authStore.user?._id}`}
             onChange={(data) => {

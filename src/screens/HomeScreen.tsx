@@ -1,6 +1,6 @@
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import { AppNavigationScreen } from "@libs/react.navigation.lib";
-import React from "react";
+import React, { useEffect } from "react";
 import { sh, sw } from "@libs/responsive.lib";
 import {
   Image,
@@ -29,8 +29,10 @@ import LoadingCircle from "@components/Shared/LoadingCircle";
 import CustomText from "@components/Shared/CustomText";
 import dayjs from "dayjs";
 import SizedBox from "@components/Shared/SizedBox";
-import { displayCurrency } from "@libs/utils";
+import { displayCurrency, getRelativeTimes } from "@libs/utils";
 import Avatar from "@components/Shared/Avatar";
+import * as Notifications from "expo-notifications";
+import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 
 const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
   navigation,
@@ -241,6 +243,39 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       return page.data;
     }) ?? [];
 
+  useEffect(() => {
+    const datas = transactions.filter((z) => z.userId != authStore.user?._id);
+    if (datas.length > 0) {
+      datas.map((data) => {
+        if (data.transactionCategory.type == ETransactionCategoryType.expense) {
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: data.user.displayName,
+              body: `${data.amount} ${data.currency} under ${
+                data.transactionCategory?.name
+              } ${getRelativeTimes(data.transactedAt)}`,
+            },
+            trigger: null,
+          });
+        }
+      });
+    }
+  }, [transactions]);
+
+  useEffect(() => {
+    const requestNotifiicationPermission = async () => {
+      await Notifications.requestPermissionsAsync();
+      await Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: false,
+          shouldSetBadge: false,
+        }),
+      });
+    };
+    requestNotifiicationPermission();
+  }, []);
+
   return (
     <>
       <ContainerLayout>
@@ -361,7 +396,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                     <CustomText label="$" size="extra-big" textStyle={{}} />
                   </View>
                   <SizedBox width={sw(10)} />
-                  <View>
+                  <View style={{ flex: 1 }}>
                     <CustomText
                       size="medium"
                       label="Spent this month"

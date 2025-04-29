@@ -45,15 +45,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         {
           text: "Yes",
           onPress: () => {
-            navigationRef.reset({
-              index: 0,
-              routes: [{ name: "LoginScreen" }],
-            });
             set((state) => ({
               ...state,
               user: undefined,
             }));
             AsyncStorageLib.clear();
+            navigationRef.reset({
+              index: 0,
+              routes: [{ name: "LoginScreen" }],
+            });
           },
         },
       ],

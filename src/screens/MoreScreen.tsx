@@ -100,7 +100,6 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
             />
             <SizedBox height={sh(20)} />
             <ModalImagePicker
-              buttonStyle={{}}
               type={"profileImage"}
               userId={authStore.user?._id ?? ""}
               onChange={(data) => {

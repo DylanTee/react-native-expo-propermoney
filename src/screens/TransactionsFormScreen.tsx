@@ -514,6 +514,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
             />
             <SizedBox height={sh(20)} />
             <ModalImagePicker
+              loadingStyle={{ flex: 1, alignSelf: "flex-end" }}
               type={"transaction_image"}
               userId={authStore.user?._id ?? ""}
               onChange={(data) => {

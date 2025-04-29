@@ -158,6 +158,18 @@ const displayDateRangeText = ({
   }
 };
 
+const getRelativeTimes = (timestamp: Date) => {
+  const date = new Date(timestamp) as any;
+  const now = new Date() as any;
+  const diff = Math.floor((now - date) / 1000); // difference in seconds
+
+  if (diff < 60) return "Just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+  if (diff < 31536000) return `${Math.floor(diff / 86400)} days ago`;
+  return `${Math.floor(diff / 31536000)} years ago`;
+};
+
 export {
   removeLeadingZero,
   isValidDate,
@@ -174,4 +186,5 @@ export {
   displayCurrency,
   getAmountTextColor,
   displayDateRangeText,
+  getRelativeTimes,
 };
