@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import CustomButtonItemPicker from "@components/Shared/CustomButtonItemPicker";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -49,6 +49,35 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
     camera = "Camera",
     gallery = "Gallery",
   }
+
+  const [
+    grantedImagePickerMediaLibraryPermission,
+    setGrantedImagePickerMediaLibraryPermission,
+  ] = useState<boolean | undefined>(undefined);
+  const [
+    grantedImagePickerCameraPermission,
+    setGrantedImagePickerCameraPermission,
+  ] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    const checkPermissions = async () => {
+      try {
+        const imagePickerCameraPermissions =
+          await ImagePicker.requestCameraPermissionsAsync();
+        setGrantedImagePickerCameraPermission(
+          imagePickerCameraPermissions.granted
+        );
+        const imagePickerMediaLibraryPermissions =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        setGrantedImagePickerMediaLibraryPermission(
+          imagePickerMediaLibraryPermissions.granted
+        );
+        
+      } catch (e) {}
+    };
+
+    checkPermissions();
+  }, []);
 
   async function uploadFileWithProgress({
     putUrl,
@@ -136,25 +165,40 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
     if (option == EMethods.camera) {
       let assets = await ImagePicker.launchCameraAsync({
         base64: true,
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: "images",
         allowsEditing: true,
         quality: 1,
       });
 
-      await getAsset(assets);
+      getAsset(assets);
+      setIsVisible(false);
     } else if (option == EMethods.gallery) {
       let assets = await ImagePicker.launchImageLibraryAsync({
         base64: true,
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: "images",
         allowsEditing: true,
         quality: 1,
       });
 
-      await getAsset(assets);
+      getAsset(assets);
+      setIsVisible(false);
     }
   };
 
-  const list = [EMethods.camera, EMethods.gallery];
+  const list = useMemo(() => {
+    [EMethods.camera, EMethods.gallery];
+    let actions = [];
+    if (grantedImagePickerCameraPermission) {
+      actions.push(EMethods.camera);
+    }
+    if (grantedImagePickerMediaLibraryPermission) {
+      actions.push(EMethods.gallery);
+    }
+    return actions;
+  }, [
+    grantedImagePickerCameraPermission,
+    grantedImagePickerMediaLibraryPermission,
+  ]);
   return (
     <>
       <TouchableOpacity
@@ -195,7 +239,6 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
                   isSelect={false}
                   onPress={() => {
                     handleOptionsPicked(option);
-                    setIsVisible(false);
                   }}
                 />
               ))}

@@ -439,7 +439,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                     <CustomText label="$" size="extra-big" />
                   </View>
                   <SizedBox width={sw(10)} />
-                  <View>
+                  <View style={{ flex: 1 }}>
                     <CustomText
                       size="medium"
                       label="Spent last month"
@@ -535,7 +535,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                         <CustomText label="$" size="extra-big" textStyle={{}} />
                       </View>
                       <SizedBox width={sw(10)} />
-                      <View>
+                      <View style={{ flex: 1 }}>
                         <CustomText
                           size="medium"
                           label="Spent this month"
@@ -578,7 +578,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                         <CustomText label="$" size="extra-big" />
                       </View>
                       <SizedBox width={sw(10)} />
-                      <View>
+                      <View style={{ flex: 1 }}>
                         <CustomText
                           size="medium"
                           label="Spent last month"
