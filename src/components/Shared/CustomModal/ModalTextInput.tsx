@@ -71,7 +71,7 @@ export default function ModalTextInput(props: ModalTextInputProps) {
                   borderColor: "#253A14",
                 }}
                 multiline={true}
-                maxLength={100}
+                maxLength={200}
                 autoFocus={true}
               />
               <SizedBox height={sh(20)} />

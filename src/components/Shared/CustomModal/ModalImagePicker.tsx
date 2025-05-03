@@ -129,6 +129,31 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
   };
 
   const handleMethodClick = async (option: TModalImagePickerOptions) => {
+    const checkFileSizeBeforeUpload = ({
+      filePath,
+      mimeType,
+      fileSize,
+    }: {
+      filePath: string;
+      mimeType: string;
+      fileSize: number;
+    }) => {
+      const maxSizeInBytes = 15 * 1024 * 1024; // 15 MB in bytes
+
+      if (maxSizeInBytes > fileSize) {
+        uploadFile({
+          filePath: filePath,
+          mimeType: mimeType,
+          fileExtension: filePath.split(".").pop() as string,
+        });
+      } else {
+        Alert.alert(
+          "Maximum size",
+          "File is too large, Maximum allowed size is 10 MB."
+        );
+      }
+    };
+
     if (option == "Camera") {
       let assets = await ImagePicker.launchCameraAsync({
         mediaTypes: "images",
@@ -137,11 +162,11 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
       });
       if (assets && assets.assets && assets.assets.length > 0) {
         const file = assets.assets[0];
-        if (file.mimeType) {
-          uploadFile({
+        if (file.uri && file.fileSize && file.mimeType) {
+          checkFileSizeBeforeUpload({
             filePath: file.uri,
             mimeType: file.mimeType,
-            fileExtension: file.uri.split(".").pop() as string,
+            fileSize: file.fileSize,
           });
         }
       }
@@ -153,11 +178,11 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
       });
       if (assets && assets.assets && assets.assets.length > 0) {
         const file = assets.assets[0];
-        if (file.mimeType) {
-          uploadFile({
+        if (file.mimeType && file.fileSize && file.mimeType) {
+          checkFileSizeBeforeUpload({
             filePath: file.uri,
             mimeType: file.mimeType,
-            fileExtension: file.uri.split(".").pop() as string,
+            fileSize: file.fileSize,
           });
         }
       }
@@ -169,11 +194,11 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
       });
       if (assets && assets.assets && assets.assets.length > 0) {
         const file = assets.assets[0];
-        if (file.mimeType) {
-          uploadFile({
+        if (file.mimeType && file.size && file.mimeType) {
+          checkFileSizeBeforeUpload({
             filePath: file.uri,
             mimeType: file.mimeType,
-            fileExtension: file.uri.split(".").pop() as string,
+            fileSize: file.size,
           });
         }
       }

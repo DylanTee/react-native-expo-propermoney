@@ -31,10 +31,10 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
 
   const ImageFileText = () => {
     return (
-      <>
+      <View style={{ flex: 1}}>
         <CustomText
           size="medium"
-          textStyle={{flex:1}}
+          textStyle={{ flex: 1 }}
           label={`${props.filePath?.split("/").pop()}`}
         />
         <SizedBox height={sh(5)} />
@@ -45,7 +45,7 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
           }}
           size="small"
         />
-      </>
+      </View>
     );
   };
   return (
@@ -62,7 +62,7 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
     >
       {props.filePath ? (
         <>
-          <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row", flex: 1 }}>
             <AntDesign
               name="checkcircle"
               size={sw(24)}
@@ -71,6 +71,7 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
             <SizedBox width={sw(20)} />
             {isImage ? (
               <ModalZoomableImage
+                buttonStyle={{ flex: 1 }}
                 listComponents={<>{ImageFileText()}</>}
                 imagePath={props.filePath}
               />
@@ -95,7 +96,7 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
                 borderRadius: sw(60 / 2),
                 justifyContent: "center",
                 alignItems: "center",
-                marginLeft:"auto"
+                marginLeft: "auto",
               }}
               onPress={() => props.onDelete()}
             >
