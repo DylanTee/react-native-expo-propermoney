@@ -19,7 +19,7 @@ import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 interface ModalZoomableImageProps {
   listComponents: ReactNode;
   imagePath: string;
-  buttonStyle: ViewStyle;
+  buttonStyle?: ViewStyle;
 }
 
 export default function ModalZoomableImage(props: ModalZoomableImageProps) {

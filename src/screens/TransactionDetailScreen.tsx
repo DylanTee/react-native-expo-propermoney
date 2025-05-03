@@ -24,11 +24,11 @@ import {
   StyleSheet,
 } from "react-native";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
-import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
 import dayjs from "dayjs";
 import TransactionCategoryContainer from "@components/Shared/TransactionCategoryContainer";
 import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
 import LoadingCircle from "@components/Shared/LoadingCircle";
+import UploadFileButton from "@components/Shared/UploadFileButton";
 
 const TransactionDetailScreen: AppNavigationScreen<
   "TransactionDetailScreen"
@@ -51,6 +51,7 @@ const TransactionDetailScreen: AppNavigationScreen<
   });
   const detail: TTransaction | undefined =
     useGetTransactionDetailQuery.data ?? undefined;
+
   return (
     <ContainerLayout>
       <Header
@@ -193,32 +194,19 @@ const TransactionDetailScreen: AppNavigationScreen<
               )}
               {detail.imagePath && (
                 <View style={styles.bodyContainer}>
-                  <CustomText
-                    size="medium"
-                    label={`Image`}
-                    textStyle={{ color: Colors.matterhorn }}
-                  />
-                  <ModalZoomableImage
-                    buttonStyle={{
-                      borderWidth: 1,
-                      borderColor: Colors.suvaGrey,
-                      borderRadius: sw(5),
-                      marginLeft: "auto",
+                  <UploadFileButton
+                    onUploadSuccess={() => {}}
+                    filePath={detail.imagePath}
+                    onDelete={() => {
+                      navigation.navigate("TransactionsFormScreen", {
+                        id: detail._id,
+                        isEdit: true,
+                        onEdit: () => {},
+                        onDelete: () => {
+                          navigation.goBack();
+                        },
+                      });
                     }}
-                    listComponents={
-                      <>
-                        <Image
-                          style={{
-                            width: sw(100),
-                            height: sw(100),
-                            objectFit: "cover",
-                            borderRadius: sw(5),
-                          }}
-                          source={{ uri: detail.imagePath }}
-                        />
-                      </>
-                    }
-                    imagePath={detail.imagePath ?? ``}
                   />
                 </View>
               )}

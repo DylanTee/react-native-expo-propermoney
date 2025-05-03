@@ -59,6 +59,7 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
           />
         ) : (
           <ModalImagePicker
+            options={["Camera", "Gallery", "Document"]}
             loadingStyle={{
               alignItems: "center",
               justifyContent: "center",

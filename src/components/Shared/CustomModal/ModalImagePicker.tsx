@@ -22,10 +22,13 @@ import ContainerLayout from "@components/Layout/ContainerLayout";
 import LoadingCircle from "../LoadingCircle";
 import CustomText from "../CustomText";
 import * as FileSystem from "expo-file-system";
+import * as DocumentPicker from "expo-document-picker";
 import SizedBox from "../SizedBox";
 
+type TModalImagePickerOptions = "Camera" | "Gallery" | "Document";
 interface ModalImagePickerProps {
   userId: string;
+  options: TModalImagePickerOptions[];
   buttonStyle?: ViewStyle;
   loadingStyle?: ViewStyle;
   listComponents: ReactNode;
@@ -44,11 +47,6 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
       );
     },
   });
-
-  enum EMethods {
-    camera = "Camera",
-    gallery = "Gallery",
-  }
 
   const [
     grantedImagePickerMediaLibraryPermission,
@@ -72,79 +70,56 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
         setGrantedImagePickerMediaLibraryPermission(
           imagePickerMediaLibraryPermissions.granted
         );
-        
       } catch (e) {}
     };
-
     checkPermissions();
   }, []);
 
-  async function uploadFileWithProgress({
-    putUrl,
-    fileUri,
-    mimeType,
-    onProgress,
-  }: {
-    putUrl: string;
-    fileUri: string;
-    mimeType?: string;
-    onProgress: (progress: number) => void;
-  }) {
-    const uploadTask = FileSystem.createUploadTask(
-      putUrl,
-      fileUri,
-      {
-        fieldName: "file", // optional for S3 PUT but you can leave it
-        httpMethod: "PUT",
-        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
-        headers: {
-          "Content-Type": mimeType ?? "image/jpeg",
-        },
-      },
-      ({ totalBytesSent, totalBytesExpectedToSend }) => {
-        const progress = totalBytesExpectedToSend
-          ? totalBytesSent / totalBytesExpectedToSend
-          : 0;
+  const uploadFile = (file: {
+    filePath: string;
+    mimeType: string;
+    fileExtension: string;
+  }) => {
+    setIsVisible(false);
 
-        onProgress(parseFloat(progress.toFixed(2)));
-      }
-    );
-
-    const result = await uploadTask.uploadAsync();
-
-    return result;
-  }
-
-  const handleImageUpload = (file: ImagePicker.ImagePickerAsset) => {
-    const mimeType = file.mimeType?.replace("image/", "");
-    const fileName = `${props.userId}_${new Date().getTime()}.${mimeType}`;
+    const fileNamePrefix = `${props.userId}_${new Date().getTime()}`;
+    const fileName = `${fileNamePrefix}.${file.fileExtension}`;
     const imagePathKey = `propermoney/${props.type}/${fileName}`;
     getS3PresignedUrlMutation.mutate(
       {
         bucketName: process.env.EXPO_PUBLIC_S3_BUCKET_NAME as string,
-        mime: mimeType as string,
+        mime: file.mimeType,
         key: imagePathKey,
       },
       {
         onSuccess: async (response) => {
           const data: TS3GetPresignedUrlResponse = response.data;
-          await uploadFileWithProgress({
-            putUrl: data.presignedUrl,
-            fileUri: file.uri,
-            mimeType: "image/jpeg",
-            onProgress: (progress) => {
+          const uploadTask = FileSystem.createUploadTask(
+            data.presignedUrl,
+            file.filePath,
+            {
+              fieldName: fileNamePrefix,
+              httpMethod: "PUT",
+              uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+              headers: {
+                "Content-Type": file.mimeType,
+              },
+            },
+            ({ totalBytesSent, totalBytesExpectedToSend }) => {
+              const progress = totalBytesExpectedToSend
+                ? totalBytesSent / totalBytesExpectedToSend
+                : 0;
               if (progress * 100 == 100) {
                 seProgressText(0);
               } else {
                 seProgressText(progress * 100);
               }
-            },
-          });
-
+            }
+          );
+          await uploadTask.uploadAsync();
           props.onChange(
             `${process.env.EXPO_PUBLIC_S3_BUCKET_NAME_BASE_URL}/${imagePathKey}`
           );
-          setIsVisible(false);
         },
         onError: (e) => {
           Alert.alert(e.message);
@@ -153,52 +128,73 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
     );
   };
 
-  const handleOptionsPicked = async (option: EMethods) => {
-    const getAsset = (result: ImagePicker.ImagePickerResult) => {
-      if (result && result.assets && result.assets.length > 0) {
-        const assest = result
-          .assets[0] as unknown as ImagePicker.ImagePickerAsset;
-        handleImageUpload(assest);
-      }
-    };
-
-    if (option == EMethods.camera) {
+  const handleMethodClick = async (option: TModalImagePickerOptions) => {
+    if (option == "Camera") {
       let assets = await ImagePicker.launchCameraAsync({
-        base64: true,
         mediaTypes: "images",
         allowsEditing: true,
         quality: 1,
       });
-
-      getAsset(assets);
-      setIsVisible(false);
-    } else if (option == EMethods.gallery) {
+      if (assets && assets.assets && assets.assets.length > 0) {
+        const file = assets.assets[0];
+        if (file.mimeType) {
+          uploadFile({
+            filePath: file.uri,
+            mimeType: file.mimeType,
+            fileExtension: file.uri.split(".").pop() as string,
+          });
+        }
+      }
+    } else if (option == "Gallery") {
       let assets = await ImagePicker.launchImageLibraryAsync({
-        base64: true,
         mediaTypes: "images",
         allowsEditing: true,
         quality: 1,
       });
-
-      getAsset(assets);
-      setIsVisible(false);
+      if (assets && assets.assets && assets.assets.length > 0) {
+        const file = assets.assets[0];
+        if (file.mimeType) {
+          uploadFile({
+            filePath: file.uri,
+            mimeType: file.mimeType,
+            fileExtension: file.uri.split(".").pop() as string,
+          });
+        }
+      }
+    } else if (option == "Document") {
+      let assets = await DocumentPicker.getDocumentAsync({
+        type: "*/*",
+        copyToCacheDirectory: true,
+        multiple: false,
+      });
+      if (assets && assets.assets && assets.assets.length > 0) {
+        const file = assets.assets[0];
+        if (file.mimeType) {
+          uploadFile({
+            filePath: file.uri,
+            mimeType: file.mimeType,
+            fileExtension: file.uri.split(".").pop() as string,
+          });
+        }
+      }
     }
   };
 
-  const list = useMemo(() => {
-    [EMethods.camera, EMethods.gallery];
-    let actions = [];
+  const options = useMemo(() => {
+    let options: TModalImagePickerOptions[] = [];
     if (grantedImagePickerCameraPermission) {
-      actions.push(EMethods.camera);
+      options.push("Camera");
     }
     if (grantedImagePickerMediaLibraryPermission) {
-      actions.push(EMethods.gallery);
+      options.push("Gallery");
     }
-    return actions;
+    options.push("Document");
+    return options;
   }, [
     grantedImagePickerCameraPermission,
     grantedImagePickerMediaLibraryPermission,
   ]);
+
   return (
     <>
       <TouchableOpacity
@@ -232,13 +228,13 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
               }}
             />
             <ScrollView>
-              {list.map((option) => (
+              {options.map((option) => (
                 <CustomButtonItemPicker
                   key={option}
                   text={option}
                   isSelect={false}
                   onPress={() => {
-                    handleOptionsPicked(option);
+                    handleMethodClick(option);
                   }}
                 />
               ))}

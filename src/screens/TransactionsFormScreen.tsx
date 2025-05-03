@@ -16,7 +16,6 @@ import { resetQueries } from "@libs/react.query.client.lib";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { useAuthStore } from "@libs/zustand/authStore";
-import { currencyList } from "@mcdylanproperenterprise/nodejs-proper-money-types/lists/currency";
 import dayjs from "dayjs";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
@@ -24,9 +23,8 @@ import ModalDateTimePicker from "@components/Shared/CustomModal/ModalDateTimePic
 import ModalTransactionCategoryPicker from "@components/Shared/CustomModal/ModalTransactionCategoryPicker";
 import ModalTransationLabelsPicker from "@components/Shared/CustomModal/ModalTransationLabelsPicker";
 import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
-import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
 import { Colors } from "@styles/Colors";
-import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import CustomText from "@components/Shared/CustomText";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import CustomButton from "@components/Shared/CustomButton";
@@ -34,6 +32,7 @@ import TransactionCategoryContainer from "@components/Shared/TransactionCategory
 import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
 import ModalTextInput from "@components/Shared/CustomModal/ModalTextInput";
 import ModalAmountTextInput from "@components/Shared/CustomModal/ModalAmountTextInput";
+import UploadFileButton from "@components/Shared/UploadFileButton";
 
 const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
   navigation,
@@ -513,86 +512,20 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
               }
             />
             <SizedBox height={sh(20)} />
-            <ModalImagePicker
-              loadingStyle={{ flex: 1, alignSelf: "flex-end" }}
-              type={"transaction_image"}
-              userId={authStore.user?._id ?? ""}
-              onChange={(data) => {
+            <UploadFileButton
+              onUploadSuccess={(imagePath) => {
                 setForm((prevState) => ({
                   ...prevState,
-                  imagePath: data,
+                  imagePath,
                 }));
               }}
-              listComponents={
-                <>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      paddingVertical: sh(10),
-                    }}
-                  >
-                    <CustomText
-                      size="medium"
-                      label={"Image"}
-                      textStyle={{ color: Colors.matterhorn }}
-                    />
-                    {form.imagePath ? (
-                      <ModalZoomableImage
-                        buttonStyle={{
-                          borderWidth: 1,
-                          borderColor: Colors.suvaGrey,
-                          borderRadius: sw(5),
-                          marginLeft: "auto",
-                        }}
-                        listComponents={
-                          <>
-                            <Image
-                              style={{
-                                width: sw(100),
-                                height: sw(100),
-                                objectFit: "cover",
-                                borderRadius: sw(5),
-                              }}
-                              source={{ uri: form.imagePath }}
-                            />
-                          </>
-                        }
-                        imagePath={form.imagePath ?? ``}
-                      />
-                    ) : (
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          marginLeft: "auto",
-                          borderWidth: 1,
-                          borderColor: Colors.suvaGrey,
-                          borderRadius: sw(5),
-                          padding: sw(10),
-                        }}
-                      >
-                        <ExpoVectorIcon
-                          name="upload"
-                          size={sw(20)}
-                          color={Colors.black}
-                        />
-                        <SizedBox width={sw(20)} />
-                        <View>
-                          <CustomText
-                            label="Upload file"
-                            containerStyle={{ marginLeft: "auto" }}
-                            textStyle={{
-                              color: Colors.primary,
-                              textDecorationLine: "underline",
-                            }}
-                            size="medium"
-                          />
-                        </View>
-                      </View>
-                    )}
-                  </View>
-                </>
-              }
+              filePath={form.imagePath}
+              onDelete={() => {
+                setForm((prevState) => ({
+                  ...prevState,
+                  imagePath: null,
+                }));
+              }}
             />
             <SizedBox height={sh(60)} />
           </View>
