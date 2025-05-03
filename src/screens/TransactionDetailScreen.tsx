@@ -22,6 +22,7 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  Linking,
 } from "react-native";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import dayjs from "dayjs";
@@ -29,6 +30,7 @@ import TransactionCategoryContainer from "@components/Shared/TransactionCategory
 import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import UploadFileButton from "@components/Shared/UploadFileButton";
+import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
 
 const TransactionDetailScreen: AppNavigationScreen<
   "TransactionDetailScreen"
@@ -51,6 +53,12 @@ const TransactionDetailScreen: AppNavigationScreen<
   });
   const detail: TTransaction | undefined =
     useGetTransactionDetailQuery.data ?? undefined;
+
+  const fileExtension = detail?.imagePath?.split(".").pop();
+  const isImage =
+    fileExtension === "jpg" ||
+    fileExtension === "jpeg" ||
+    fileExtension === "png";
 
   return (
     <ContainerLayout>
@@ -194,20 +202,44 @@ const TransactionDetailScreen: AppNavigationScreen<
               )}
               {detail.imagePath && (
                 <View style={styles.bodyContainer}>
-                  <UploadFileButton
-                    onUploadSuccess={() => {}}
-                    filePath={detail.imagePath}
-                    onDelete={() => {
-                      navigation.navigate("TransactionsFormScreen", {
-                        id: detail._id,
-                        isEdit: true,
-                        onEdit: () => {},
-                        onDelete: () => {
-                          navigation.goBack();
-                        },
-                      });
-                    }}
-                  />
+                  {isImage ? (
+                    <ModalZoomableImage
+                      buttonStyle={{ flex: 1 }}
+                      listComponents={
+                        <>
+                          <CustomText
+                            label="View"
+                            size="medium"
+                            textStyle={{
+                              color: Colors.primary,
+                              textDecorationLine: "underline",
+                              marginLeft: "auto",
+                            }}
+                          />
+                        </>
+                      }
+                      imagePath={detail.imagePath}
+                    />
+                  ) : (
+                    <TouchableOpacity
+                      style={{ flex: 1 }}
+                      onPress={() => {
+                        if (detail.imagePath) {
+                          Linking.openURL(detail.imagePath);
+                        }
+                      }}
+                    >
+                      <CustomText
+                        label="View"
+                        size="medium"
+                        textStyle={{
+                          color: Colors.primary,
+                          textDecorationLine: "underline",
+                          marginLeft: "auto",
+                        }}
+                      />
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
               <SizedBox height={sh(20)} />

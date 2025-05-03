@@ -22,7 +22,6 @@ type UploadFileButtonProps = {
 
 export default function UploadFileButton(props: UploadFileButtonProps) {
   const authStore = useAuthStore();
-
   const fileExtension = props.filePath?.split(".").pop();
   const isImage =
     fileExtension === "jpg" ||
