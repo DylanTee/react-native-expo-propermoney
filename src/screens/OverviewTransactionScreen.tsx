@@ -27,9 +27,9 @@ import TransactionCategoryContainer from "@components/Shared/TransactionCategory
 import ModalTransationLabelsPicker from "@components/Shared/CustomModal/ModalTransationLabelsPicker";
 import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
-import { useAuthStore } from "@libs/zustand/authStore";
 import ModalDateRangePicker from "@components/Shared/CustomModal/ModalDateTimePicker/ModalDateRangePicker";
 import { displayDateRangeText } from "@libs/utils";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 export enum EOverviewTransactionsReport {
   Categories = "Categories",
@@ -40,7 +40,7 @@ export enum EOverviewTransactionsReport {
 const OverviewTransactionScreen: AppNavigationScreen<
   "OverviewTransactionScreen"
 > = ({ navigation, route }) => {
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const [transactionCategoryConfig, setTransactionCategoryConfig] = useState<{
     userCategoryId: string | undefined;
     sharedUserCategoryId: string | undefined;
@@ -56,11 +56,11 @@ const OverviewTransactionScreen: AppNavigationScreen<
     setTransactionCategoryConfig((prevState) => ({
       ...prevState,
       sharedUserCategoryId:
-        route.params.targetUserId != authStore.user?._id
+        route.params.targetUserId != user?._id
           ? route.params.transactionCategoryId
           : undefined,
       userCategoryId:
-        route.params.targetUserId == authStore.user?._id
+        route.params.targetUserId == user?._id
           ? route.params.transactionCategoryId
           : undefined,
     }));
@@ -207,7 +207,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
         id: "category",
         components: (
           <ModalTransactionCategoryPicker
-            userId={authStore.user?._id as string}
+            userId={user?._id as string}
             listComponents={
               <>
                 {transactionCategoryConfig.userCategoryId ? (
@@ -286,7 +286,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
         id: "shared-user-category",
         components: (
           <ModalTransactionCategoryPicker
-            userId={authStore.user?.sharedUserInfo?.id as string}
+            userId={user?.sharedUserInfo?.id as string}
             listComponents={
               <>
                 {transactionCategoryConfig.sharedUserCategoryId ? (
@@ -322,7 +322,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
                   </TouchableOpacity>
                 ) : (
                   <CustomText
-                    label={`${authStore.user?.sharedUserInfo?.displayName}'s Category`}
+                    label={`${user?.sharedUserInfo?.displayName}'s Category`}
                     size="medium"
                     textStyle={{ color: Colors.primary }}
                   />
@@ -359,13 +359,13 @@ const OverviewTransactionScreen: AppNavigationScreen<
           />
         ),
         isOrder: transactionCategoryConfig.sharedUserCategoryId ? true : false,
-        isVisible: authStore.user?.sharedUserId != null,
+        isVisible: user?.sharedUserId != null,
       },
       {
         id: "Label",
         components: (
           <ModalTransationLabelsPicker
-            userId={authStore.user?._id as string}
+            userId={user?._id as string}
             buttonStyle={{
               flexDirection: "row",
               borderWidth: 1,
@@ -432,7 +432,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
         id: "shared-user-label",
         components: (
           <ModalTransationLabelsPicker
-            userId={authStore.user?.sharedUserId as string}
+            userId={user?.sharedUserId as string}
             buttonStyle={{
               flexDirection: "row",
               borderWidth: 1,
@@ -476,7 +476,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
                   </TouchableOpacity>
                 ) : (
                   <CustomText
-                    label={`${authStore.user?.sharedUserInfo?.displayName}'s Label`}
+                    label={`${user?.sharedUserInfo?.displayName}'s Label`}
                     size="medium"
                     textStyle={{ color: Colors.primary }}
                   />
@@ -496,7 +496,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
         isOrder: transactionLabelConfig.sharedUserTransactionLabelIds
           ? true
           : false,
-        isVisible: authStore.user?.sharedUserId != null,
+        isVisible: user?.sharedUserId != null,
       },
     ];
   }, [transactionCategoryConfig, transactionLabelConfig, transactedAtRange]);
@@ -511,7 +511,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate("DashboardScreen", {
-                  targetUserId: authStore.user?._id as string,
+                  targetUserId: user?._id as string,
                 })
               }
             >

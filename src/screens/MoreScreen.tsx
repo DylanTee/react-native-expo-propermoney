@@ -13,7 +13,6 @@ import ModalTextInput from "@components/Shared/CustomModal/ModalTextInput";
 import { useMutation } from "@tanstack/react-query";
 import { TPostUserUpdateBody } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { AxiosLibs } from "@libs/axios.lib";
-import ModalLanguagePicker from "@components/Shared/CustomModal/ModalLanguagePicker";
 import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
 import ModalCurrencyPicker from "@components/Shared/CustomModal/ModalCurrencyPicker";
 import { useAuthStore } from "@libs/zustand/authStore";
@@ -21,13 +20,15 @@ import VersionText from "@components/Shared/VersionText";
 import CustomText from "@components/Shared/CustomText";
 import Avatar from "@components/Shared/Avatar";
 import { Colors } from "@styles/Colors";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
   navigation,
   route,
 }) => {
+  const authStore = useAuthStore()
   const { t } = useTranslation();
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const userUpdateMutation = useMutation({
     mutationFn: (data: TPostUserUpdateBody) => {
       return AxiosLibs.defaultClient.post("/user/update", data);
@@ -41,7 +42,6 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
       },
       {
         onSuccess: () => {
-          authStore.getDetail();
           Alert.alert("Saved");
         },
         onError: (e) => {
@@ -72,11 +72,11 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
             >
               <Avatar
                 size="big"
-                profileImage={authStore.user?.profileImage ?? ``}
+                profileImage={user?.profileImage ?? ``}
               />
               <SizedBox width={sw(5)} />
               <CustomText
-                label={authStore.user?.displayName ?? ``}
+                label={user?.displayName ?? ``}
                 size={"medium"}
               />
             </View>
@@ -87,13 +87,13 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
               onChange={(data) => {
                 handleUpdate({ displayName: data });
               }}
-              value={authStore.user?.displayName ?? ""}
+              value={user?.displayName ?? ""}
               textInputLabel="Display Name"
               listComponents={
                 <>
                   <CustomItemPicker
                     title={t("name")}
-                    pickedText={authStore.user?.displayName ?? ""}
+                    pickedText={user?.displayName ?? ""}
                   />
                 </>
               }
@@ -102,7 +102,7 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
             <ModalImagePicker
               options={["Camera", "Gallery"]}
               type={"profileImage"}
-              userId={authStore.user?._id ?? ""}
+              userId={user?._id ?? ""}
               onChange={(data) => {
                 handleUpdate({ profileImage: data });
               }}
@@ -121,12 +121,12 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
               onChange={(data) => {
                 handleUpdate({ currency: data });
               }}
-              currency={authStore.user?.currency ?? ""}
+              currency={user?.currency ?? ""}
               listComponents={
                 <>
                   <CustomItemPicker
                     title={"Currency"}
-                    pickedText={authStore.user?.currency ?? ""}
+                    pickedText={user?.currency ?? ""}
                   />
                 </>
               }
@@ -137,12 +137,12 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
               onChange={(data) => {
                 handleUpdate({ language: data });
               }}
-              language={authStore.user?.language ?? ""}
+              language={user?.language ?? ""}
               listComponents={
                 <>
                   <CustomItemPicker
                     title={"Language"}
-                    pickedText={authStore.user?.language.toUpperCase() ?? ""}
+                    pickedText={user?.language.toUpperCase() ?? ""}
                   />
                 </>
               }

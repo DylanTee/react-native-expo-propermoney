@@ -77,6 +77,7 @@ export type AppStackParamList = {
       | undefined;
     onEdit(_id: string): void;
     onDelete(_id: string): void;
+    onCreate(): void;
   };
   OverviewTransactionScreen: OverviewTransactionScreenParams;
   TransactionSettingsScreen?: undefined;

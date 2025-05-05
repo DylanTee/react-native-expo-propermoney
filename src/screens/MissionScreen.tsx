@@ -24,14 +24,14 @@ import {
   EMissionType,
   ESubscriptionEntitlement,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
-import { useAuthStore } from "@libs/zustand/authStore";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
   navigation,
   route,
 }) => {
   const { t } = useTranslation();
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const getTotalPointsQuery = useQuery({
     queryKey: ["totalPoints"],
     queryFn: async () => {
@@ -89,7 +89,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
   });
 
   const btnAction = (data: TMission) => {
-    if (authStore.user && isAbleClaim(data)) {
+    if (user && isAbleClaim(data)) {
       claimMutation.mutate(
         {
           entitlement: ESubscriptionEntitlement.starter,
@@ -112,6 +112,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
           isEdit: false,
           onEdit: () => {},
           onDelete: () => {},
+          onCreate: () => {},
         });
       } else if (data.type == EMissionType.weeklyCheckIn) {
         Alert.alert("Claim Daily Check in [Daily Missions]");
@@ -198,7 +199,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
                     title={"Extra"}
                     onPress={() => {
                       Linking.openURL(
-                        `https://pr0per.vercel.app/topup?projectId=propermoney&userId=${authStore.user?._id}`
+                        `https://pr0per.vercel.app/topup?projectId=propermoney&userId=${user?._id}`
                       );
                     }}
                   />
@@ -300,7 +301,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
                       title={"Extra"}
                       onPress={() => {
                         Linking.openURL(
-                          `https://pr0per.vercel.app/topup?projectId=propermoney&userId=${authStore.user?._id}`
+                          `https://pr0per.vercel.app/topup?projectId=propermoney&userId=${user?._id}`
                         );
                       }}
                     />

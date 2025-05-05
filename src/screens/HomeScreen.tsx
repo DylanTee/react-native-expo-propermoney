@@ -15,7 +15,6 @@ import { useTranslation } from "@libs/i18n/index";
 import HomeCard, { HomeCardProps } from "../components/Shared/Card/HomeCard";
 import { FlashList } from "@shopify/flash-list";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
-import { useAuthStore } from "@libs/zustand/authStore";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import {
@@ -33,13 +32,14 @@ import { displayCurrency, getRelativeTimes } from "@libs/utils";
 import Avatar from "@components/Shared/Avatar";
 import * as Notifications from "expo-notifications";
 import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
   navigation,
   route,
 }) => {
   const { t } = useTranslation();
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const menu: HomeCardProps[] = [
     {
       index: 0,
@@ -47,7 +47,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       description: "Record daily expenses or income",
       icon: <ExpoVectorIcon name="plus" size={sw(25)} color={Colors.black} />,
       onPress: () => {
-        if (authStore.user) {
+        if (user) {
           navigation.navigate("TransactionsFormScreen", {
             id: undefined,
             isEdit: false,
@@ -55,6 +55,9 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
               refreshApis();
             },
             onDelete: () => {
+              refreshApis();
+            },
+            onCreate: () => {
               refreshApis();
             },
           });
@@ -68,9 +71,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
         "AI scan receipt,invoice and etc to add a transaction with camera/gallery",
       icon: <ExpoVectorIcon name="camera" size={sw(25)} color={Colors.black} />,
       onPress: () => {
-        if (authStore.user) {
-          navigation.navigate("PhotoAIScreen");
-        }
+        navigation.navigate("PhotoAIScreen");
       },
       linkToVideo: () => {
         Linking.openURL("https://fb.watch/pk_bkoEFep/");
@@ -121,12 +122,12 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
   ];
 
   const useGetTransactionDashboardThisMonthQuery = useQuery({
-    queryKey: ["this-month-dashboard", authStore.user?._id],
+    queryKey: ["this-month-dashboard", user?._id],
     queryFn: async () => {
       const query: TGetTransactionsDashboardQuery = {
         startTransactedAt: dayjs().startOf("month").toDate(),
         endTransactedAt: dayjs().endOf("month").toDate(),
-        userId: authStore.user?._id as string,
+        userId: user?._id as string,
       };
       const { data } = await AxiosLibs.defaultClient.get(
         `/transaction/dashboard`,
@@ -136,11 +137,11 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       );
       return data;
     },
-    enabled: authStore.user != undefined,
+    enabled: user != undefined,
   });
 
   const useGetTransactionDashboardLastMonthQuery = useQuery({
-    queryKey: ["last-month-dashboard", authStore.user?._id],
+    queryKey: ["last-month-dashboard", user?._id],
     queryFn: async () => {
       const query: TGetTransactionsDashboardQuery = {
         startTransactedAt: dayjs()
@@ -148,7 +149,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
           .subtract(1, "month")
           .toDate(),
         endTransactedAt: dayjs().endOf("month").subtract(1, "month").toDate(),
-        userId: authStore.user?._id as string,
+        userId: user?._id as string,
       };
       const { data } = await AxiosLibs.defaultClient.get(
         `/transaction/dashboard`,
@@ -158,7 +159,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       );
       return data;
     },
-    enabled: authStore.user != undefined,
+    enabled: user != undefined,
   });
 
   const dashboardThisMonth: TGetTransactionDashboardResponse | undefined =
@@ -168,12 +169,12 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
     useGetTransactionDashboardLastMonthQuery.data ?? undefined;
 
   const useGetTransactionDashboardThisMonthSharedUserQuery = useQuery({
-    queryKey: ["this-month-dashboard-shared-user", authStore.user?._id],
+    queryKey: ["this-month-dashboard-shared-user", user?._id],
     queryFn: async () => {
       const query: TGetTransactionsDashboardQuery = {
         startTransactedAt: dayjs().startOf("month").toDate(),
         endTransactedAt: dayjs().endOf("month").toDate(),
-        userId: authStore.user?.sharedUserId as string,
+        userId: user?.sharedUserId as string,
       };
       const { data } = await AxiosLibs.defaultClient.get(
         `/transaction/dashboard`,
@@ -183,11 +184,11 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       );
       return data;
     },
-    enabled: authStore.user != undefined && authStore.user.sharedUserId != null,
+    enabled: user != undefined && user.sharedUserId != null,
   });
 
   const useGetTransactionDashboardLastMonthSharedUserQuery = useQuery({
-    queryKey: ["last-month-dashboard-shared-user", authStore.user?._id],
+    queryKey: ["last-month-dashboard-shared-user", user?._id],
     queryFn: async () => {
       const query: TGetTransactionsDashboardQuery = {
         startTransactedAt: dayjs()
@@ -195,7 +196,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
           .subtract(1, "month")
           .toDate(),
         endTransactedAt: dayjs().endOf("month").subtract(1, "month").toDate(),
-        userId: authStore.user?.sharedUserId as string,
+        userId: user?.sharedUserId as string,
       };
       const { data } = await AxiosLibs.defaultClient.get(
         `/transaction/dashboard`,
@@ -205,7 +206,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
       );
       return data;
     },
-    enabled: authStore.user != undefined && authStore.user.sharedUserId != null,
+    enabled: user != undefined && user.sharedUserId != null,
   });
 
   const dashboardThisMonthSharedUser:
@@ -220,7 +221,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
 
   const useGetTransactionInfiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: ["transaction-listings", authStore.user?._id],
+    queryKey: ["transaction-listings", user?._id],
     queryFn: async ({ pageParam = 1 }) => {
       const query: TGetTransactionQuery = {
         limit: 3,
@@ -229,7 +230,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
         transactionLabelIds: undefined,
         startTransactedAt: undefined,
         endTransactedAt: undefined,
-        targetUserId: authStore.user?._id as string,
+        targetUserId: user?._id as string,
       };
       const { data } = await AxiosLibs.defaultClient.get(`/transaction`, {
         params: query,
@@ -248,7 +249,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
     }) ?? [];
 
   useEffect(() => {
-    const datas = transactions.filter((z) => z.userId != authStore.user?._id);
+    const datas = transactions.filter((z) => z.userId != user?._id);
     if (datas.length > 0) {
       datas.map((data) => {
         if (data.transactionCategory.type == ETransactionCategoryType.expense) {
@@ -291,7 +292,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
   return (
     <>
       <ContainerLayout>
-        {authStore.user && (
+        {user && (
           <TouchableOpacity
             style={{
               flexDirection: "row",
@@ -309,10 +310,10 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                 objectFit: "cover",
                 borderRadius: sw(1000),
               }}
-              source={{ uri: authStore.user.profileImage }}
+              source={{ uri: user.profileImage }}
             />
             <SizedBox width={sw(10)} />
-            <CustomText label={authStore.user.displayName} size={"medium"} />
+            <CustomText label={user.displayName} size={"medium"} />
           </TouchableOpacity>
         )}
         <FlashList
@@ -370,7 +371,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                   >
                     <Avatar
                       size="big"
-                      profileImage={authStore.user?.profileImage ?? ``}
+                      profileImage={user?.profileImage ?? ``}
                     />
                     <CustomText size="medium" label="Spending" />
                   </View>
@@ -378,7 +379,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                     style={{ marginLeft: "auto" }}
                     onPress={() => {
                       navigation.navigate("DashboardScreen", {
-                        targetUserId: authStore.user?._id as string,
+                        targetUserId: user?._id as string,
                       });
                     }}
                   >
@@ -479,7 +480,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                   </View>
                 </View>
               </View>
-              {authStore.user?.sharedUserId ? (
+              {user?.sharedUserId ? (
                 <>
                   <SizedBox height={sh(20)} />
                   <View
@@ -503,21 +504,18 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                       >
                         <Avatar
                           size="big"
-                          profileImage={
-                            authStore.user.sharedUserInfo?.profileImage ?? ``
-                          }
+                          profileImage={user.sharedUserInfo?.profileImage ?? ``}
                         />
                         <CustomText
                           size="medium"
-                          label={`${authStore.user.sharedUserInfo?.displayName}'s Spending`}
+                          label={`${user.sharedUserInfo?.displayName}'s Spending`}
                         />
                       </View>
                       <TouchableOpacity
                         style={{ marginLeft: "auto" }}
                         onPress={() => {
                           navigation.navigate("DashboardScreen", {
-                            targetUserId: authStore.user
-                              ?.sharedUserId as string,
+                            targetUserId: user?.sharedUserId as string,
                           });
                         }}
                       >
@@ -675,7 +673,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                   style={{ marginLeft: "auto", marginRight: sw(15) }}
                   onPress={() => {
                     navigation.navigate("OverviewTransactionScreen", {
-                      targetUserId: authStore.user?._id,
+                      targetUserId: user?._id,
                       startTransactedAt: undefined,
                       endTransactedAt: undefined,
                       transactionCategoryId: undefined,
@@ -699,7 +697,6 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
               tintColor={Colors.black}
               refreshing={false}
               onRefresh={() => {
-                authStore.getDetail();
                 refreshApis();
               }}
             />

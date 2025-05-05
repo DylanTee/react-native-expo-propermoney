@@ -4,34 +4,15 @@ import {
   TJwtToken,
   TUser,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import { AxiosLibs } from "../axios.lib";
 import { navigationRef } from "@libs/react.navigation.lib";
 import { Alert } from "react-native";
 
 type AuthStore = {
-  user: TUser | undefined;
-  getDetail: () => void;
   logOut: () => void;
   logIn: (data: TJwtToken) => void;
 };
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
-  user: undefined,
-  getDetail: async () => {
-    const tokens =
-      (await AsyncStorageLib.getJWTtoken()) as unknown as TJwtToken;
-    if (tokens) {
-      try {
-        const { data } = await AxiosLibs.defaultClient.get("/user/detail");
-        set((state) => ({
-          ...state,
-          user: data,
-        }));
-      } catch (e) {
-        throw e;
-      }
-    }
-  },
   logOut: () => {
     Alert.alert(
       "Log Out?",
@@ -45,10 +26,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         {
           text: "Yes",
           onPress: () => {
-            set((state) => ({
-              ...state,
-              user: undefined,
-            }));
             AsyncStorageLib.clear();
             navigationRef.reset({
               index: 0,
@@ -62,7 +39,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
   logIn: async (data) => {
     await AsyncStorageLib.setJWTtoken(data);
-    await get().getDetail();
     navigationRef.reset({
       index: 0,
       routes: [{ name: "HomeScreen" }],

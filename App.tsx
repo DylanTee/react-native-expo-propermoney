@@ -3,7 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import {
   asyncStoragePersister,
   queryClient,
-} from "@libs/react.query.client.lib";
+} from "@libs/react-query/react.query.client.lib";
 import NavigationStack from "@libs/react.navigation.lib";
 import { ExpoUpdatesLibs } from "@libs/expo-updates.libs";
 import dayjs from "dayjs";

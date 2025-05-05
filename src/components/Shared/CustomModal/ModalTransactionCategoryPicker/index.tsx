@@ -7,7 +7,6 @@ import NextCreateButton from "@components/Shared/NextCreateButton";
 import SizedBox from "@components/Shared/SizedBox";
 import { AxiosLibs } from "@libs/axios.lib";
 import { sfont, sh, sw } from "@libs/responsive.lib";
-import { useAuthStore } from "@libs/zustand/authStore";
 import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import {
   TGetTransactionCategoryQuery,
@@ -30,6 +29,7 @@ import React, {
 import Form from "./form";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import useDebounce from "@libs/hooks/useDebounce";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 export type TTransactionCategoryForm = {
   _id: string | undefined;
@@ -58,7 +58,7 @@ const initialFormState: TTransactionCategoryForm = {
 export default function ModalTransactionCategoryPicker(
   props: ModalTransactionCategoryPickerProps
 ) {
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isVisibleForm, setIsVisibleForm] = useState<boolean>(false);
@@ -95,7 +95,7 @@ export default function ModalTransactionCategoryPicker(
     getNextPageParam: (lastPage, allPages) => {
       const hasNextPage = lastPage.pagination.has_next_page;
       return hasNextPage ? allPages.length + 1 : undefined;
-    }
+    },
   });
 
   const categories: TTransactionCategory[] =
@@ -243,7 +243,7 @@ export default function ModalTransactionCategoryPicker(
                       label={item.name}
                       size="medium"
                     />
-                    {item.userId == authStore.user?._id && (
+                    {item.userId == user?._id && (
                       <TouchableOpacity
                         onPress={() => {
                           setForm(item);

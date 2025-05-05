@@ -23,10 +23,10 @@ import {
   TGetTransactionLabelQuery,
   TTransactionLabel,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import { useAuthStore } from "@libs/zustand/authStore";
 import Form from "./form";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import useDebounce from "@libs/hooks/useDebounce";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 export type TTransactionLabelForm = {
   _id: string | undefined;
@@ -50,7 +50,7 @@ export default function ModalTransationLabelsPicker(
   props: ModalTransationLabelsPickerProps
 ) {
   const { t } = useTranslation();
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const [transactionLabelIds, setTransactionLabelIds] = useState<string[]>(
     props.ids
   );
@@ -211,7 +211,7 @@ export default function ModalTransationLabelsPicker(
                       label={item.name}
                       size="medium"
                     />
-                    {item.userId == authStore.user?._id && (
+                    {item.userId == user?._id && (
                       <TouchableOpacity
                         onPress={() => {
                           setForm(item);

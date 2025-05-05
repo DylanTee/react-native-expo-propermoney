@@ -10,17 +10,17 @@ import { useTranslation } from "@libs/i18n/index";
 import CustomText from "@components/Shared/CustomText";
 import CustomButtonIconRight from "@components/Shared/CustomButtonIconRight";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
-import { useAuthStore } from "@libs/zustand/authStore";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 const ContactSupportScreen: AppNavigationScreen<"ContactSupportScreen"> = ({
   navigation,
   route,
 }) => {
   const { t } = useTranslation();
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const contactNumber = "+60174449716";
   const emailAddress = "aksoonz@gmail.com";
-  const text = `Hi, i would like to ask some questions regarding the app.\n\n\nID:${authStore.user?._id}`;
+  const text = `Hi, i would like to ask some questions regarding the app.\n\n\nID:${user?._id}`;
   return (
     <ContainerLayout>
       <Header

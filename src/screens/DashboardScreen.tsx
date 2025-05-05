@@ -10,7 +10,6 @@ import {
   TGetTransactionDashboardResponse,
   TGetTransactionsDashboardQuery,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
-import { useAuthStore } from "@libs/zustand/authStore";
 import { Colors } from "@styles/Colors";
 import CustomText from "@components/Shared/CustomText";
 import SizedBox from "@components/Shared/SizedBox";
@@ -19,14 +18,15 @@ import dayjs from "dayjs";
 import TransactionCategoryCard from "@components/Shared/Card/TransactionCategoryCard";
 import LoadingCircle from "@components/Shared/LoadingCircle";
 import { displayDateRangeText } from "@libs/utils";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
   navigation,
   route,
 }) => {
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const [targetUserId, setTargetUserId] = useState<string>(
-   route.params.targetUserId as string
+    route.params.targetUserId as string
   );
   const [transactedAtRange, setTransactedAtRange] = useState<{
     startTransactedAt: Date;
@@ -66,28 +66,23 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
               borderWidth: 1,
               borderColor: Colors.suvaGrey,
               backgroundColor:
-                authStore.user?._id == targetUserId
-                  ? Colors.primary
-                  : "transparent",
+                user?._id == targetUserId ? Colors.primary : "transparent",
               borderRadius: sw(30),
               padding: sw(5),
               paddingHorizontal: sw(20),
             }}
-            onPress={() => setTargetUserId(authStore.user?._id as string)}
+            onPress={() => setTargetUserId(user?._id as string)}
           >
             <CustomText
-              label={`${authStore.user?.displayName}`}
+              label={`${user?.displayName}`}
               size="medium"
               textStyle={{
-                color:
-                  authStore.user?._id == targetUserId
-                    ? `#D6FFBC`
-                    : Colors.primary,
+                color: user?._id == targetUserId ? `#D6FFBC` : Colors.primary,
               }}
             />
           </TouchableOpacity>
         ),
-        isVisible: authStore.user?.sharedUserId != null,
+        isVisible: user?.sharedUserId != null,
       },
       {
         id: "shared-user",
@@ -98,30 +93,28 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
               borderWidth: 1,
               borderColor: Colors.suvaGrey,
               backgroundColor:
-                authStore.user?.sharedUserId == targetUserId
+                user?.sharedUserId == targetUserId
                   ? Colors.primary
                   : "transparent",
               borderRadius: sw(30),
               padding: sw(5),
               paddingHorizontal: sw(20),
             }}
-            onPress={() =>
-              setTargetUserId(authStore.user?.sharedUserId as string)
-            }
+            onPress={() => setTargetUserId(user?.sharedUserId as string)}
           >
             <CustomText
-              label={`${authStore.user?.sharedUserInfo?.displayName}`}
+              label={`${user?.sharedUserInfo?.displayName}`}
               size="medium"
               textStyle={{
                 color:
-                  authStore.user?.sharedUserId == targetUserId
+                  user?.sharedUserId == targetUserId
                     ? `#D6FFBC`
                     : Colors.primary,
               }}
             />
           </TouchableOpacity>
         ),
-        isVisible: authStore.user?.sharedUserId != null,
+        isVisible: user?.sharedUserId != null,
       },
       {
         id: "transaction-date",
@@ -246,7 +239,7 @@ const DashboardScreen: AppNavigationScreen<"DashboardScreen"> = ({
                         startTransactedAt: transactedAtRange.startTransactedAt,
                         endTransactedAt: transactedAtRange.endTransactedAt,
                         transactionCategoryId: category._id,
-                        targetUserId: authStore.user?._id as string,
+                        targetUserId: user?._id as string,
                       });
                     }}
                   />

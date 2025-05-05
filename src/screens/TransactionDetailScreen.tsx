@@ -7,7 +7,6 @@ import { AxiosLibs } from "@libs/axios.lib";
 import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import { sh, sw } from "@libs/responsive.lib";
 import { displayCurrency, getAmountTextColor } from "@libs/utils";
-import { useAuthStore } from "@libs/zustand/authStore";
 import { ETransactionCategoryType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import {
   TGetTransactionDetailQuery,
@@ -29,13 +28,13 @@ import dayjs from "dayjs";
 import TransactionCategoryContainer from "@components/Shared/TransactionCategoryContainer";
 import TransactionLabelsContainer from "@components/Shared/TransactionLabelsContainer";
 import LoadingCircle from "@components/Shared/LoadingCircle";
-import UploadFileButton from "@components/Shared/UploadFileButton";
 import ModalZoomableImage from "@components/Shared/CustomModal/ModalZoomableImage";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 const TransactionDetailScreen: AppNavigationScreen<
   "TransactionDetailScreen"
 > = ({ navigation, route }) => {
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const useGetTransactionDetailQuery = useQuery({
     queryKey: ["detail", route.params.id],
     queryFn: async () => {
@@ -70,13 +69,16 @@ const TransactionDetailScreen: AppNavigationScreen<
         onBack={() => navigation.goBack()}
         itemRight={
           <>
-            {detail && authStore.user?._id == detail?.userId && (
+            {detail && user?._id == detail?.userId && (
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate("TransactionsFormScreen", {
                     id: detail._id,
                     isEdit: true,
-                    onEdit: () => {},
+                    onCreate: () => {},
+                    onEdit: () => {
+                      useGetTransactionDetailQuery.refetch();
+                    },
                     onDelete: () => {
                       navigation.goBack();
                     },

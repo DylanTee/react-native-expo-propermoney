@@ -14,7 +14,6 @@ import {
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
-import { useAuthStore } from "@libs/zustand/authStore";
 import dayjs from "dayjs";
 import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
@@ -31,13 +30,14 @@ import TransactionLabelsContainer from "@components/Shared/TransactionLabelsCont
 import ModalTextInput from "@components/Shared/CustomModal/ModalTextInput";
 import ModalAmountTextInput from "@components/Shared/CustomModal/ModalAmountTextInput";
 import UploadFileButton from "@components/Shared/UploadFileButton";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
   navigation,
   route,
 }) => {
   const { t } = useTranslation();
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const { id, isEdit, dataFromPhotoAIScreen } = route.params;
   const useGetTransactionDetailQuery = useQuery({
     queryKey: ["detail", id],
@@ -186,6 +186,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
             index: 0,
             routes: [{ name: "HomeScreen" }],
           });
+          route.params.onCreate();
         },
         onError: (e) => {
           Alert.alert(e.message);
@@ -224,7 +225,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
     _id: undefined,
     transactionCategoryId: undefined,
     transactionLabelIds: [],
-    currency: authStore.user?.currency as string,
+    currency: user?.currency as string,
     amount: "",
     imagePath: null,
     note: "",
@@ -349,7 +350,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
             />
             <SizedBox height={sh(10)} />
             <ModalTransactionCategoryPicker
-              userId={authStore.user?._id as string}
+              userId={user?._id as string}
               listComponents={
                 <>
                   <TransactionCategoryContainer
@@ -422,7 +423,7 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
             />
             <SizedBox height={sh(20)} />
             <ModalTransationLabelsPicker
-              userId={authStore.user?._id as string}
+              userId={user?._id as string}
               listComponent={
                 <View style={styles.bodyContainer}>
                   <CustomText

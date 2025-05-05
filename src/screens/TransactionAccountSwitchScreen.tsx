@@ -12,11 +12,11 @@ import CustomButton from '@components/Shared/CustomButton';
 import CustomText from '@components/Shared/CustomText';
 import Avatar from '@components/Shared/Avatar';
 import ExpoVectorIcon from '@libs/expo-vector-icons.libs';
-import { useAuthStore } from '@libs/zustand/authStore';
+import { useGetUserDetailQuery } from '@libs/react-query/hooks/useGetUserDetailQuery';
 
 const TransactionAccountSwitchScreen: AppNavigationScreen<'TransactionAccountSwitchScreen'> = ({navigation, route}) => {
     const {t} = useTranslation();
-    const authStore = useAuthStore();
+    const { data: user } = useGetUserDetailQuery();
     const btnSelect = (userId: string | undefined) => {
         route.params.onSelect(userId);
         navigation.goBack();
@@ -27,47 +27,47 @@ const TransactionAccountSwitchScreen: AppNavigationScreen<'TransactionAccountSwi
     return (
         <ContainerLayout>
             <Header onBack={() => navigation.goBack()} />
-            {authStore.user && (
+            {user && (
                 <View style={{flex: 1, padding: sw(10)}}>
-                    <TouchableOpacity style={$ButtonContainer} onPress={() => btnSelect(authStore.user?._id)}>
+                    <TouchableOpacity style={$ButtonContainer} onPress={() => btnSelect(user?._id)}>
                         <View style={{flexDirection: 'row', marginRight: 'auto', alignItems: 'center'}}>
-                            <Avatar size="big" profileImage={authStore.user.profileImage} />
+                            <Avatar size="big" profileImage={user.profileImage} />
                             <SizedBox width={sw(10)} />
-                            <CustomText label={authStore.user.displayName + ' (you)'} size={'medium'} />
+                            <CustomText label={user.displayName + ' (you)'} size={'medium'} />
                         </View>
-                        {route.params.userId == authStore.user._id && (
+                        {route.params.userId == user._id && (
                             <ExpoVectorIcon name="check" size={sw(20)} color={Colors.black} />
                         )}
                     </TouchableOpacity>
-                    {authStore.user.sharedUserInfo && (
+                    {user.sharedUserInfo && (
                         <>
                             <TouchableOpacity
                                 style={$ButtonContainer}
-                                onPress={() => btnSelect(authStore.user?.sharedUserInfo?._id)}
+                                onPress={() => btnSelect(user?.sharedUserInfo?._id)}
                             >
                                 <View style={{flexDirection: 'row', marginRight: 'auto', alignItems: 'center'}}>
                                     <Avatar
                                         size="big"
-                                        profileImage={authStore.user.sharedUserInfo.profileImage}
+                                        profileImage={user.sharedUserInfo.profileImage}
                                     />
                                     <SizedBox width={sw(10)} />
-                                    <CustomText label={authStore.user.sharedUserInfo.displayName} size={'medium'} />
+                                    <CustomText label={user.sharedUserInfo.displayName} size={'medium'} />
                                 </View>
-                                {route.params.userId == authStore.user.sharedUserInfo._id && (
+                                {route.params.userId == user.sharedUserInfo._id && (
                                     <ExpoVectorIcon name="check" size={sw(20)} color={Colors.black} />
                                 )}
                             </TouchableOpacity>
                             <TouchableOpacity style={$ButtonContainer} onPress={() => btnSelect(undefined)}>
                                 <View style={{flexDirection: 'row', marginRight: 'auto', alignItems: 'center'}}>
-                                    <Avatar size="big" profileImage={authStore.user.profileImage} />
+                                    <Avatar size="big" profileImage={user.profileImage} />
                                     <SizedBox width={sw(10)} />
                                     <Avatar
                                         size="big"
-                                        profileImage={authStore.user.sharedUserInfo.profileImage}
+                                        profileImage={user.sharedUserInfo.profileImage}
                                     />
                                     <SizedBox width={sw(10)} />
                                     <CustomText
-                                        label={`${authStore.user.displayName} & ${authStore.user.sharedUserInfo.displayName}`}
+                                        label={`${user.displayName} & ${user.sharedUserInfo.displayName}`}
                                         size={'medium'}
                                     />
                                 </View>

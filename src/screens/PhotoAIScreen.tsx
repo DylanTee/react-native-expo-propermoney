@@ -8,7 +8,6 @@ import { Colors } from "@styles/Colors";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import CustomText from "@components/Shared/CustomText";
 import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
-import { useAuthStore } from "@libs/zustand/authStore";
 import SizedBox from "@components/Shared/SizedBox";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -19,11 +18,13 @@ import axios from "axios";
 import { currencyList } from "@mcdylanproperenterprise/nodejs-proper-money-types/lists/currency";
 import findAmountAndNameOfCategory from "@libs/findAmountAndNameOfCategory";
 import { isNumber } from "@libs/utils";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
   navigation,
   route,
 }) => {
+  const { data: user } = useGetUserDetailQuery();
   const imageDetectMutation = useMutation({
     mutationFn: async (data: TAIImageDetectBody) => {
       return axios.post(
@@ -32,7 +33,6 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
       );
     },
   });
-  const authStore = useAuthStore();
   const questionAmount = `1) Amount:`;
   const questionContext = `2) Context:`;
   const questionCurrency = `3) Currency: (pick from ${currencyList.map(
@@ -65,7 +65,7 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
               justifyContent: "center",
             }}
             type={"transaction_image"}
-            userId={`${authStore.user?._id}`}
+            userId={`${user?._id}`}
             onChange={(data) => {
               imageDetectMutation.mutate(
                 {
@@ -96,6 +96,7 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
                             : undefined,
                           imagePath: data,
                         },
+                        onCreate: () => {},
                         onDelete: () => {},
                         onEdit: () => {},
                       });

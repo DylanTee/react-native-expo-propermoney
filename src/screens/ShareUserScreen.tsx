@@ -31,15 +31,15 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import ModalScanQrCode from "@components/Shared/CustomModal/ModalScanQrCode";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
-import { useAuthStore } from "@libs/zustand/authStore";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
   navigation,
   route,
 }) => {
   const { t } = useTranslation();
-  const authStore = useAuthStore();
-  const isShared = authStore.user?.sharedUserInfo ? true : false;
+  const { data: user } = useGetUserDetailQuery();
+  const isShared = user?.sharedUserInfo ? true : false;
   const [timer, setTimer] = useState<number>(600);
 
   const getShareIdQuery = useQuery({
@@ -134,7 +134,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
         },
         {
           onSuccess: () => {
-            authStore.getDetail();
+            
           },
           onError: (e) => {
             Alert.alert(e.message);
@@ -163,9 +163,9 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
     }
   };
   const btnRemove = () => {
-    if (authStore.user?.sharedUserInfo) {
+    if (user?.sharedUserInfo) {
       Alert.alert(
-        t("remove") + ` ${authStore.user.sharedUserInfo.displayName}?`,
+        t("remove") + ` ${user.sharedUserInfo.displayName}?`,
         ``,
         [
           {
@@ -176,10 +176,10 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
           {
             text: "Yes",
             onPress: () => {
-              if (authStore.user?.sharedUserInfo) {
+              if (user?.sharedUserInfo) {
                 removeMutation.mutate(
                   {
-                    sharedUserId: authStore.user.sharedUserInfo._id,
+                    sharedUserId: user.sharedUserInfo._id,
                   },
                   {
                     onSuccess: () => {},
@@ -196,7 +196,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                         six: "",
                       });
                       getShareIdQuery.refetch();
-                      authStore.getDetail();
+                      
                     },
                   }
                 );
@@ -304,27 +304,27 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Avatar
                     size="big"
-                    profileImage={authStore.user?.profileImage ?? ""}
+                    profileImage={user?.profileImage ?? ""}
                   />
                   <SizedBox width={sw(10)} />
                   <CustomText
                     size={"medium"}
-                    label={`${authStore.user?.displayName} (you)`}
+                    label={`${user?.displayName} (you)`}
                   />
                 </View>
               </View>
               <SizedBox height={sh(10)} />
-              {authStore.user?.sharedUserInfo ? (
+              {user?.sharedUserInfo ? (
                 <View style={[styles.userCardStyle]}>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Avatar
                       size="big"
-                      profileImage={authStore.user.sharedUserInfo?.profileImage}
+                      profileImage={user.sharedUserInfo?.profileImage}
                     />
                     <SizedBox width={sw(10)} />
                     <CustomText
                       size={"medium"}
-                      label={authStore.user.sharedUserInfo.displayName}
+                      label={user.sharedUserInfo.displayName}
                     />
                     <CustomButton
                       buttonStyle={{ marginLeft: "auto" }}

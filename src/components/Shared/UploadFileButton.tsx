@@ -10,8 +10,8 @@ import CustomText from "./CustomText";
 import SizedBox from "./SizedBox";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import ModalImagePicker from "./CustomModal/ModalImagePicker";
-import { useAuthStore } from "@libs/zustand/authStore";
 import ModalZoomableImage from "./CustomModal/ModalZoomableImage";
+import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
 
 type UploadFileButtonProps = {
   containerStyle?: ViewStyle;
@@ -21,7 +21,7 @@ type UploadFileButtonProps = {
 };
 
 export default function UploadFileButton(props: UploadFileButtonProps) {
-  const authStore = useAuthStore();
+  const { data: user } = useGetUserDetailQuery();
   const fileExtension = props.filePath?.split(".").pop();
   const isImage =
     fileExtension === "jpg" ||
@@ -109,7 +109,7 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
             options={["Camera", "Gallery", "Document"]}
             loadingStyle={{ flex: 1, alignSelf: "flex-end" }}
             type={"transaction_image"}
-            userId={`${authStore.user?._id}`}
+            userId={`${user?._id}`}
             onChange={(data) => {
               props.onUploadSuccess(data);
             }}
