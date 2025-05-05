@@ -6,6 +6,7 @@ import {
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { navigationRef } from "@libs/react.navigation.lib";
 import { Alert } from "react-native";
+import { resetQueries } from "@libs/react-query/react.query.client.lib";
 
 type AuthStore = {
   logOut: () => void;
@@ -27,6 +28,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           text: "Yes",
           onPress: () => {
             AsyncStorageLib.clear();
+            resetQueries();
             navigationRef.reset({
               index: 0,
               routes: [{ name: "LoginScreen" }],

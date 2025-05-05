@@ -231,6 +231,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
         startTransactedAt: undefined,
         endTransactedAt: undefined,
         targetUserId: user?._id as string,
+        isHideSharedUserTransactions: user?.sharedUserId ? false : true,
       };
       const { data } = await AxiosLibs.defaultClient.get(`/transaction`, {
         params: query,
