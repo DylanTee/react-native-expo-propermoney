@@ -25,7 +25,6 @@ import {
   ESubscriptionEntitlement,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import { useAuthStore } from "@libs/zustand/authStore";
-import { resetQueries } from "@libs/react.query.client.lib";
 
 const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
   navigation,
@@ -97,9 +96,7 @@ const MissionScreen: AppNavigationScreen<"MissionScreen"> = ({
           missionType: data.type,
         },
         {
-          onSuccess: () => {
-            resetQueries();
-          },
+          onSuccess: () => {},
           onError: (e) => {
             Alert.alert(e.message);
           },

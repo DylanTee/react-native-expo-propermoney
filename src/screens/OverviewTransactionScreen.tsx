@@ -6,7 +6,6 @@ import SizedBox from "@components/Shared/SizedBox";
 import { sh, sw } from "@libs/responsive.lib";
 import Header from "@components/Shared/Header";
 import {
-  Alert,
   RefreshControl,
   ScrollView,
   TouchableOpacity,

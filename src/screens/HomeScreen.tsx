@@ -51,8 +51,12 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
           navigation.navigate("TransactionsFormScreen", {
             id: undefined,
             isEdit: false,
-            onEdit: () => {},
-            onDelete: () => {},
+            onEdit: () => {
+              refreshApis();
+            },
+            onDelete: () => {
+              refreshApis();
+            },
           });
         }
       },
@@ -275,6 +279,14 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
     };
     requestNotifiicationPermission();
   }, []);
+
+  const refreshApis = () => {
+    useGetTransactionDashboardThisMonthQuery.refetch();
+    useGetTransactionDashboardThisMonthSharedUserQuery;
+    useGetTransactionDashboardLastMonthQuery.refetch();
+    useGetTransactionDashboardLastMonthSharedUserQuery.refetch();
+    useGetTransactionInfiniteQuery.refetch();
+  };
 
   return (
     <>
@@ -688,7 +700,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
               refreshing={false}
               onRefresh={() => {
                 authStore.getDetail();
-                useGetTransactionInfiniteQuery.refetch();
+                refreshApis();
               }}
             />
           }

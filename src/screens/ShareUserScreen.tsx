@@ -26,9 +26,7 @@ import { useTranslation } from "@libs/i18n/index";
 import dayjs from "dayjs";
 import CustomText from "@components/Shared/CustomText";
 import CustomButton from "@components/Shared/CustomButton";
-import { Global } from "@styles/Global";
 import QRCode from "react-native-qrcode-svg";
-import { resetQueries } from "@libs/react.query.client.lib";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import ModalScanQrCode from "@components/Shared/CustomModal/ModalScanQrCode";
@@ -136,7 +134,6 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
         },
         {
           onSuccess: () => {
-            resetQueries();
             authStore.getDetail();
           },
           onError: (e) => {
@@ -198,7 +195,6 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                         five: "",
                         six: "",
                       });
-                      resetQueries();
                       getShareIdQuery.refetch();
                       authStore.getDetail();
                     },

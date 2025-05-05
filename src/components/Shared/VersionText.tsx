@@ -7,7 +7,7 @@ export default function VersionText() {
     <View style={{ alignSelf: "center" }}>
       <CustomText
         size={"small"}
-        label={`${process.env.EXPO_PUBLIC_STORE_VERSION} (1) © MCDYLAN PROPER ENTERPRISE`}
+        label={`${process.env.EXPO_PUBLIC_STORE_VERSION} (3) © MCDYLAN PROPER ENTERPRISE`}
       />
     </View>
   );

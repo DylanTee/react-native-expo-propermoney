@@ -15,7 +15,6 @@ import RewardCard from "@components/Shared/Card/RewardCard";
 import { useTranslation } from "react-i18next";
 import { ERewardType } from "@mcdylanproperenterprise/nodejs-proper-money-types/enum";
 import CustomTab from "@components/Shared/CustomTab";
-import { resetQueries } from "@libs/react.query.client.lib";
 import { AxiosLibs } from "@libs/axios.lib";
 import { Alert } from "react-native";
 
@@ -91,9 +90,7 @@ const MyRewardScreen: AppNavigationScreen<"MyRewardScreen"> = ({
       redeemPointMutation.mutate(
         { rewardId: data._id },
         {
-          onSuccess: () => {
-            resetQueries();
-          },
+          onSuccess: () => {},
           onError: (e) => {
             Alert.alert(e.message);
           },

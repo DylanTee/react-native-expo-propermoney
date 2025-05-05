@@ -12,7 +12,6 @@ import {
   TTransaction,
 } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import KeyboardLayout from "@components/Layout/KeyboardLayout";
-import { resetQueries } from "@libs/react.query.client.lib";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import { useAuthStore } from "@libs/zustand/authStore";
@@ -146,7 +145,6 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
         },
         {
           onSuccess: () => {
-            resetQueries();
             route.params.onEdit(_id);
             navigation.goBack();
           },
@@ -183,16 +181,14 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
         note: note && note.trim().length > 0 ? note : null,
       },
       {
-        onSuccess: () => {},
-        onError: (e) => {
-          Alert.alert(e.message);
-        },
-        onSettled: () => {
-          resetQueries();
+        onSuccess: () => {
           navigation.reset({
             index: 0,
             routes: [{ name: "HomeScreen" }],
           });
+        },
+        onError: (e) => {
+          Alert.alert(e.message);
         },
       }
     );
@@ -205,7 +201,6 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
       },
       {
         onSuccess: () => {
-          resetQueries();
           route.params.onDelete(id);
           navigation.goBack();
         },

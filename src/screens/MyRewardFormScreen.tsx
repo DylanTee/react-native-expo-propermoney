@@ -16,7 +16,6 @@ import KeyboardLayout from "@components/Layout/KeyboardLayout";
 import { TPostRewardSubmitBody } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import CustomButton from "@components/Shared/CustomButton";
 import CustomText from "@components/Shared/CustomText";
-import { resetQueries } from "@libs/react.query.client.lib";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 import ModalCountryPicker from "@components/Shared/CustomModal/ModalCountryPicker";
@@ -78,7 +77,6 @@ const MyRewardFormScreen: AppNavigationScreen<"MyRewardFormScreen"> = ({
                 },
                 {
                   onSuccess: () => {
-                    resetQueries();
                     Alert.alert(t("weHadReceivedYourSubmitted"));
                     route.params.onRefresh();
                     navigation.goBack();

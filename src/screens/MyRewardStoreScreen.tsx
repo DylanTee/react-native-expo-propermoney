@@ -24,7 +24,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { resetQueries } from "@libs/react.query.client.lib";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosLibs } from "@libs/axios.lib";
 
@@ -93,7 +92,6 @@ const MyRewardStoreScreen: AppNavigationScreen<"MyRewardStoreScreen"> = ({
               },
               {
                 onSuccess: (response: any) => {
-                  resetQueries();
                   const res: TPostRewardRedeemResponse = response.data;
                   if (
                     data.type ==
