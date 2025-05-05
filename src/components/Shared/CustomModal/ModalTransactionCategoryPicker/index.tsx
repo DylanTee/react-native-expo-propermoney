@@ -95,7 +95,7 @@ export default function ModalTransactionCategoryPicker(
     getNextPageParam: (lastPage, allPages) => {
       const hasNextPage = lastPage.pagination.has_next_page;
       return hasNextPage ? allPages.length + 1 : undefined;
-    },
+    }
   });
 
   const categories: TTransactionCategory[] =

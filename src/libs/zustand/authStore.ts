@@ -62,13 +62,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
   logIn: async (data) => {
     await AsyncStorageLib.setJWTtoken(data);
-    Promise.all([get().getDetail()]).then(() => {
-      setTimeout(() => {
-        navigationRef.reset({
-          index: 0,
-          routes: [{ name: "HomeScreen" }],
-        });
-      }, 2000);
+    await get().getDetail();
+    navigationRef.reset({
+      index: 0,
+      routes: [{ name: "HomeScreen" }],
     });
   },
 }));

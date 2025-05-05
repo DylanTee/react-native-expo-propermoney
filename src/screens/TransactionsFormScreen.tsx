@@ -22,7 +22,6 @@ import { sh, sw } from "@libs/responsive.lib";
 import ModalDateTimePicker from "@components/Shared/CustomModal/ModalDateTimePicker/ModalDateTimePicker";
 import ModalTransactionCategoryPicker from "@components/Shared/CustomModal/ModalTransactionCategoryPicker";
 import ModalTransationLabelsPicker from "@components/Shared/CustomModal/ModalTransationLabelsPicker";
-import ModalImagePicker from "@components/Shared/CustomModal/ModalImagePicker";
 import { Colors } from "@styles/Colors";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import CustomText from "@components/Shared/CustomText";
@@ -184,15 +183,16 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
         note: note && note.trim().length > 0 ? note : null,
       },
       {
-        onSuccess: () => {
+        onSuccess: () => {},
+        onError: (e) => {
+          Alert.alert(e.message);
+        },
+        onSettled: () => {
           resetQueries();
           navigation.reset({
             index: 0,
             routes: [{ name: "HomeScreen" }],
           });
-        },
-        onError: (e) => {
-          Alert.alert(e.message);
         },
       }
     );
