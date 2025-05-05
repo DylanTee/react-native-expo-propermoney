@@ -26,9 +26,9 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
   navigation,
   route,
 }) => {
-  const authStore = useAuthStore()
+  const authStore = useAuthStore();
   const { t } = useTranslation();
-  const { data: user } = useGetUserDetailQuery();
+  const { data: user, refetch } = useGetUserDetailQuery();
   const userUpdateMutation = useMutation({
     mutationFn: (data: TPostUserUpdateBody) => {
       return AxiosLibs.defaultClient.post("/user/update", data);
@@ -43,6 +43,7 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
       {
         onSuccess: () => {
           Alert.alert("Saved");
+          refetch();
         },
         onError: (e) => {
           Alert.alert(e.message);
@@ -70,15 +71,9 @@ const MoreScreen: AppNavigationScreen<"MoreScreen"> = ({
                 alignItems: "center",
               }}
             >
-              <Avatar
-                size="big"
-                profileImage={user?.profileImage ?? ``}
-              />
+              <Avatar size="big" profileImage={user?.profileImage ?? ``} />
               <SizedBox width={sw(5)} />
-              <CustomText
-                label={user?.displayName ?? ``}
-                size={"medium"}
-              />
+              <CustomText label={user?.displayName ?? ``} size={"medium"} />
             </View>
           </View>
           <View style={{ padding: sw(15) }}>

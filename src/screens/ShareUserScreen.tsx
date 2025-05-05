@@ -32,6 +32,7 @@ import { AxiosLibs } from "@libs/axios.lib";
 import ModalScanQrCode from "@components/Shared/CustomModal/ModalScanQrCode";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
+import { resetQueries } from "@libs/react-query/react.query.client.lib";
 
 const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
   navigation,
@@ -134,7 +135,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
         },
         {
           onSuccess: () => {
-            
+            resetQueries();
           },
           onError: (e) => {
             Alert.alert(e.message);
@@ -182,7 +183,9 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                     sharedUserId: user.sharedUserInfo._id,
                   },
                   {
-                    onSuccess: () => {},
+                    onSuccess: () => {
+                      resetQueries();
+                    },
                     onError: (e) => {
                       Alert.alert(e.message);
                     },
@@ -196,7 +199,6 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
                         six: "",
                       });
                       getShareIdQuery.refetch();
-                      
                     },
                   }
                 );
@@ -302,10 +304,7 @@ const ShareUserScreen: AppNavigationScreen<"ShareUserScreen"> = ({
               <SizedBox height={sh(10)} />
               <View style={styles.userCardStyle}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Avatar
-                    size="big"
-                    profileImage={user?.profileImage ?? ""}
-                  />
+                  <Avatar size="big" profileImage={user?.profileImage ?? ""} />
                   <SizedBox width={sw(10)} />
                   <CustomText
                     size={"medium"}
