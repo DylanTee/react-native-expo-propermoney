@@ -674,7 +674,7 @@ const HomeScreen: AppNavigationScreen<"HomeScreen"> = ({
                   style={{ marginLeft: "auto", marginRight: sw(15) }}
                   onPress={() => {
                     navigation.navigate("OverviewTransactionScreen", {
-                      targetUserId: user?._id,
+                      targetUserId: undefined,
                       startTransactedAt: undefined,
                       endTransactedAt: undefined,
                       transactionCategoryId: undefined,

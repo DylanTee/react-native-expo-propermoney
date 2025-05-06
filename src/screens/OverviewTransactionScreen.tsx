@@ -30,6 +30,7 @@ import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import ModalDateRangePicker from "@components/Shared/CustomModal/ModalDateTimePicker/ModalDateRangePicker";
 import { displayDateRangeText } from "@libs/utils";
 import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
+import ModalUserPicker from "@components/Shared/CustomModal/ModalUserPicker";
 
 export enum EOverviewTransactionsReport {
   Categories = "Categories",
@@ -70,8 +71,11 @@ const OverviewTransactionScreen: AppNavigationScreen<
       endTransactedAt: route.params.endTransactedAt,
     }));
   }, [route.params]);
+  const [targetUserId, setTargetUserId] = useState<string | undefined>(
+    route.params.targetUserId
+  );
   const [isHideSharedUserTransactions, setIsHideSharedUserTransactions] =
-    useState<boolean>(user?.sharedUserInfo?false:true);
+    useState<boolean>(user?.sharedUserInfo ? false : true);
   const [transactedAtRange, setTransactedAtRange] = useState<{
     startTransactedAt: Date | undefined;
     endTransactedAt: Date | undefined;
@@ -86,7 +90,8 @@ const OverviewTransactionScreen: AppNavigationScreen<
       transactionCategoryConfig,
       transactionLabelConfig,
       transactedAtRange,
-      isHideSharedUserTransactions
+      isHideSharedUserTransactions,
+      targetUserId,
     ],
     queryFn: async ({ pageParam = 1 }) => {
       const query: TGetTransactionQuery = {
@@ -102,7 +107,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
             : transactionLabelConfig.userTransactionLabelIds,
         startTransactedAt: transactedAtRange.startTransactedAt,
         endTransactedAt: transactedAtRange.endTransactedAt,
-        targetUserId: route.params.targetUserId,
+        targetUserId: targetUserId == undefined ? user?._id : targetUserId,
       };
       const { data } = await AxiosLibs.defaultClient.get(`/transaction`, {
         params: query,
@@ -114,7 +119,6 @@ const OverviewTransactionScreen: AppNavigationScreen<
       return hasNextPage ? allPages.length + 1 : undefined;
     },
   });
-  
 
   const transactions: TTransaction[] =
     useGetTransactionInfiniteQuery.data?.pages.flatMap((page) => {
@@ -209,6 +213,99 @@ const OverviewTransactionScreen: AppNavigationScreen<
         isVisible: true,
       },
       {
+        id: "hide-shared-user",
+        components: (
+          <ModalUserPicker
+            onChange={(id) => {
+              if (id == undefined) {
+                setIsHideSharedUserTransactions(false);
+                setTargetUserId(undefined);
+                setTransactionCategoryConfig((prevState) => ({
+                  ...prevState,
+                  sharedUserCategoryId: undefined,
+                  userCategoryId: undefined,
+                }));
+                setTransactionLabelConfig((prevState) => ({
+                  ...prevState,
+                  sharedUserTransactionLabelIds: [],
+                  userTransactionLabelIds: [],
+                }));
+              } else if (id == user?._id) {
+                setIsHideSharedUserTransactions(true);
+                setTargetUserId(user._id);
+                setTransactionCategoryConfig((prevState) => ({
+                  ...prevState,
+                  sharedUserCategoryId: undefined,
+                }));
+                setTransactionLabelConfig((prevState) => ({
+                  ...prevState,
+                  sharedUserTransactionLabelIds: [],
+                }));
+              } else if (id == user?.sharedUserId) {
+                setTargetUserId(user.sharedUserId);
+                setIsHideSharedUserTransactions(true);
+                setTransactionCategoryConfig((prevState) => ({
+                  ...prevState,
+                  userCategoryId: undefined,
+                }));
+                setTransactionLabelConfig((prevState) => ({
+                  ...prevState,
+                  userTransactionLabelIds: [],
+                }));
+              }
+            }}
+            userId={targetUserId}
+            listComponents={
+              <>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    borderWidth: 1,
+                    borderColor: Colors.suvaGrey,
+                    backgroundColor:
+                      targetUserId != undefined
+                        ? Colors.primary
+                        : "transparent",
+                    borderRadius: sw(30),
+                    padding: sw(5),
+                    paddingHorizontal: sw(20),
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <CustomText
+                    label={`${
+                      targetUserId != undefined
+                        ? targetUserId == user?._id
+                          ? user.displayName
+                          : user?.sharedUserInfo?.displayName
+                        : `Everyone`
+                    }`}
+                    size="medium"
+                    textStyle={{
+                      color:
+                        targetUserId != undefined ? "#D6FFBC" : Colors.primary,
+                    }}
+                  />
+                  {isHideSharedUserTransactions && (
+                    <>
+                      <SizedBox width={sw(10)} />
+                      <ExpoVectorIcon
+                        name="closecircle"
+                        size={sw(15)}
+                        color={"#D6FFBC"}
+                      />
+                    </>
+                  )}
+                </View>
+              </>
+            }
+          />
+        ),
+        isOrder: !isHideSharedUserTransactions ? true : false,
+        isVisible: user?.sharedUserId != null,
+      },
+      {
         id: "category",
         components: (
           <ModalTransactionCategoryPicker
@@ -217,13 +314,13 @@ const OverviewTransactionScreen: AppNavigationScreen<
               <>
                 {transactionCategoryConfig.userCategoryId ? (
                   <TouchableOpacity
-                    onPress={() =>
+                    onPress={() => {
                       setTransactionCategoryConfig((prevState) => ({
                         ...prevState,
                         userCategoryId: undefined,
                         sharedUserCategoryId: undefined,
-                      }))
-                    }
+                      }));
+                    }}
                     style={{
                       flexDirection: "row",
                       justifyContent: "center",
@@ -286,53 +383,6 @@ const OverviewTransactionScreen: AppNavigationScreen<
         ),
         isOrder: transactionCategoryConfig.userCategoryId ? true : false,
         isVisible: true,
-      },
-      {
-        id: "hide-shared-user",
-        components: (
-          <TouchableOpacity
-            onPress={() => {
-              setIsHideSharedUserTransactions(!isHideSharedUserTransactions);
-              setTransactionCategoryConfig((prevState)=>({...prevState,sharedUserCategoryId:undefined}))
-              setTransactionLabelConfig((prevState)=>({...prevState,sharedUserTransactionLabelIds:[]}))
-            }}
-            style={{
-              flexDirection: "row",
-              borderWidth: 1,
-              borderColor: Colors.suvaGrey,
-              backgroundColor: isHideSharedUserTransactions
-                ? Colors.primary
-                : "transparent",
-              borderRadius: sw(30),
-              padding: sw(5),
-              paddingHorizontal: sw(20),
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <CustomText
-              label={`Hide ${user?.sharedUserInfo?.displayName}`}
-              size="medium"
-              textStyle={{
-                color: isHideSharedUserTransactions
-                  ? "#D6FFBC"
-                  : Colors.primary,
-              }}
-            />
-            {isHideSharedUserTransactions && (
-              <>
-                <SizedBox width={sw(10)} />
-                <ExpoVectorIcon
-                  name="closecircle"
-                  size={sw(15)}
-                  color={"#D6FFBC"}
-                />
-              </>
-            )}
-          </TouchableOpacity>
-        ),
-        isOrder: !isHideSharedUserTransactions ? true : false,
-        isVisible: user?.sharedUserId != null,
       },
       {
         id: "shared-user-category",
@@ -439,13 +489,13 @@ const OverviewTransactionScreen: AppNavigationScreen<
                       justifyContent: "center",
                       alignItems: "center",
                     }}
-                    onPress={() =>
+                    onPress={() => {
                       setTransactionLabelConfig((prevState) => ({
                         ...prevState,
                         userTransactionLabelIds: [],
                         sharedUserTransactionLabelIds: [],
-                      }))
-                    }
+                      }));
+                    }}
                   >
                     <TransactionLabelsContainer
                       textStyle={{ color: "#D6FFBC" }}
@@ -556,6 +606,7 @@ const OverviewTransactionScreen: AppNavigationScreen<
     transactionLabelConfig,
     transactedAtRange,
     isHideSharedUserTransactions,
+    targetUserId,
   ]);
 
   return (
