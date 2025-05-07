@@ -149,7 +149,7 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
       } else {
         Alert.alert(
           "Maximum size",
-          "File is too large, Maximum allowed size is 10 MB."
+          "File is too large, Maximum allowed size is 15 MB."
         );
       }
     };
@@ -206,14 +206,13 @@ export default function ModalImagePicker(props: ModalImagePickerProps) {
   };
 
   const options = useMemo(() => {
-    let options: TModalImagePickerOptions[] = [];
-    if (grantedImagePickerCameraPermission) {
-      options.push("Camera");
+    let options: TModalImagePickerOptions[] = props.options;
+    if (!grantedImagePickerCameraPermission) {
+      options = options.filter((z) => z != "Camera");
     }
-    if (grantedImagePickerMediaLibraryPermission) {
-      options.push("Gallery");
+    if (!grantedImagePickerMediaLibraryPermission) {
+      options = options.filter((z) => z != "Gallery");
     }
-    options.push("Document");
     return options;
   }, [
     grantedImagePickerCameraPermission,

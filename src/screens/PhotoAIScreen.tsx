@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ContainerLayout from "@components/Layout/ContainerLayout";
 import { AppNavigationScreen } from "@libs/react.navigation.lib";
 import Header from "@components/Shared/Header";
@@ -19,11 +19,16 @@ import { currencyList } from "@mcdylanproperenterprise/nodejs-proper-money-types
 import findAmountAndNameOfCategory from "@libs/findAmountAndNameOfCategory";
 import { isNumber } from "@libs/utils";
 import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
+import { TTransactionCategory } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
+import { AsyncStorageLib } from "@libs/async.storage.lib";
 
 const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
   navigation,
   route,
 }) => {
+  const [transactionCategories, setTransactionCategories] = useState<
+    TTransactionCategory[]
+  >([]);
   const { data: user } = useGetUserDetailQuery();
   const imageDetectMutation = useMutation({
     mutationFn: async (data: TAIImageDetectBody) => {
@@ -34,11 +39,24 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
     },
   });
   const questionAmount = `1) Amount:`;
-  const questionContext = `2) Context:`;
+  const questionNote = `2) Note: (as detail as possible)`;
   const questionCurrency = `3) Currency: (pick from ${currencyList.map(
     (z) => z.iso
   )})`;
-  const totalQuestionsOnText = `\n\nBased on above example above, construct this format ${questionAmount} ${questionContext} ${questionCurrency}`;
+  const questionDate = `4) Date: (convert to YYYY-MM-DD, just answer)`;
+  const questionCategory = `5) Category: (pick from ${transactionCategories.map(
+    (z) => z.name
+  )})`;
+  const totalQuestionsOnText = `\n\nBased on above example above, construct this format ${questionAmount} ${questionNote} ${questionCurrency} ${questionDate} ${questionCategory}`;
+
+  useEffect(() => {
+    const init = async () => {
+      const transactionCategories =
+        (await AsyncStorageLib.getTransactionCategories()) as TTransactionCategory[];
+      setTransactionCategories(transactionCategories);
+    };
+    init();
+  }, []);
   return (
     <>
       <ContainerLayout>
@@ -59,7 +77,7 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
           />
         ) : (
           <ModalImagePicker
-            options={["Camera", "Gallery", "Document"]}
+            options={["Camera", "Gallery"]}
             loadingStyle={{
               alignItems: "center",
               justifyContent: "center",
@@ -78,6 +96,7 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
                     if (result.messageContent != "") {
                       const detectedText = findAmountAndNameOfCategory({
                         message: result.messageContent,
+                        transactionCategories: transactionCategories,
                       });
                       navigation.replace("TransactionsFormScreen", {
                         id: undefined,
@@ -94,6 +113,11 @@ const PhotoAIScreen: AppNavigationScreen<"PhotoAIScreen"> = ({
                           note: detectedText.note
                             ? detectedText.note
                             : undefined,
+                          transactedAt: detectedText.transactedAt
+                            ? detectedText.transactedAt
+                            : undefined,
+                          transactionCategoryId:
+                            detectedText.transactionCategoryId,
                           imagePath: data,
                         },
                         onCreate: () => {},

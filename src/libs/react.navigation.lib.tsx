@@ -72,6 +72,8 @@ export type AppStackParamList = {
           amount: string | undefined;
           currency: string | undefined;
           note: string | undefined;
+          transactedAt: Date | undefined;
+          transactionCategoryId: string | undefined;
           imagePath: string;
         }
       | undefined;

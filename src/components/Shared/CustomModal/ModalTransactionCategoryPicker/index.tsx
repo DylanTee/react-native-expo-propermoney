@@ -15,7 +15,7 @@ import {
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "@styles/Colors";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import React, {
   Image,
@@ -30,6 +30,7 @@ import Form from "./form";
 import ExpoVectorIcon from "@libs/expo-vector-icons.libs";
 import useDebounce from "@libs/hooks/useDebounce";
 import { useGetUserDetailQuery } from "@libs/react-query/hooks/useGetUserDetailQuery";
+import { AsyncStorageLib } from "@libs/async.storage.lib";
 
 export type TTransactionCategoryForm = {
   _id: string | undefined;
@@ -106,6 +107,11 @@ export default function ModalTransactionCategoryPicker(
   const categoriesLength =
     useGetTransactionCategoryInfiniteQuery?.data?.pages[0].pagination
       .total_items ?? 0;
+
+  useEffect(() => {
+    AsyncStorageLib.setTransactionCategories(categories);
+  }, [categories]);
+  
   return (
     <>
       <TouchableOpacity

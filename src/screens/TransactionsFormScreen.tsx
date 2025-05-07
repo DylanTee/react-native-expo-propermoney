@@ -239,7 +239,10 @@ const TransactionsFormScreen: AppNavigationScreen<"TransactionsFormScreen"> = ({
         currency: dataFromPhotoAIScreen.currency ?? prevState.currency,
         amount: dataFromPhotoAIScreen.amount ?? prevState.amount,
         note: dataFromPhotoAIScreen.note ?? prevState.note,
+        transactedAt:
+          dataFromPhotoAIScreen.transactedAt ?? prevState.transactedAt,
         imagePath: dataFromPhotoAIScreen.imagePath,
+        transactionCategoryId: dataFromPhotoAIScreen?.transactionCategoryId,
       }));
     }
   }, [route.params.dataFromPhotoAIScreen]);

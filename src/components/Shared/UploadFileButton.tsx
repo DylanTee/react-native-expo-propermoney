@@ -130,7 +130,7 @@ export default function UploadFileButton(props: UploadFileButtonProps) {
                     <SizedBox height={sh(5)} />
                     <CustomText
                       size="small"
-                      label={`PDF, JPEG or PNG less than 10 MB`}
+                      label={`PDF, JPEG or PNG less than 15 MB`}
                     />
                   </View>
                 </View>

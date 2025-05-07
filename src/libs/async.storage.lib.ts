@@ -1,10 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TPostVerificationVerifyResponse } from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
+import {
+  TPostVerificationVerifyResponse,
+  TTransactionCategory,
+} from "@mcdylanproperenterprise/nodejs-proper-money-types/types";
 import { navigationRef } from "./react.navigation.lib";
 
 const asyncJWTtoken = "@asyncJWTtoken";
 const asyncTimerToRequestOTP = "@asyncTimerToRequestOTP";
 const asyncAppRestartAt = "@asyncAppRestartAt";
+const asyncTransactionCategories = "@asyncTransactionCategories";
 
 const setJWTtoken = (value: TPostVerificationVerifyResponse) => {
   AsyncStorage.setItem(asyncJWTtoken, JSON.stringify(value));
@@ -53,6 +57,19 @@ const removeTimerToRequestOTP = () => {
   AsyncStorage.removeItem(asyncTimerToRequestOTP);
 };
 
+const getTransactionCategories = async () => {
+  const data = await AsyncStorage.getItem(asyncTransactionCategories);
+  if (data) {
+    return JSON.parse(data);
+  } else {
+    return [];
+  }
+};
+
+const setTransactionCategories = (values: TTransactionCategory[]) => {
+  AsyncStorage.setItem(asyncTransactionCategories, JSON.stringify(values));
+};
+
 const clear = () => {
   AsyncStorage.clear();
 };
@@ -62,6 +79,8 @@ export const AsyncStorageLib = {
   getJWTtoken,
   getTimerToRequestOTP,
   setTimerToRequestOTP,
+  getTransactionCategories,
+  setTransactionCategories,
   removeTimerToRequestOTP,
   getAppRestartAt,
   clear,
